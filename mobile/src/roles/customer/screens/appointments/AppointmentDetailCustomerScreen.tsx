@@ -34,13 +34,15 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
   const handleCancel = () => {
     Alert.alert('Cancel Appointment', 'Are you sure you want to cancel this appointment?', [
       { text: 'No', style: 'cancel' },
-      { text: 'Yes, Cancel', style: 'destructive', onPress: async () => {
-        try {
-          await api.delete(`/appointments/${appointmentId}`);
-          Alert.alert('Cancelled', 'Appointment cancelled successfully');
-          fetchAppointment();
-        } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Failed to cancel'); }
-      }},
+      {
+        text: 'Yes, Cancel', style: 'destructive', onPress: async () => {
+          try {
+            await api.delete(`/appointments/${appointmentId}`);
+            Alert.alert('Cancelled', 'Appointment cancelled successfully');
+            fetchAppointment();
+          } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Failed to cancel'); }
+        }
+      },
     ]);
   };
 
@@ -48,12 +50,14 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
     if (Platform.OS === 'ios') {
       Alert.prompt('Leave a Review', 'Rate your experience (1-5):', [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Submit', onPress: async (rating?: string) => {
-          try {
-            await api.post('/reviews', { appointmentId, rating: parseInt(rating || '5'), comment: 'Great service!' });
-            Alert.alert('Thank you!', 'Your review has been submitted');
-          } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Failed to submit review'); }
-        }},
+        {
+          text: 'Submit', onPress: async (rating?: string) => {
+            try {
+              await api.post('/reviews', { appointmentId, rating: parseInt(rating || '5'), comment: 'Great service!' });
+              Alert.alert('Thank you!', 'Your review has been submitted');
+            } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Failed to submit review'); }
+          }
+        },
       ]);
     } else {
       Alert.alert('Review', 'Review feature - navigate to review screen');
