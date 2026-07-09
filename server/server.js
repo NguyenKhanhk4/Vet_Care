@@ -19,6 +19,9 @@ const paymentRoutes = require('./routes/customer/payment.routes');
 const notificationRoutes = require('./routes/customer/notification.routes');
 const reviewRoutes = require('./routes/customer/review.routes');
 
+// Import Shared Routes
+const sharedAuthRoutes = require('./routes/shared/auth.routes');
+
 // Import Admin Routes
 const adminAuthRoutes = require('./routes/admin/auth.routes');
 const adminDashboardRoutes = require('./routes/admin/dashboard.routes');
@@ -54,6 +57,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files as static assets
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// ============================================================
+// API Routes - Shared Role
+// ============================================================
+
+app.use('/api/auth', sharedAuthRoutes);
 
 // ============================================================
 // API Routes - Customer Role

@@ -10,20 +10,20 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
-import { CustomerProvider } from './src/roles/customer/context/CustomerContext';
-import CustomerNavigator from './src/roles/customer/navigation/CustomerNavigator';
+import RootNavigator from './src/shared/navigation/RootNavigator';
+import { AuthProvider } from './src/shared/context/AuthContext';
 import { ThemeProvider } from './src/shared/context/ThemeContext';
 
 
 export default function App() {
   return (
     <ThemeProvider>
-      <CustomerProvider>
+      <AuthProvider>
         <NavigationContainer>
           <StatusBar style="auto" />
-          <CustomerNavigator />
+          <RootNavigator />
         </NavigationContainer>
-      </CustomerProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
