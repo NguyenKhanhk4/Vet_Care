@@ -41,6 +41,16 @@ const seedData = async () => {
     // Create Users
     // ============================================================
 
+    // Admin user (pre-created, no registration needed)
+    const adminUser = await User.create({
+      name: 'Admin VetCare',
+      email: 'admin@vetcare.com',
+      password: '123456',
+      phone: '0900000000',
+      address: 'VetCare Headquarters, TP.HCM',
+      role: 'admin',
+    });
+
     // Customer user (for testing)
     const customerUser = await User.create({
       name: 'Nguyen Van An',
@@ -502,7 +512,7 @@ const seedData = async () => {
     console.log('✅ Database seeded successfully!');
     console.log('========================================');
     console.log(`📊 Summary:`);
-    console.log(`   - Users: 6 (1 customer + 5 doctors)`);
+    console.log(`   - Users: 7 (1 admin + 1 customer + 5 doctors)`);
     console.log(`   - Clinics: 5`);
     console.log(`   - Doctors: 5`);
     console.log(`   - Services: 14`);
@@ -511,8 +521,8 @@ const seedData = async () => {
     console.log(`   - Medical Records: 1`);
     console.log(`   - Notifications: 4`);
     console.log('\n📧 Test Login:');
-    console.log(`   Email: customer@vetcare.com`);
-    console.log(`   Password: 123456`);
+    console.log(`   Admin:    admin@vetcare.com / 123456`);
+    console.log(`   Customer: customer@vetcare.com / 123456`);
     console.log('========================================\n');
 
     process.exit(0);

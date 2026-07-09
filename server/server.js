@@ -26,6 +26,23 @@ const doctorAppointmentRoutes = require('./routes/doctor/appointment.routes');
 const doctorMedicalRecordRoutes = require('./routes/doctor/medicalRecord.routes');
 const doctorScheduleRoutes = require('./routes/doctor/schedule.routes');
 const doctorNotificationRoutes = require('./routes/doctor/notification.routes');
+// Import Shared Routes
+const sharedAuthRoutes = require('./routes/shared/auth.routes');
+const sharedPaymentRoutes = require('./routes/shared/payment.routes');
+
+// Import Admin Routes
+const adminAuthRoutes = require('./routes/admin/auth.routes');
+const adminDashboardRoutes = require('./routes/admin/dashboard.routes');
+const adminUserRoutes = require('./routes/admin/user.routes');
+const adminDoctorRoutes = require('./routes/admin/doctor.routes');
+const adminClinicRoutes = require('./routes/admin/clinic.routes');
+const adminServiceRoutes = require('./routes/admin/service.routes');
+const adminAppointmentRoutes = require('./routes/admin/appointment.routes');
+const adminPaymentRoutes = require('./routes/admin/payment.routes');
+const adminReviewRoutes = require('./routes/admin/review.routes');
+const adminReportRoutes = require('./routes/admin/report.routes');
+const adminProfileRoutes = require('./routes/admin/profile.routes');
+const adminNotificationRoutes = require('./routes/admin/notification.routes');
 
 // Initialize Express App
 const app = express();
@@ -48,6 +65,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files as static assets
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// ============================================================
+// API Routes - Shared Role
+// ============================================================
+
+app.use('/api/auth', sharedAuthRoutes);
+app.use('/api/payment', sharedPaymentRoutes);
 
 // ============================================================
 // API Routes - Customer Role
@@ -79,6 +103,23 @@ app.use(`${DOCTOR_API_PREFIX}/appointments`, doctorAppointmentRoutes);
 app.use(`${DOCTOR_API_PREFIX}/medical-records`, doctorMedicalRecordRoutes);
 app.use(`${DOCTOR_API_PREFIX}/schedules`, doctorScheduleRoutes);
 app.use(`${DOCTOR_API_PREFIX}/notifications`, doctorNotificationRoutes);
+// API Routes - Admin Role
+// ============================================================
+
+const ADMIN_PREFIX = '/api/admin';
+
+app.use(`${ADMIN_PREFIX}/auth`, adminAuthRoutes);
+app.use(`${ADMIN_PREFIX}/dashboard`, adminDashboardRoutes);
+app.use(`${ADMIN_PREFIX}/users`, adminUserRoutes);
+app.use(`${ADMIN_PREFIX}/doctors`, adminDoctorRoutes);
+app.use(`${ADMIN_PREFIX}/clinics`, adminClinicRoutes);
+app.use(`${ADMIN_PREFIX}/services`, adminServiceRoutes);
+app.use(`${ADMIN_PREFIX}/appointments`, adminAppointmentRoutes);
+app.use(`${ADMIN_PREFIX}/payments`, adminPaymentRoutes);
+app.use(`${ADMIN_PREFIX}/reviews`, adminReviewRoutes);
+app.use(`${ADMIN_PREFIX}/reports`, adminReportRoutes);
+app.use(`${ADMIN_PREFIX}/profile`, adminProfileRoutes);
+app.use(`${ADMIN_PREFIX}/notifications`, adminNotificationRoutes);
 
 // ============================================================
 // Health Check Endpoint
@@ -120,6 +161,7 @@ app.listen(PORT, () => {
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Customer API: http://localhost:${PORT}/api/customer`);
   console.log(`🔗 Doctor API:   http://localhost:${PORT}/api/doctor`);
+  console.log(`🔗 Admin API: http://localhost:${PORT}/api/admin`);
 });
 
 module.exports = app;

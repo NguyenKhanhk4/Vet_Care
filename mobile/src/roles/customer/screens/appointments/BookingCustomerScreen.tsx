@@ -113,10 +113,14 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
         clinic: selectedClinic._id, doctor: selectedDoctor._id, service: selectedService._id,
         pet: selectedPet._id, date: selectedDate, time: selectedTime, notes,
       });
-      Alert.alert('Payment Success', 'Book Appointment successful!', [
-        { text: 'Home', onPress: () => { navigation.popToTop(); navigation.navigate('Home'); } },
-        { text: 'Appointments', onPress: () => { navigation.popToTop(); navigation.navigate('Appointments'); } },
-      ]);
+      
+      const appointmentId = res.data.data._id;
+      
+      // Directly create payment to show QR Code
+      const paymentRes = await api.post('/payments/create', { appointmentId });
+      const { checkoutUrl, orderCode } = paymentRes.data.data;
+      
+      navigation.replace('PaymentWebViewCustomer', { checkoutUrl, orderCode });
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.message || 'Failed to book appointment');
     } finally { setIsSubmitting(false); }

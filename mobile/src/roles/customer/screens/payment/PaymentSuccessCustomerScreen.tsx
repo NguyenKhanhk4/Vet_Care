@@ -1,15 +1,10 @@
-/**
- * PaymentSuccessCustomerScreen
- * Displays payment success with transaction details
- */
-
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 
 const PaymentSuccessCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
-  const { transactionId } = route.params;
+  const { orderCode } = route.params || {};
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
@@ -19,13 +14,15 @@ const PaymentSuccessCustomerScreen: React.FC<{ route: any; navigation: any }> = 
         <View style={styles.iconCircle}>
           <Text style={styles.icon}>✅</Text>
         </View>
-        <Text style={styles.title}>Payment Success</Text>
-        <Text style={styles.subtitle}>Your payment has been processed successfully</Text>
+        <Text style={styles.title}>Thanh toán thành công</Text>
+        <Text style={styles.subtitle}>Lịch hẹn của bạn đã được đặt</Text>
 
-        <View style={styles.transactionCard}>
-          <Text style={styles.transLabel}>Transaction ID</Text>
-          <Text style={styles.transValue}>{transactionId}</Text>
-        </View>
+        {orderCode && (
+          <View style={styles.transactionCard}>
+            <Text style={styles.transLabel}>Order Code</Text>
+            <Text style={styles.transValue}>{orderCode}</Text>
+          </View>
+        )}
 
         <TouchableOpacity style={styles.primaryButton} onPress={() => { navigation.popToTop(); navigation.navigate('Appointments'); }} activeOpacity={0.8}>
           <Text style={styles.primaryButtonText}>Appointments</Text>
