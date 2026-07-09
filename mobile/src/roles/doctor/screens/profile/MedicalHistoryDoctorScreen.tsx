@@ -13,7 +13,7 @@ const MedicalHistoryDoctorScreen: React.FC<{ navigation: any }> = ({ navigation 
   const fetchRecords = async () => {
     try {
       const response = await doctorApi.get('/medical-records');
-      setRecords(response.data.data);
+      setRecords(response.data.records || []);
     } catch (error) {
       console.error('Error fetching medical history:', error);
     } finally {

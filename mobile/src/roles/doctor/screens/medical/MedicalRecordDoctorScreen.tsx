@@ -17,24 +17,35 @@ const medicalRecordSchema = yup.object().shape({
 });
 
 const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
-  const { appointmentId } = route.params;
+  const { appointmentId, existingRecord } = route.params;
   const { colors } = useTheme();
   const [submitting, setSubmitting] = useState(false);
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(medicalRecordSchema),
-    defaultValues: { diagnosis: '', symptoms: '', prescription: '', treatment: '', doctorNotes: '', cost: 0 },
+    defaultValues: { 
+      diagnosis: existingRecord?.diagnosis || '', 
+      symptoms: existingRecord?.symptoms || '', 
+      prescription: existingRecord?.prescription || '', 
+      treatment: existingRecord?.treatment || '', 
+      doctorNotes: existingRecord?.doctorNotes || '', 
+      cost: existingRecord?.cost || 0 
+    },
   });
 
   const onSubmit = async (data: any) => {
     try {
       setSubmitting(true);
-      await doctorApi.post('/medical-records', {
-        appointmentId,
-        ...data,
-      });
+      if (existingRecord) {
+        await doctorApi.put(`/medical-records/${existingRecord._id}`, data);
+      } else {
+        await doctorApi.post('/medical-records', {
+          appointmentId,
+          ...data,
+        });
+      }
       Alert.alert('Thành công', 'Đã lưu hồ sơ bệnh án.', [
-        { text: 'OK', onPress: () => navigation.navigate('HomeDoctor') }
+        { text: 'OK', onPress: () => navigation.goBack() }
       ]);
     } catch (error: any) {
       Alert.alert('Lỗi', error.response?.data?.message || 'Không thể lưu hồ sơ bệnh án.');
@@ -51,7 +62,7 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Cập Nhật Bệnh Án</Text>
+        <Text style={styles.headerTitle}>{existingRecord ? 'Sửa Bệnh Án' : 'Cập Nhật Bệnh Án'}</Text>
         <View style={{ width: 40 }} />
       </View>
 

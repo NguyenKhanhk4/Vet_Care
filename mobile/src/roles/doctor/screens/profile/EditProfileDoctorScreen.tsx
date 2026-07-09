@@ -9,13 +9,29 @@ import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants
 import { useDoctor } from '../../context/DoctorContext';
 import { doctorApi } from '../../services/doctorApi';
 
+const nameRegex = /^[\p{L}\s]+$/u;
+const phoneRegex = /^[0-9]{10,11}$/;
+
 const editProfileSchema = yup.object().shape({
-  name: yup.string().required('Vui lòng nhập họ tên'),
-  phone: yup.string().required('Vui lòng nhập số điện thoại'),
-  address: yup.string(),
-  specialization: yup.string(),
-  experience: yup.number().typeError('Kinh nghiệm phải là số'),
-  bio: yup.string(),
+  name: yup.string()
+    .required('Vui lòng nhập họ tên')
+    .min(2, 'Tên phải có ít nhất 2 ký tự')
+    .max(50, 'Tên không được vượt quá 50 ký tự')
+    .matches(nameRegex, 'Tên chỉ được chứa chữ cái tiếng Việt và khoảng trắng, không chứa số hay ký tự đặc biệt'),
+  phone: yup.string()
+    .required('Vui lòng nhập số điện thoại')
+    .matches(phoneRegex, 'Số điện thoại không hợp lệ (gồm 10-11 chữ số)'),
+  address: yup.string()
+    .max(200, 'Địa chỉ không được vượt quá 200 ký tự'),
+  specialization: yup.string()
+    .max(100, 'Chuyên khoa không được vượt quá 100 ký tự'),
+  experience: yup.number()
+    .typeError('Kinh nghiệm phải là số')
+    .min(0, 'Kinh nghiệm không được là số âm')
+    .max(50, 'Kinh nghiệm không hợp lệ (>50 năm)')
+    .required('Vui lòng nhập số năm kinh nghiệm'),
+  bio: yup.string()
+    .max(500, 'Giới thiệu không được vượt quá 500 ký tự'),
 });
 
 const EditProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -111,7 +127,7 @@ const EditProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) 
               <Image source={{ uri: avatarUri }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarPlaceholderText}>{doctor?.user.name?.charAt(0) || 'D'}</Text>
+                <Text style={styles.avatarPlaceholderText}>{doctor?.user?.name?.charAt(0) || 'D'}</Text>
               </View>
             )}
             <View style={styles.editBadge}>

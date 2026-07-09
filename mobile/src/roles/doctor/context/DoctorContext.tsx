@@ -40,7 +40,8 @@ export const DoctorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       setIsLoading(true);
       const res = await doctorApi.post('/auth/login', { email, password });
-      const { token, doctor: doctorData } = res.data.data;
+      const { token, doctor: doctorData, user } = res.data.data;
+      doctorData.user = user;
       await AsyncStorage.setItem('doctorToken', token);
       setDoctor(doctorData);
     } catch (error: any) {
@@ -58,7 +59,9 @@ export const DoctorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const updateProfile = async () => {
     try {
       const res = await doctorApi.get('/profile');
-      setDoctor(res.data.data.doctor);
+      const { user, doctor: doctorData } = res.data.data;
+      doctorData.user = user;
+      setDoctor(doctorData);
     } catch (error) {
       console.log('Update profile error:', error);
       throw error;

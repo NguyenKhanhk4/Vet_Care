@@ -8,6 +8,7 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
   const { id } = route.params;
   const { colors } = useTheme();
   const [appointment, setAppointment] = useState<any>(null);
+  const [medicalRecord, setMedicalRecord] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -15,6 +16,18 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
     try {
       const response = await doctorApi.get(`/appointments/${id}`);
       setAppointment(response.data.data);
+      
+      // Try to fetch medical record if appointment is completed
+      if (response.data.data.status === 'completed') {
+        try {
+          const recordRes = await doctorApi.get(`/medical-records?appointmentId=${id}`);
+          if (recordRes.data.data?.records?.length > 0) {
+            setMedicalRecord(recordRes.data.data.records[0]);
+          }
+        } catch (e) {
+          // Ignore error if not found
+        }
+      }
     } catch (error) {
       console.error('Lỗi khi tải chi tiết lịch hẹn:', error);
       Alert.alert('Lỗi', 'Không thể tải chi tiết lịch hẹn.');
@@ -133,6 +146,21 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
           )}
         </View>
 
+        {/* Medical Record Info */}
+        {medicalRecord && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Hồ Sơ Bệnh Án</Text>
+            <View style={styles.infoRow}><Text style={styles.label}>Chẩn đoán:</Text><Text style={styles.value}>{medicalRecord.diagnosis}</Text></View>
+            <View style={styles.infoRow}><Text style={styles.label}>Triệu chứng:</Text><Text style={styles.value}>{medicalRecord.symptoms || 'Không có'}</Text></View>
+            <View style={styles.infoRow}><Text style={styles.label}>Điều trị:</Text><Text style={styles.value}>{medicalRecord.treatment || 'Không có'}</Text></View>
+            <View style={styles.infoRow}><Text style={styles.label}>Đơn thuốc:</Text><Text style={styles.value}>{medicalRecord.prescription || 'Không có'}</Text></View>
+            <View style={styles.infoRow}><Text style={styles.label}>Ghi chú bác sĩ:</Text><Text style={styles.value}>{medicalRecord.doctorNotes || 'Không có'}</Text></View>
+            {medicalRecord.cost > 0 && (
+              <View style={styles.infoRow}><Text style={styles.label}>Phát sinh:</Text><Text style={[styles.value, { color: colors.primary }]}>{medicalRecord.cost?.toLocaleString('vi-VN')} VNĐ</Text></View>
+            )}
+          </View>
+        )}
+
         {/* Actions */}
         <View style={styles.actionContainer}>
           {actionLoading ? (
@@ -162,8 +190,8 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
               )}
 
               {appointment.status === 'completed' && (
-                <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('MedicalRecordDoctor', { appointmentId: appointment._id })}>
-                  <Text style={styles.actionBtnText}>📝 Cập Nhật Bệnh Án</Text>
+                <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('MedicalRecordDoctor', { appointmentId: appointment._id, existingRecord: medicalRecord })}>
+                  <Text style={styles.actionBtnText}>{medicalRecord ? '📝 Sửa Bệnh Án' : '📝 Cập Nhật Bệnh Án'}</Text>
                 </TouchableOpacity>
               )}
             </>

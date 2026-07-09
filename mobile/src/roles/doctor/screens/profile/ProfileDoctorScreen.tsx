@@ -29,11 +29,11 @@ const ProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             <Image source={{ uri: doctor.user.avatar }} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarText}>{doctor?.user.name.charAt(0)}</Text>
+              <Text style={styles.avatarText}>{doctor?.user?.name?.charAt(0) || 'D'}</Text>
             </View>
           )}
         </View>
-        <Text style={styles.name}>Bs. {doctor?.user.name}</Text>
+        <Text style={styles.name}>Bs. {doctor?.user?.name}</Text>
         <Text style={styles.email}>{doctor?.user.email}</Text>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{doctor?.specialization}</Text>

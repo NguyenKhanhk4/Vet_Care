@@ -70,7 +70,7 @@ const HomeDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>{getGreeting()},</Text>
-          <Text style={styles.name}>Bs. {doctor?.user.name}</Text>
+          <Text style={styles.name}>Bs. {doctor?.user?.name}</Text>
           <Text style={styles.specialization}>{doctor?.specialization}</Text>
         </View>
         <TouchableOpacity

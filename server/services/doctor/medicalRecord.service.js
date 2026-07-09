@@ -8,6 +8,7 @@ class DoctorMedicalRecordService {
 
     const query = { doctor: doctor._id };
     if (filters.petId) query.pet = filters.petId;
+    if (filters.appointmentId) query.appointment = filters.appointmentId;
 
     const { page = 1, limit = 20 } = pagination;
     const skip = (page - 1) * limit;
