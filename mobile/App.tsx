@@ -13,17 +13,20 @@ import { NavigationContainer } from '@react-navigation/native';
 import RootNavigator from './src/shared/navigation/RootNavigator';
 import { AuthProvider } from './src/shared/context/AuthContext';
 import { ThemeProvider } from './src/shared/context/ThemeContext';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <NavigationContainer>
-          <StatusBar style="auto" />
-          <RootNavigator />
-        </NavigationContainer>
-      </AuthProvider>
-    </ThemeProvider>
+    <PaperProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <NavigationContainer>
+            <StatusBar style="auto" />
+            <RootNavigator />
+          </NavigationContainer>
+        </AuthProvider>
+      </ThemeProvider>
+    </PaperProvider>
   );
 }

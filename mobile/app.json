@@ -1,11 +1,16 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "VetCare",
+    "slug": "VetCare",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/vetcare.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/vetcare.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
       "supportsTablet": true
     },

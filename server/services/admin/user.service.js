@@ -16,7 +16,10 @@ class AdminUserService {
     const skip = (page - 1) * limit;
 
     // Build filter
-    const filter = { role: 'customer' };
+    const filter = {};
+    if (query.role) {
+      filter.role = query.role;
+    }
 
     if (query.search) {
       filter.$or = [

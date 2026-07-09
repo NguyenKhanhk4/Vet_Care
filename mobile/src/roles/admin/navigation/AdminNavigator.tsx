@@ -12,6 +12,9 @@ import { SIZES, FONTS, ThemeColors } from '../../../shared/constants/theme';
 // Screens
 import DashboardAdminScreen from '../screens/dashboard/DashboardAdminScreen';
 import ProfileAdminScreen from '../screens/profile/ProfileAdminScreen';
+import UserListAdminScreen from '../screens/users/UserListAdminScreen';
+import AppointmentListAdminScreen from '../screens/appointments/AppointmentListAdminScreen';
+import ClinicListAdminScreen from '../screens/clinics/ClinicListAdminScreen';
 import PlaceholderScreen from '../screens/PlaceholderScreen';
 
 const Stack = createNativeStackNavigator();
@@ -56,9 +59,9 @@ const MainAdminNavigator = () => {
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardAdminScreen} />
-      <Tab.Screen name="Users" component={PlaceholderScreen} />
-      <Tab.Screen name="Appointments" component={PlaceholderScreen} />
-      <Tab.Screen name="Clinics" component={PlaceholderScreen} />
+      <Tab.Screen name="Users" component={UserListAdminScreen} />
+      <Tab.Screen name="Appointments" component={AppointmentListAdminScreen} />
+      <Tab.Screen name="Clinics" component={ClinicListAdminScreen} />
       <Tab.Screen name="Profile" component={ProfileAdminScreen} />
     </Tab.Navigator>
   );
