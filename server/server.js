@@ -19,6 +19,20 @@ const paymentRoutes = require('./routes/customer/payment.routes');
 const notificationRoutes = require('./routes/customer/notification.routes');
 const reviewRoutes = require('./routes/customer/review.routes');
 
+// Import Admin Routes
+const adminAuthRoutes = require('./routes/admin/auth.routes');
+const adminDashboardRoutes = require('./routes/admin/dashboard.routes');
+const adminUserRoutes = require('./routes/admin/user.routes');
+const adminDoctorRoutes = require('./routes/admin/doctor.routes');
+const adminClinicRoutes = require('./routes/admin/clinic.routes');
+const adminServiceRoutes = require('./routes/admin/service.routes');
+const adminAppointmentRoutes = require('./routes/admin/appointment.routes');
+const adminPaymentRoutes = require('./routes/admin/payment.routes');
+const adminReviewRoutes = require('./routes/admin/review.routes');
+const adminReportRoutes = require('./routes/admin/report.routes');
+const adminProfileRoutes = require('./routes/admin/profile.routes');
+const adminNotificationRoutes = require('./routes/admin/notification.routes');
+
 // Initialize Express App
 const app = express();
 
@@ -60,6 +74,25 @@ app.use(`${API_PREFIX}/notifications`, notificationRoutes);
 app.use(`${API_PREFIX}/reviews`, reviewRoutes);
 
 // ============================================================
+// API Routes - Admin Role
+// ============================================================
+
+const ADMIN_PREFIX = '/api/admin';
+
+app.use(`${ADMIN_PREFIX}/auth`, adminAuthRoutes);
+app.use(`${ADMIN_PREFIX}/dashboard`, adminDashboardRoutes);
+app.use(`${ADMIN_PREFIX}/users`, adminUserRoutes);
+app.use(`${ADMIN_PREFIX}/doctors`, adminDoctorRoutes);
+app.use(`${ADMIN_PREFIX}/clinics`, adminClinicRoutes);
+app.use(`${ADMIN_PREFIX}/services`, adminServiceRoutes);
+app.use(`${ADMIN_PREFIX}/appointments`, adminAppointmentRoutes);
+app.use(`${ADMIN_PREFIX}/payments`, adminPaymentRoutes);
+app.use(`${ADMIN_PREFIX}/reviews`, adminReviewRoutes);
+app.use(`${ADMIN_PREFIX}/reports`, adminReportRoutes);
+app.use(`${ADMIN_PREFIX}/profile`, adminProfileRoutes);
+app.use(`${ADMIN_PREFIX}/notifications`, adminNotificationRoutes);
+
+// ============================================================
 // Health Check Endpoint
 // ============================================================
 
@@ -97,7 +130,8 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 VetCare Server running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 API Base URL: http://localhost:${PORT}/api/customer`);
+  console.log(`🔗 Customer API: http://localhost:${PORT}/api/customer`);
+  console.log(`🔗 Admin API: http://localhost:${PORT}/api/admin`);
 });
 
 module.exports = app;
