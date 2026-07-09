@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Scr
 import { Text, TextInput, Button, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AdminContext } from '../../context/AdminContext';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
 const LoginAdminScreen = ({ navigation }: any) => {
   const theme = useTheme();

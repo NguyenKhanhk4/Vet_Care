@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Scr
 import { Text, TextInput, Button, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthContext } from '../../context/AuthContext';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
 const LoginScreen = ({ navigation }: any) => {
   const theme = useTheme();
@@ -45,11 +45,15 @@ const LoginScreen = ({ navigation }: any) => {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.headerContainer}>
-            <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary }]}>
-              <Icon name="paw" size={48} color="white" />
+            <View style={styles.logoWrapper}>
+              <Image 
+                source={require('../../../../assets/vetcare.png')} 
+                style={styles.logoImage} 
+                resizeMode="cover"
+              />
             </View>
-            <Text style={styles.title}>Welcome to VetCare</Text>
-            <Text style={styles.subtitle}>Sign in to your account</Text>
+            <Text style={styles.title}>VetCare</Text>
+            <Text style={styles.subtitle}>Đặt lịch dễ dàng – Yêu thương trọn vẹn</Text>
           </View>
 
           <View style={styles.formContainer}>
@@ -127,28 +131,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 40,
   },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
+  logoWrapper: {
+    width: 150,
+    height: 105,
+    borderRadius: 24,
+    overflow: 'hidden',
+    marginBottom: 20,
+    backgroundColor: '#FFFFFF',
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+  },
+  logoImage: {
+    width: 190,
+    height: 190,
+    marginLeft: -20,
+    marginTop: -20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#00796B', // A nice teal color matching the VetCare logo
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 14,
+    color: '#00796B',
+    fontWeight: '500',
   },
   formContainer: {
     width: '100%',
