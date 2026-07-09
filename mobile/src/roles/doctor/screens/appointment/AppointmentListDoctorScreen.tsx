@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, 
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { doctorApi } from '../../services/doctorApi';
+import { translateSpecies } from '../../../../shared/utils/translate';
 
 const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { colors } = useTheme();
@@ -15,7 +16,7 @@ const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation
     try {
       const url = filter === 'all' ? '/appointments' : `/appointments?status=${filter}`;
       const response = await doctorApi.get(url);
-      setAppointments(response.data.data);
+      setAppointments(response.data.appointments || []);
     } catch (error) {
       console.error('Error fetching appointments:', error);
     } finally {
@@ -109,7 +110,7 @@ const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation
                 </View>
                 <View style={styles.infoRow}>
                   <Text style={styles.infoLabel}>Thú cưng:</Text>
-                  <Text style={styles.infoValue}>{item.pet?.name} ({item.pet?.species})</Text>
+                  <Text style={styles.infoValue}>{item.pet?.name} ({translateSpecies(item.pet?.species)})</Text>
                 </View>
                 <View style={styles.infoRow}>
                   <Text style={styles.infoLabel}>Dịch vụ:</Text>

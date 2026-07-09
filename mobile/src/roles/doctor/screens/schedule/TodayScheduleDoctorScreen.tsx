@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, 
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { doctorApi } from '../../services/doctorApi';
+import { translateSpecies } from '../../../../shared/utils/translate';
 
 const TodayScheduleDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { colors } = useTheme();
@@ -100,7 +101,7 @@ const TodayScheduleDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }
               </View>
             </View>
             <View style={styles.infoSection}>
-              <Text style={styles.petName}>🐾 {item.pet.name} ({item.pet.species})</Text>
+              <Text style={styles.petName}>🐾 {item.pet?.name} ({translateSpecies(item.pet?.species)})</Text>
               <Text style={styles.customerName}>👤 {item.customer.name}</Text>
               <Text style={styles.serviceName}>🩺 {item.service.name}</Text>
             </View>

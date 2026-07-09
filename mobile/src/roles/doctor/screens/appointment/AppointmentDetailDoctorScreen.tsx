@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { doctorApi } from '../../services/doctorApi';
+import { translateSpecies, translateGender, translateVaccineStatus } from '../../../../shared/utils/translate';
 
 const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
   const { id } = route.params;
@@ -21,8 +22,9 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
       if (response.data.data.status === 'completed') {
         try {
           const recordRes = await doctorApi.get(`/medical-records?appointmentId=${id}`);
-          if (recordRes.data.data?.records?.length > 0) {
-            setMedicalRecord(recordRes.data.data.records[0]);
+          const records = recordRes.data.records || recordRes.data.data?.records || [];
+          if (records.length > 0) {
+            setMedicalRecord(records[0]);
           }
         } catch (e) {
           // Ignore error if not found
@@ -118,10 +120,10 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Thông Tin Thú Cưng</Text>
           <View style={styles.infoRow}><Text style={styles.label}>Tên:</Text><Text style={styles.value}>{appointment.pet?.name}</Text></View>
-          <View style={styles.infoRow}><Text style={styles.label}>Loài/Giống:</Text><Text style={styles.value}>{appointment.pet?.species} - {appointment.pet?.breed}</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Loài/Giống:</Text><Text style={styles.value}>{translateSpecies(appointment.pet?.species)} - {appointment.pet?.breed || 'Không rõ'}</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Tuổi:</Text><Text style={styles.value}>{appointment.pet?.age} năm</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Cân nặng:</Text><Text style={styles.value}>{appointment.pet?.weight} kg</Text></View>
-          <View style={styles.infoRow}><Text style={styles.label}>Tình trạng tiêm:</Text><Text style={styles.value}>{appointment.pet?.vaccineStatus}</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Tình trạng tiêm:</Text><Text style={styles.value}>{translateVaccineStatus(appointment.pet?.vaccineStatus)}</Text></View>
         </View>
 
         {/* Customer Info */}
@@ -137,7 +139,16 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
           <Text style={styles.sectionTitle}>Dịch Vụ & Thanh Toán</Text>
           <View style={styles.infoRow}><Text style={styles.label}>Dịch vụ:</Text><Text style={styles.value}>{appointment.service?.name}</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Thời lượng:</Text><Text style={styles.value}>{appointment.service?.duration} phút</Text></View>
-          <View style={styles.infoRow}><Text style={styles.label}>Tổng tiền:</Text><Text style={[styles.value, { color: colors.primary, ...FONTS.bold }]}>{appointment.totalAmount?.toLocaleString('vi-VN')} VNĐ</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Giá dịch vụ:</Text><Text style={styles.value}>{(appointment.totalAmount || appointment.service?.price || 0).toLocaleString('vi-VN')} VNĐ</Text></View>
+          {medicalRecord && medicalRecord.cost > 0 && (
+            <View style={styles.infoRow}><Text style={styles.label}>Phát sinh:</Text><Text style={styles.value}>{medicalRecord.cost.toLocaleString('vi-VN')} VNĐ</Text></View>
+          )}
+          <View style={[styles.infoRow, { borderTopWidth: 1, borderColor: colors.border, paddingTop: 8, marginTop: 4 }]}>
+            <Text style={[styles.label, { ...FONTS.bold, color: colors.textPrimary }]}>Tổng tiền:</Text>
+            <Text style={[styles.value, { color: colors.primary, ...FONTS.bold, fontSize: SIZES.lg }]}>
+              {((appointment.totalAmount || appointment.service?.price || 0) + (medicalRecord?.cost || 0)).toLocaleString('vi-VN')} VNĐ
+            </Text>
+          </View>
           {appointment.notes && (
             <View style={{ marginTop: 10 }}>
               <Text style={styles.label}>Ghi chú từ khách hàng:</Text>
