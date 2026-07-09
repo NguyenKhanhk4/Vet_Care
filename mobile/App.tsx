@@ -1,29 +1,17 @@
-/**
- * VetCare App - Main Entry Point
- * Pet Healthcare Mobile Application
- *
- * Architecture: Role-based with customer focus
- * Currently active roles: Customer
- * Future expandable: Admin, Doctor
- */
-
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
-import { CustomerProvider } from './src/roles/customer/context/CustomerContext';
-import CustomerNavigator from './src/roles/customer/navigation/CustomerNavigator';
 import { ThemeProvider } from './src/shared/context/ThemeContext';
-
+import { DoctorProvider } from './src/roles/doctor/context/DoctorContext';
+import DoctorNavigator from './src/roles/doctor/navigation/DoctorNavigator';
 
 export default function App() {
   return (
     <ThemeProvider>
-      <CustomerProvider>
+      <DoctorProvider>
         <NavigationContainer>
-          <StatusBar style="auto" />
-          <CustomerNavigator />
+          <DoctorNavigator />
         </NavigationContainer>
-      </CustomerProvider>
+      </DoctorProvider>
     </ThemeProvider>
   );
 }

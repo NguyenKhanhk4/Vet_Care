@@ -48,6 +48,12 @@ const medicalRecordSchema = new mongoose.Schema(
       maxlength: [1000, 'Prescription cannot exceed 1000 characters'],
       default: '',
     },
+    treatment: {
+      type: String,
+      trim: true,
+      maxlength: [1000, 'Treatment cannot exceed 1000 characters'],
+      default: '',
+    },
     doctorNotes: {
       type: String,
       trim: true,

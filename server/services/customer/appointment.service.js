@@ -1,7 +1,7 @@
 const Appointment = require('../../models/Appointment');
 const Service = require('../../models/Service');
 const Notification = require('../../models/Notification');
-
+const Doctor = require('../../models/Doctor');
 /**
  * Appointment Service - Customer
  * Handles appointment booking, viewing, cancellation, and rescheduling
@@ -115,7 +115,7 @@ class AppointmentService {
       status: 'pending',
     });
 
-    // Create notification for booking
+    // Create notification for booking for Customer
     await Notification.create({
       user: customerId,
       title: 'Booking Confirmed',
@@ -123,6 +123,18 @@ class AppointmentService {
       type: 'booking',
       relatedId: appointment._id,
     });
+
+    // Create notification for Doctor
+    const doctorProfile = await Doctor.findById(doctor).select('user');
+    if (doctorProfile) {
+      await Notification.create({
+        user: doctorProfile.user,
+        title: 'Lịch hẹn mới',
+        message: `Bạn có lịch hẹn mới vào lúc ${time} ngày ${new Date(date).toLocaleDateString('vi-VN')}`,
+        type: 'booking',
+        relatedId: appointment._id,
+      });
+    }
 
     // Return populated appointment
     return await this.getAppointmentById(appointment._id, customerId);
@@ -214,6 +226,18 @@ class AppointmentService {
 
     appointment.status = 'cancelled';
     await appointment.save();
+
+    // Create notification for Doctor
+    const doctorProfile = await Doctor.findById(appointment.doctor).select('user');
+    if (doctorProfile) {
+      await Notification.create({
+        user: doctorProfile.user,
+        title: 'Lịch hẹn bị hủy',
+        message: `Lịch hẹn lúc ${appointment.time} ngày ${new Date(appointment.date).toLocaleDateString('vi-VN')} đã bị hủy bởi khách hàng.`,
+        type: 'booking',
+        relatedId: appointment._id,
+      });
+    }
 
     return appointment;
   }

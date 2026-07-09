@@ -19,6 +19,14 @@ const paymentRoutes = require('./routes/customer/payment.routes');
 const notificationRoutes = require('./routes/customer/notification.routes');
 const reviewRoutes = require('./routes/customer/review.routes');
 
+// Import Doctor Routes
+const doctorAuthRoutes = require('./routes/doctor/auth.routes');
+const doctorProfileRoutes = require('./routes/doctor/profile.routes');
+const doctorAppointmentRoutes = require('./routes/doctor/appointment.routes');
+const doctorMedicalRecordRoutes = require('./routes/doctor/medicalRecord.routes');
+const doctorScheduleRoutes = require('./routes/doctor/schedule.routes');
+const doctorNotificationRoutes = require('./routes/doctor/notification.routes');
+
 // Initialize Express App
 const app = express();
 
@@ -60,6 +68,19 @@ app.use(`${API_PREFIX}/notifications`, notificationRoutes);
 app.use(`${API_PREFIX}/reviews`, reviewRoutes);
 
 // ============================================================
+// API Routes - Doctor Role
+// ============================================================
+
+const DOCTOR_API_PREFIX = '/api/doctor';
+
+app.use(`${DOCTOR_API_PREFIX}/auth`, doctorAuthRoutes);
+app.use(`${DOCTOR_API_PREFIX}/profile`, doctorProfileRoutes);
+app.use(`${DOCTOR_API_PREFIX}/appointments`, doctorAppointmentRoutes);
+app.use(`${DOCTOR_API_PREFIX}/medical-records`, doctorMedicalRecordRoutes);
+app.use(`${DOCTOR_API_PREFIX}/schedules`, doctorScheduleRoutes);
+app.use(`${DOCTOR_API_PREFIX}/notifications`, doctorNotificationRoutes);
+
+// ============================================================
 // Health Check Endpoint
 // ============================================================
 
@@ -97,7 +118,8 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 VetCare Server running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 API Base URL: http://localhost:${PORT}/api/customer`);
+  console.log(`🔗 Customer API: http://localhost:${PORT}/api/customer`);
+  console.log(`🔗 Doctor API:   http://localhost:${PORT}/api/doctor`);
 });
 
 module.exports = app;
