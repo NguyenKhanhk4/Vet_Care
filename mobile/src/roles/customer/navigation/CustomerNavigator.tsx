@@ -41,7 +41,9 @@ import MedicalDetailCustomerScreen from '../screens/medical/MedicalDetailCustome
 
 // Import Payment Screens
 import PaymentCustomerScreen from '../screens/payment/PaymentCustomerScreen';
+import PaymentWebViewCustomerScreen from '../screens/payment/PaymentWebViewCustomerScreen';
 import PaymentSuccessCustomerScreen from '../screens/payment/PaymentSuccessCustomerScreen';
+import PaymentFailedCustomerScreen from '../screens/payment/PaymentFailedCustomerScreen';
 
 // Import Profile Screens
 import ProfileCustomerScreen from '../screens/profile/ProfileCustomerScreen';
@@ -68,7 +70,9 @@ export type HomeStackParamList = {
   ServiceCustomer: { serviceId: string };
   BookingCustomer: { clinicId?: string; doctorId?: string; serviceId?: string };
   PaymentCustomer: { appointmentId: string };
-  PaymentSuccessCustomer: { paymentId: string; transactionId: string };
+  PaymentWebViewCustomer: { checkoutUrl: string; orderCode: number };
+  PaymentSuccessCustomer: { orderCode?: number; appointmentId?: string };
+  PaymentFailedCustomer: { orderCode?: number; appointmentId?: string };
 };
 
 export type PetStackParamList = {
@@ -83,7 +87,9 @@ export type AppointmentStackParamList = {
   AppointmentDetailCustomer: { appointmentId: string };
   BookingCustomer: { clinicId?: string; doctorId?: string; serviceId?: string };
   PaymentCustomer: { appointmentId: string };
-  PaymentSuccessCustomer: { paymentId: string; transactionId: string };
+  PaymentWebViewCustomer: { checkoutUrl: string; orderCode: number };
+  PaymentSuccessCustomer: { orderCode?: number; appointmentId?: string };
+  PaymentFailedCustomer: { orderCode?: number; appointmentId?: string };
   MedicalDetailCustomer: { recordId: string };
 };
 
@@ -176,7 +182,9 @@ const CustomerNavigator: React.FC = () => {
       <HomeStack.Screen name="ServiceCustomer" component={ServiceCustomerScreen} options={{ title: 'Service Details' }} />
       <HomeStack.Screen name="BookingCustomer" component={BookingCustomerScreen} options={{ title: 'Book Appointment' }} />
       <HomeStack.Screen name="PaymentCustomer" component={PaymentCustomerScreen} options={{ title: 'Payment' }} />
+      <HomeStack.Screen name="PaymentWebViewCustomer" component={PaymentWebViewCustomerScreen} options={{ title: 'Checkout', headerShown: false }} />
       <HomeStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
+      <HomeStack.Screen name="PaymentFailedCustomer" component={PaymentFailedCustomerScreen} options={{ title: 'Payment Failed', headerShown: false }} />
     </HomeStack.Navigator>
   );
 
@@ -197,7 +205,9 @@ const CustomerNavigator: React.FC = () => {
       <AppointmentStack.Screen name="AppointmentDetailCustomer" component={AppointmentDetailCustomerScreen} options={{ title: 'Appointment Details' }} />
       <AppointmentStack.Screen name="BookingCustomer" component={BookingCustomerScreen} options={{ title: 'Book Appointment' }} />
       <AppointmentStack.Screen name="PaymentCustomer" component={PaymentCustomerScreen} options={{ title: 'Payment' }} />
+      <AppointmentStack.Screen name="PaymentWebViewCustomer" component={PaymentWebViewCustomerScreen} options={{ title: 'Checkout', headerShown: false }} />
       <AppointmentStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
+      <AppointmentStack.Screen name="PaymentFailedCustomer" component={PaymentFailedCustomerScreen} options={{ title: 'Payment Failed', headerShown: false }} />
       <AppointmentStack.Screen name="MedicalDetailCustomer" component={MedicalDetailCustomerScreen} options={{ title: 'Medical Record' }} />
     </AppointmentStack.Navigator>
   );

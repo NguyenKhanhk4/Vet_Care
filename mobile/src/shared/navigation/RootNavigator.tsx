@@ -64,11 +64,13 @@ export default function RootNavigator() {
 
   // Fallback for 'guest' (not logged in) - Show Unified Auth Stack
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterCustomerScreen} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPasswordCustomerScreen} />
-    </Stack.Navigator>
+    <CustomerProvider>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterCustomerScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordCustomerScreen} />
+      </Stack.Navigator>
+    </CustomerProvider>
   );
 }
 

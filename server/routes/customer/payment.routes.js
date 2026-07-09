@@ -15,22 +15,22 @@ const router = express.Router();
 router.use(authenticate);
 router.use(authorize('customer'));
 
-// POST /api/customer/payments
+// POST /api/customer/payments/create
 router.post(
-  '/',
+  '/create',
   [
     body('appointmentId')
       .notEmpty().withMessage('Appointment ID is required')
-      .isMongoId().withMessage('Invalid appointment ID'),
-    body('method')
-      .notEmpty().withMessage('Payment method is required')
-      .isIn(['vnpay', 'momo', 'cash']).withMessage('Invalid payment method. Must be vnpay, momo, or cash'),
+      .isMongoId().withMessage('Invalid appointment ID')
   ],
   validate,
-  PaymentController.processPayment
+  PaymentController.createPayment
 );
 
-// GET /api/customer/payments?page=1&limit=10
-router.get('/', PaymentController.getPaymentHistory);
+// GET /api/customer/payments/history
+router.get('/history', PaymentController.getPaymentHistory);
+
+// GET /api/customer/payments/:id
+router.get('/:id', PaymentController.getPaymentById);
 
 module.exports = router;

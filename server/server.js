@@ -21,6 +21,7 @@ const reviewRoutes = require('./routes/customer/review.routes');
 
 // Import Shared Routes
 const sharedAuthRoutes = require('./routes/shared/auth.routes');
+const sharedPaymentRoutes = require('./routes/shared/payment.routes');
 
 // Import Admin Routes
 const adminAuthRoutes = require('./routes/admin/auth.routes');
@@ -63,6 +64,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ============================================================
 
 app.use('/api/auth', sharedAuthRoutes);
+app.use('/api/payment', sharedPaymentRoutes);
 
 // ============================================================
 // API Routes - Customer Role

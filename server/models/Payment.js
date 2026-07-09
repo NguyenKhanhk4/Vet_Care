@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 /**
  * Payment Model
- * Represents a payment for an appointment
- * Supports VNPay, MoMo, and Cash payment methods (simulated)
+ * Represents a payment for an appointment via payOS
  */
 const paymentSchema = new mongoose.Schema(
   {
@@ -12,49 +11,50 @@ const paymentSchema = new mongoose.Schema(
       ref: 'Appointment',
       required: [true, 'Appointment reference is required'],
     },
-    customer: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'Customer reference is required'],
+      required: [true, 'User reference is required'],
       index: true,
+    },
+    orderCode: {
+      type: Number,
+      required: [true, 'Order code is required for payOS'],
+      unique: true,
+    },
+    paymentLinkId: {
+      type: String,
     },
     amount: {
       type: Number,
       required: [true, 'Payment amount is required'],
       min: [0, 'Amount cannot be negative'],
     },
-    method: {
+    description: {
       type: String,
-      enum: ['vnpay', 'momo', 'cash'],
-      required: [true, 'Payment method is required'],
+      required: [true, 'Payment description is required'],
+    },
+    checkoutUrl: {
+      type: String,
     },
     status: {
       type: String,
-      enum: ['pending', 'completed', 'failed'],
-      default: 'pending',
+      enum: ['PENDING', 'PAID', 'FAILED', 'CANCELLED'],
+      default: 'PENDING',
     },
     transactionId: {
       type: String,
-      unique: true,
-      sparse: true, // Allow multiple null values
+    },
+    paidAt: {
+      type: Date,
+    },
+    rawResponse: {
+      type: Object, // Store raw response from payOS webhook
     },
   },
   {
     timestamps: true,
   }
 );
-
-/**
- * Pre-save middleware to generate transaction ID
- */
-paymentSchema.pre('save', function (next) {
-  if (!this.transactionId) {
-    const prefix = this.method.toUpperCase();
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    this.transactionId = `${prefix}-${timestamp}-${random}`;
-  }
-  next();
-});
 
 module.exports = mongoose.model('Payment', paymentSchema);
