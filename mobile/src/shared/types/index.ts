@@ -117,6 +117,8 @@ export interface Appointment {
   status: AppointmentStatus;
   notes: string;
   totalAmount: number;
+  paymentStatus: 'PENDING' | 'PAID';
+  paymentMethod: 'cash' | 'payos';
   createdAt: string;
   updatedAt: string;
 }

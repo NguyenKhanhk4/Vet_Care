@@ -77,7 +77,7 @@ class AppointmentService {
    * @returns {Object} - Created appointment
    */
   static async createAppointment(customerId, appointmentData) {
-    const { pet, clinic, doctor, service, date, time, notes } = appointmentData;
+    const { pet, clinic, doctor, service, date, time, notes, paymentMethod = 'cash' } = appointmentData;
 
     // Get service price for total amount
     const serviceData = await Service.findById(service);
@@ -113,6 +113,7 @@ class AppointmentService {
       notes: notes || '',
       totalAmount: serviceData.price,
       status: 'pending',
+      paymentMethod,
     });
 
     // Create notification for booking

@@ -7,6 +7,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../../../shared/context/AuthContext';
 import api from '../../../shared/utils/api';
 import { User, AuthResponse, ApiResponse } from '../../../shared/types';
 
@@ -30,6 +31,7 @@ const CustomerContext = createContext<CustomerContextState | undefined>(undefine
 
 // Provider Component
 export const CustomerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { logoutUnified } = useContext(AuthContext);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -130,10 +132,9 @@ export const CustomerProvider: React.FC<{ children: ReactNode }> = ({ children }
    */
   const logout = async () => {
     try {
+      await logoutUnified();
       setUser(null);
       setToken(null);
-      await AsyncStorage.removeItem('token');
-      await AsyncStorage.removeItem('user');
     } catch (err) {
       console.error('Error logging out:', err);
     }

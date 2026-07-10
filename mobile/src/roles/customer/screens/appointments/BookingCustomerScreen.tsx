@@ -19,6 +19,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'payos_now' | 'payos_later' | 'cash'>('payos_now');
   const { colors } = useTheme();
 
   // Data lists
@@ -180,11 +181,24 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
       const res = await api.post('/appointments', {
         clinic: selectedClinic._id, doctor: selectedDoctor._id, service: selectedService._id,
         pet: selectedPet._id, date: selectedDate, time: selectedTime, notes,
+        paymentMethod: paymentMethod === 'cash' ? 'cash' : 'payos',
       });
-      Alert.alert('Payment Success', 'Book Appointment successful!', [
-        { text: 'Home', onPress: () => { navigation.popToTop(); navigation.navigate('Home'); } },
-        { text: 'Appointments', onPress: () => { navigation.popToTop(); navigation.navigate('Appointments'); } },
-      ]);
+      
+      const appointmentId = res.data.data._id;
+      
+      // Directly create payment to show QR Code or Complete Cash Booking
+      if (paymentMethod === 'cash') {
+        const paymentRes = await api.post('/payments/create', { appointmentId, method: 'cash' });
+        navigation.replace('PaymentSuccessCustomer', { orderCode: paymentRes.data.data.orderCode, method: 'cash' });
+      } else if (paymentMethod === 'payos_later') {
+        // Just navigate to success screen
+        navigation.replace('PaymentSuccessCustomer', { appointmentId, method: 'payos_later' });
+      } else {
+        // payos_now
+        const paymentRes = await api.post('/payments/create', { appointmentId, method: 'payos' });
+        const { checkoutUrl, orderCode } = paymentRes.data.data;
+        navigation.replace('PaymentWebViewCustomer', { checkoutUrl, orderCode });
+      }
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.message || 'Failed to book appointment');
     } finally { setIsSubmitting(false); }
@@ -325,6 +339,48 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
               </View>
             ))}
 
+            {/* Payment Method Selector */}
+            <Text style={[styles.sectionLabel, { marginTop: SIZES.spacing.xl, marginBottom: SIZES.spacing.md }]}>Payment Method</Text>
+            
+            <TouchableOpacity 
+              style={paymentMethod === 'payos_now' ? styles.methodCardActive : styles.methodCard}
+              onPress={() => setPaymentMethod('payos_now')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.methodIcon}>💳</Text>
+              <View style={styles.methodInfo}>
+                <Text style={styles.methodName}>Thanh toán Online (Ngay)</Text>
+                <Text style={styles.methodDesc}>Quét mã QR PayOS để thanh toán ngay</Text>
+              </View>
+              {paymentMethod === 'payos_now' && <Text style={styles.checkIcon}>✅</Text>}
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={paymentMethod === 'payos_later' ? styles.methodCardActive : styles.methodCard}
+              onPress={() => setPaymentMethod('payos_later')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.methodIcon}>⏱️</Text>
+              <View style={styles.methodInfo}>
+                <Text style={styles.methodName}>Thanh toán Online (Sau)</Text>
+                <Text style={styles.methodDesc}>Tạo lịch trước, thanh toán chuyển khoản sau</Text>
+              </View>
+              {paymentMethod === 'payos_later' && <Text style={styles.checkIcon}>✅</Text>}
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={paymentMethod === 'cash' ? styles.methodCardActive : styles.methodCard}
+              onPress={() => setPaymentMethod('cash')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.methodIcon}>💵</Text>
+              <View style={styles.methodInfo}>
+                <Text style={styles.methodName}>Thanh toán Tiền mặt</Text>
+                <Text style={styles.methodDesc}>Thanh toán trực tiếp tại phòng khám</Text>
+              </View>
+              {paymentMethod === 'cash' && <Text style={styles.checkIcon}>✅</Text>}
+            </TouchableOpacity>
+
             <TouchableOpacity style={[styles.bookButton, isSubmitting && styles.disabled]} onPress={handleConfirmBooking} disabled={isSubmitting} activeOpacity={0.8}>
               <Text style={styles.bookButtonText}>{isSubmitting ? 'Booking...' : 'Confirm Booking'}</Text>
             </TouchableOpacity>
@@ -396,6 +452,13 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   bookButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.bold },
   backButton: { paddingVertical: SIZES.spacing.md, paddingHorizontal: SIZES.spacing.xl, borderTopWidth: 1, borderTopColor: colors.divider, backgroundColor: colors.surface },
   backButtonText: { fontSize: SIZES.base, color: colors.primary, ...FONTS.medium },
+  methodCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.background, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 1, borderColor: colors.border },
+  methodCardActive: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 2, borderColor: colors.primary, ...SHADOWS.light },
+  methodIcon: { fontSize: 24, marginRight: SIZES.spacing.base },
+  methodInfo: { flex: 1 },
+  methodName: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold },
+  methodDesc: { fontSize: SIZES.sm, color: colors.textSecondary, marginTop: 2 },
+  checkIcon: { fontSize: 18 },
 });
 
 export default BookingCustomerScreen;
