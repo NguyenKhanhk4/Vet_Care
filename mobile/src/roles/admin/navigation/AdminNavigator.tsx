@@ -23,6 +23,7 @@ import EditServicePriceAdminScreen from '../screens/services/EditServicePriceAdm
 import ServicePriceDetailAdminScreen from '../screens/services/ServicePriceDetailAdminScreen';
 import ClinicDoctorListAdminScreen from '../screens/clinics/ClinicDoctorListAdminScreen';
 import UserDetailAdminScreen from '../screens/users/UserDetailAdminScreen';
+import NotificationListAdminScreen from '../screens/notifications/NotificationListAdminScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -99,6 +100,7 @@ const AdminNavigator = () => {
       <Stack.Screen name="ServiceDetail" component={ServicePriceDetailAdminScreen} />
       <Stack.Screen name="ClinicDoctorList" component={ClinicDoctorListAdminScreen} />
       <Stack.Screen name="UserDetail" component={UserDetailAdminScreen} />
+      <Stack.Screen name="NotificationList" component={NotificationListAdminScreen} />
     </Stack.Navigator>
   );
 };

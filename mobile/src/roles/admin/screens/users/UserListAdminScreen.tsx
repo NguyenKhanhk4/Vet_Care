@@ -17,13 +17,13 @@ interface User {
   createdAt: string;
 }
 
-const UserListAdminScreen = ({ navigation }: any) => {
+const UserListAdminScreen = ({ route, navigation }: any) => {
   const { colors } = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
+  const [roleFilter, setRoleFilter] = useState(route?.params?.role || '');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -59,6 +59,12 @@ const UserListAdminScreen = ({ navigation }: any) => {
     setLoading(true);
     fetchUsers(1, false);
   }, [searchQuery, roleFilter]);
+
+  useEffect(() => {
+    if (route?.params?.role !== undefined) {
+      setRoleFilter(route.params.role);
+    }
+  }, [route?.params?.role]);
 
   const onRefresh = useCallback(() => {
     fetchUsers(1, true);
@@ -136,6 +142,78 @@ const UserListAdminScreen = ({ navigation }: any) => {
     );
   };
 
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <Text style={styles.title}>System Users</Text>
+        <Text style={styles.subtitle}>Manage all user accounts</Text>
+      </View>
+
+      <View style={styles.searchContainer}>
+        <Searchbar
+          placeholder="Search name, email..."
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+          style={styles.searchbar}
+          iconColor={colors.primary}
+          inputStyle={styles.searchInput}
+        />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipContainer} contentContainerStyle={styles.chipContent}>
+          <Chip
+            selected={roleFilter === ''}
+            onPress={() => setRoleFilter('')}
+            style={styles.chip}
+            showSelectedOverlay
+          >All</Chip>
+          <Chip
+            selected={roleFilter === 'admin'}
+            onPress={() => setRoleFilter('admin')}
+            style={styles.chip}
+            showSelectedOverlay
+          >Admin</Chip>
+          <Chip
+            selected={roleFilter === 'doctor'}
+            onPress={() => setRoleFilter('doctor')}
+            style={styles.chip}
+            showSelectedOverlay
+          >Doctor</Chip>
+          <Chip
+            selected={roleFilter === 'customer'}
+            onPress={() => setRoleFilter('customer')}
+            style={styles.chip}
+            showSelectedOverlay
+          >Customer</Chip>
+        </ScrollView>
+      </View>
+
+      {loading && page === 1 ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          style={{ flex: 1 }}
+          data={users}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
+          }
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Icon name="account-search" size={60} color="#CCC" />
+              <Text style={styles.emptyText}>No users found</Text>
+            </View>
+          }
+          ListFooterComponent={
+            hasMore && users.length > 0 ? (
+              <ActivityIndicator size="small" color={colors.primary} style={{ margin: 20 }} />
+            ) : null
+          }
         />
       )}
     </SafeAreaView>

@@ -29,7 +29,7 @@ class AdminDashboardService {
       revenueData,
       monthlyAppointments,
       popularServices,
-      recentAppointments,
+      recentNotifications,
       appointmentStatusCounts,
     ] = await Promise.all([
       User.countDocuments({ role: 'customer' }),
@@ -42,7 +42,7 @@ class AdminDashboardService {
       this.getRevenueData(),
       this.getMonthlyAppointments(),
       this.getPopularServices(),
-      this.getRecentAppointments(),
+      this.getRecentNotifications(),
       this.getAppointmentStatusCounts(),
     ]);
 
@@ -66,7 +66,7 @@ class AdminDashboardService {
         popularServices,
         appointmentStatusCounts,
       },
-      recentAppointments,
+      recentNotifications,
     };
   }
 
@@ -175,23 +175,17 @@ class AdminDashboardService {
   }
 
   /**
-   * Get 10 most recent appointments
+   * Get 10 most recent notifications
    */
-  static async getRecentAppointments() {
-    const appointments = await Appointment.find()
-      .populate('customer', 'name email phone')
-      .populate('pet', 'name species breed')
-      .populate({
-        path: 'doctor',
-        populate: { path: 'user', select: 'name' },
-      })
-      .populate('clinic', 'name')
-      .populate('service', 'name price')
+  static async getRecentNotifications() {
+    const Notification = require('../../models/Notification');
+    const notifications = await Notification.find()
+      .populate('user', 'name role')
       .sort({ createdAt: -1 })
       .limit(10)
       .lean();
 
-    return appointments;
+    return notifications;
   }
 
   /**
