@@ -17,6 +17,11 @@ import AppointmentListAdminScreen from '../screens/appointments/AppointmentListA
 import ClinicListAdminScreen from '../screens/clinics/ClinicListAdminScreen';
 import PlaceholderScreen from '../screens/PlaceholderScreen';
 
+import ServicePriceListAdminScreen from '../screens/services/ServicePriceListAdminScreen';
+import AddServicePriceAdminScreen from '../screens/services/AddServicePriceAdminScreen';
+import EditServicePriceAdminScreen from '../screens/services/EditServicePriceAdminScreen';
+import ServicePriceDetailAdminScreen from '../screens/services/ServicePriceDetailAdminScreen';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -27,6 +32,7 @@ const TabIcon = ({ name, focused, colors }: { name: string; focused: boolean; co
     Users: 'account-group',
     Appointments: 'calendar-check',
     Clinics: 'hospital-building',
+    Services: 'medical-bag',
     Profile: 'shield-account',
   };
 
@@ -62,6 +68,7 @@ const MainAdminNavigator = () => {
       <Tab.Screen name="Users" component={UserListAdminScreen} />
       <Tab.Screen name="Appointments" component={AppointmentListAdminScreen} />
       <Tab.Screen name="Clinics" component={ClinicListAdminScreen} />
+      <Tab.Screen name="Services" component={ServicePriceListAdminScreen} />
       <Tab.Screen name="Profile" component={ProfileAdminScreen} />
     </Tab.Navigator>
   );
@@ -82,7 +89,14 @@ const AdminNavigator = () => {
   // We no longer need AuthNavigator here because RootNavigator handles it.
   // But just in case AdminContext somehow isn't synced, we could show a fallback.
   // For now, if they are not authenticated, they shouldn't even be here.
-  return <MainAdminNavigator />;
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="AdminTabs" component={MainAdminNavigator} />
+      <Stack.Screen name="ServiceAdd" component={AddServicePriceAdminScreen} />
+      <Stack.Screen name="ServiceEdit" component={EditServicePriceAdminScreen} />
+      <Stack.Screen name="ServiceDetail" component={ServicePriceDetailAdminScreen} />
+    </Stack.Navigator>
+  );
 };
 
 const styles = StyleSheet.create({
