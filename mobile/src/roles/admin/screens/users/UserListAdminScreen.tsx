@@ -26,8 +26,6 @@ const UserListAdminScreen = ({ navigation }: any) => {
   const [roleFilter, setRoleFilter] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const fetchUsers = async (pageNumber = 1, isRefresh = false) => {
     try {
@@ -103,8 +101,7 @@ const UserListAdminScreen = ({ navigation }: any) => {
   };
 
   const openUserDetails = (user: User) => {
-    setSelectedUser(user);
-    setModalVisible(true);
+    navigation.navigate('UserDetail', { userId: user._id });
   };
 
   const renderItem = ({ item }: { item: User }) => {
@@ -139,139 +136,8 @@ const UserListAdminScreen = ({ navigation }: any) => {
     );
   };
 
-  const renderModal = () => {
-    if (!selectedUser) return null;
-    const isSelfOrAdmin = selectedUser.role === 'admin';
-
-    return (
-      <Portal>
-        <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>User Details</Text>
-            <IconButton icon="close" size={24} onPress={() => setModalVisible(false)} />
-          </View>
-          
-          <View style={styles.modalBody}>
-            <View style={styles.modalUserHeader}>
-              <Avatar.Icon size={64} icon="account" style={{ backgroundColor: colors.primary + '20' }} color={colors.primary} />
-              <View style={{ marginLeft: 16 }}>
-                <Text style={styles.modalUserName}>{selectedUser.name}</Text>
-                <View style={[styles.roleBadge, { marginLeft: 0, marginTop: 4, alignSelf: 'flex-start', backgroundColor: selectedUser.role === 'admin' ? '#FFEBEE' : selectedUser.role === 'doctor' ? '#E3F2FD' : '#F5F5F5' }]}>
-                  <Text style={[styles.roleText, { color: selectedUser.role === 'admin' ? '#F44336' : selectedUser.role === 'doctor' ? '#2196F3' : '#666' }]}>
-                    {selectedUser.role.toUpperCase()}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.modalInfoGroup}>
-              <View style={styles.modalInfoRow}>
-                <Icon name="email-outline" size={20} color="#666" />
-                <Text style={styles.modalInfoText}>{selectedUser.email}</Text>
-              </View>
-              <View style={styles.modalInfoRow}>
-                <Icon name="phone-outline" size={20} color="#666" />
-                <Text style={styles.modalInfoText}>{selectedUser.phone || 'No phone number provided'}</Text>
-              </View>
-              <View style={styles.modalInfoRow}>
-                <Icon name="shield-account-outline" size={20} color="#666" />
-                <Text style={styles.modalInfoText}>Status: {selectedUser.isActive ? 'Active' : 'Locked'}</Text>
-              </View>
-            </View>
-
-            <View style={styles.modalActions}>
-              <Button
-                mode="contained"
-                buttonColor={selectedUser.isActive ? '#F44336' : '#4CAF50'}
-                icon={selectedUser.isActive ? 'lock' : 'lock-open-variant'}
-                disabled={isSelfOrAdmin}
-                onPress={() => handleToggleStatus(selectedUser)}
-                style={styles.modalBtn}
-              >
-                {selectedUser.isActive ? 'Lock Account' : 'Unlock Account'}
-              </Button>
-            </View>
-          </View>
-        </Modal>
-      </Portal>
-    );
-  };
-
-  return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.title}>System Users</Text>
-        <Text style={styles.subtitle}>Manage all user accounts</Text>
-      </View>
-
-      <View style={styles.searchContainer}>
-        <Searchbar
-          placeholder="Search name, email..."
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          style={styles.searchbar}
-          iconColor={colors.primary}
-          inputStyle={styles.searchInput}
-        />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipContainer} contentContainerStyle={styles.chipContent}>
-          <Chip
-            selected={roleFilter === ''}
-            onPress={() => setRoleFilter('')}
-            style={styles.chip}
-            showSelectedOverlay
-          >All</Chip>
-          <Chip
-            selected={roleFilter === 'admin'}
-            onPress={() => setRoleFilter('admin')}
-            style={styles.chip}
-            showSelectedOverlay
-          >Admin</Chip>
-          <Chip
-            selected={roleFilter === 'doctor'}
-            onPress={() => setRoleFilter('doctor')}
-            style={styles.chip}
-            showSelectedOverlay
-          >Doctor</Chip>
-          <Chip
-            selected={roleFilter === 'customer'}
-            onPress={() => setRoleFilter('customer')}
-            style={styles.chip}
-            showSelectedOverlay
-          >Customer</Chip>
-        </ScrollView>
-      </View>
-
-      {loading && page === 1 ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
-      ) : (
-        <FlatList
-          style={{ flex: 1 }}
-          data={users}
-          keyExtractor={(item) => item._id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
-          }
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Icon name="account-search" size={60} color="#CCC" />
-              <Text style={styles.emptyText}>No users found</Text>
-            </View>
-          }
-          ListFooterComponent={
-            hasMore && users.length > 0 ? (
-              <ActivityIndicator size="small" color={colors.primary} style={{ margin: 20 }} />
-            ) : null
-          }
         />
       )}
-      {renderModal()}
     </SafeAreaView>
   );
 };

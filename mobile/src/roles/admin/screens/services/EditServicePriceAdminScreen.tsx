@@ -11,18 +11,18 @@ import { Service } from '../../../../shared/types';
 
 // Validation Schema
 const schema = yup.object().shape({
-  name: yup.string().required('Service name is required').min(2, 'At least 2 characters'),
+  name: yup.string().required('Tên dịch vụ không được để trống').min(2, 'Ít nhất 2 ký tự'),
   price: yup.number()
     .transform((value) => (isNaN(value) ? undefined : value))
-    .required('Price is required')
-    .positive('Price must be greater than 0')
-    .typeError('Price must be a number'),
+    .required('Giá không được để trống')
+    .positive('Giá phải lớn hơn 0')
+    .typeError('Giá phải là số'),
   duration: yup.number()
     .transform((value) => (isNaN(value) ? undefined : value))
-    .required('Duration is required')
-    .positive('Duration must be greater than 0')
-    .min(5, 'At least 5 minutes')
-    .typeError('Duration must be a number'),
+    .required('Thời gian không được để trống')
+    .positive('Thời gian phải lớn hơn 0')
+    .min(5, 'Ít nhất 5 phút')
+    .typeError('Thời gian phải là số'),
   description: yup.string(),
   isActive: yup.boolean().default(true),
 });
@@ -65,7 +65,7 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
       });
     } catch (error) {
       console.error('Error fetching service details:', error);
-      Alert.alert('Error', 'Failed to load service details', [
+      Alert.alert('Lỗi', 'Không tải được thông tin dịch vụ', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
     } finally {
@@ -77,12 +77,12 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
     try {
       setLoading(true);
       await adminApi.put(`/services/${serviceId}`, data);
-      Alert.alert('Success', 'Service updated successfully!', [
+      Alert.alert('Thành công', 'Cập nhật dịch vụ thành công!', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
     } catch (error: any) {
       console.error('Error updating service:', error);
-      Alert.alert('Error', error.response?.data?.message || 'Failed to update service');
+      Alert.alert('Lỗi', error.response?.data?.message || 'Cập nhật dịch vụ thất bại');
     } finally {
       setLoading(false);
     }
@@ -100,9 +100,9 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Button icon="arrow-left" mode="text" onPress={() => navigation.goBack()} textColor={colors.text}>
-          Back
+          Quay lại
         </Button>
-        <Text style={styles.title}>Edit Service</Text>
+        <Text style={styles.title}>Sửa giá dịch vụ</Text>
         <View style={{ width: 60 }} />
       </View>
 
@@ -114,7 +114,7 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
           {/* Clinic Name (Read-Only) */}
           <View style={styles.inputContainer}>
              <TextInput
-                label="Clinic"
+                label="Phòng khám"
                 value={service?.clinic?.name || 'N/A'}
                 mode="outlined"
                 editable={false}
@@ -130,7 +130,7 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
               name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  label="Service Name *"
+                  label="Tên dịch vụ *"
                   mode="outlined"
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -152,7 +152,7 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
               name="price"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  label="Price (VND) *"
+                  label="Giá (VNĐ) *"
                   mode="outlined"
                   keyboardType="numeric"
                   onBlur={onBlur}
@@ -175,7 +175,7 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
               name="duration"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  label="Duration (minutes) *"
+                  label="Thời gian (phút) *"
                   mode="outlined"
                   keyboardType="numeric"
                   onBlur={onBlur}
@@ -198,7 +198,7 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
               name="description"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  label="Description"
+                  label="Mô tả"
                   mode="outlined"
                   multiline
                   numberOfLines={4}
@@ -216,7 +216,7 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
 
           {/* Is Active */}
           <View style={styles.switchContainer}>
-            <Text style={styles.switchLabel}>Status (Active)</Text>
+            <Text style={styles.switchLabel}>Trạng thái (Hoạt động)</Text>
             <Controller
               control={control}
               name="isActive"
@@ -239,7 +239,7 @@ const EditServicePriceAdminScreen = ({ route, navigation }: any) => {
             contentStyle={styles.submitButtonContent}
             labelStyle={styles.submitButtonText}
           >
-            Update Service
+            Cập nhật dịch vụ
           </Button>
           
           <View style={{ height: 40 }} />

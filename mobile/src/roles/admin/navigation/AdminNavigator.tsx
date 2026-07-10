@@ -21,6 +21,8 @@ import ServicePriceListAdminScreen from '../screens/services/ServicePriceListAdm
 import AddServicePriceAdminScreen from '../screens/services/AddServicePriceAdminScreen';
 import EditServicePriceAdminScreen from '../screens/services/EditServicePriceAdminScreen';
 import ServicePriceDetailAdminScreen from '../screens/services/ServicePriceDetailAdminScreen';
+import ClinicDoctorListAdminScreen from '../screens/clinics/ClinicDoctorListAdminScreen';
+import UserDetailAdminScreen from '../screens/users/UserDetailAdminScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -95,6 +97,8 @@ const AdminNavigator = () => {
       <Stack.Screen name="ServiceAdd" component={AddServicePriceAdminScreen} />
       <Stack.Screen name="ServiceEdit" component={EditServicePriceAdminScreen} />
       <Stack.Screen name="ServiceDetail" component={ServicePriceDetailAdminScreen} />
+      <Stack.Screen name="ClinicDoctorList" component={ClinicDoctorListAdminScreen} />
+      <Stack.Screen name="UserDetail" component={UserDetailAdminScreen} />
     </Stack.Navigator>
   );
 };
