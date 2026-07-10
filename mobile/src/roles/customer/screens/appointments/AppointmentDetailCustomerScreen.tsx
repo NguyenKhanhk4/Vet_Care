@@ -94,10 +94,12 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
         <Text style={styles.infoSub}>{typeof a.doctor === 'object' ? a.doctor.specialization : ''}</Text>
       </View>
 
-      {/* Service Info */}
+      {/* Services Info */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>🩺 Service</Text>
-        <Text style={styles.infoValue}>{typeof a.service === 'object' ? a.service.name : 'Service'}</Text>
+        <Text style={styles.cardTitle}>🩺 Services</Text>
+        {Array.isArray(a.services) ? a.services.map((s, index) => (
+          <Text key={index} style={styles.infoValue}>{s.name}</Text>
+        )) : <Text style={styles.infoValue}>Service</Text>}
       </View>
 
       {/* Notes */}

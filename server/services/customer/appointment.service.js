@@ -29,7 +29,7 @@ class AppointmentService {
         path: 'doctor',
         populate: { path: 'user', select: 'name avatar' },
       })
-      .populate('service', 'name price duration')
+      .populate('services', 'name price duration')
       .sort({ date: -1, createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
@@ -59,7 +59,7 @@ class AppointmentService {
         path: 'doctor',
         populate: { path: 'user', select: 'name email phone avatar' },
       })
-      .populate('service', 'name description price duration category');
+      .populate('services', 'name description price duration category');
 
     if (!appointment) {
       const error = new Error('Appointment not found');
@@ -77,15 +77,23 @@ class AppointmentService {
    * @returns {Object} - Created appointment
    */
   static async createAppointment(customerId, appointmentData) {
-    const { pet, clinic, doctor, service, date, time, notes, paymentMethod = 'cash' } = appointmentData;
+    const { pet, clinic, doctor, services, date, time, notes, paymentMethod = 'cash' } = appointmentData;
 
-    // Get service price for total amount
-    const serviceData = await Service.findById(service);
-    if (!serviceData) {
-      const error = new Error('Service not found');
+    // Get service prices for total amount
+    if (!services || !Array.isArray(services) || services.length === 0) {
+      const error = new Error('At least one service is required');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const serviceData = await Service.find({ _id: { $in: services } });
+    if (serviceData.length !== services.length) {
+      const error = new Error('One or more services not found');
       error.statusCode = 404;
       throw error;
     }
+
+    const totalAmount = serviceData.reduce((sum, s) => sum + s.price, 0);
 
     // Check for double booking
     const existingAppointment = await Appointment.findOne({
@@ -107,11 +115,11 @@ class AppointmentService {
       pet,
       clinic,
       doctor,
-      service,
+      services,
       date: new Date(date),
       time,
       notes: notes || '',
-      totalAmount: serviceData.price,
+      totalAmount,
       status: 'pending',
       paymentMethod,
     });

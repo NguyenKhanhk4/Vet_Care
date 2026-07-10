@@ -31,7 +31,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   // Selections
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
@@ -65,7 +65,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
       if (params.serviceId) {
         const serviceRes = await api.get(`/services/${params.serviceId}`);
         svc = serviceRes.data.data;
-        setSelectedService(svc);
+        setSelectedServices([svc]);
         if (!currentClinicId) {
            currentClinicId = typeof svc.clinic === 'string' ? svc.clinic : svc.clinic._id;
         }
@@ -137,7 +137,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
 
   const handleSelectDoctor = async (doctor: Doctor) => {
     setSelectedDoctor(doctor);
-    if (selectedService || route.params?.serviceId) {
+    if (selectedServices.length > 0 || route.params?.serviceId) {
       setIsLoading(true);
       try { const res = await api.get('/pets'); setPets(res.data.data || []); setStep(3); }
       catch { Alert.alert('Error', 'Failed to load pets'); }
@@ -147,8 +147,16 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
     }
   };
 
-  const handleSelectService = async (service: Service) => {
-    setSelectedService(service);
+  const handleToggleService = (service: Service) => {
+    setSelectedServices(prev => {
+      const exists = prev.find(s => s._id === service._id);
+      if (exists) return prev.filter(s => s._id !== service._id);
+      return [...prev, service];
+    });
+  };
+
+  const handleConfirmServices = async () => {
+    if (selectedServices.length === 0) return;
     setIsLoading(true);
     try { const res = await api.get('/pets'); setPets(res.data.data || []); }
     catch { Alert.alert('Error', 'Failed to load pets'); }
@@ -172,14 +180,14 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   };
 
   const handleConfirmBooking = async () => {
-    if (!selectedClinic || !selectedDoctor || !selectedService || !selectedPet || !selectedDate || !selectedTime) {
+    if (!selectedClinic || !selectedDoctor || selectedServices.length === 0 || !selectedPet || !selectedDate || !selectedTime) {
       Alert.alert('Error', 'Please complete all selections');
       return;
     }
     try {
       setIsSubmitting(true);
       const res = await api.post('/appointments', {
-        clinic: selectedClinic._id, doctor: selectedDoctor._id, service: selectedService._id,
+        clinic: selectedClinic._id, doctor: selectedDoctor._id, services: selectedServices.map(s => s._id),
         pet: selectedPet._id, date: selectedDate, time: selectedTime, notes,
         paymentMethod: paymentMethod === 'cash' ? 'cash' : 'payos',
       });
@@ -253,20 +261,35 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
           </TouchableOpacity>
         ))}
 
-        {/* Step 2: Select Service */}
-        {step === 2 && services.map((service) => (
-          <TouchableOpacity key={service._id} style={styles.selectionCard} onPress={() => handleSelectService(service)} activeOpacity={0.7}>
-            <Text style={styles.cardEmoji}>🩺</Text>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>{service.name}</Text>
-              <Text style={styles.cardSubtitle}>{service.description}</Text>
-            </View>
-            <View style={styles.priceCol}>
-              <Text style={styles.priceText}>{service.price.toLocaleString('vi-VN')}đ</Text>
-              <Text style={styles.durationText}>{service.duration}min</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+        {/* Step 2: Select Services */}
+        {step === 2 && (
+          <View>
+            <Text style={styles.sectionLabel}>Select one or more services</Text>
+            {services.map((service) => {
+              const isSelected = selectedServices.some(s => s._id === service._id);
+              return (
+                <TouchableOpacity key={service._id} style={isSelected ? styles.selectionCardActive : styles.selectionCard} onPress={() => handleToggleService(service)} activeOpacity={0.7}>
+                  <Text style={styles.cardEmoji}>🩺</Text>
+                  <View style={styles.cardInfo}>
+                    <Text style={styles.cardTitle}>{service.name}</Text>
+                    <Text style={styles.cardSubtitle}>{service.description}</Text>
+                  </View>
+                  <View style={styles.priceCol}>
+                    <Text style={styles.priceText}>{service.price.toLocaleString('vi-VN')}đ</Text>
+                    <Text style={styles.durationText}>{service.duration}min</Text>
+                  </View>
+                  {isSelected && <Text style={[styles.checkIcon, { marginLeft: 8 }]}>✅</Text>}
+                </TouchableOpacity>
+              );
+            })}
+            
+            {selectedServices.length > 0 && (
+              <TouchableOpacity style={styles.nextButton} onPress={handleConfirmServices} activeOpacity={0.8}>
+                <Text style={styles.nextButtonText}>Continue</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
 
         {/* Step 3: Select Pet */}
         {step === 3 && (
@@ -326,11 +349,11 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
             {[
               { label: 'Clinic', value: selectedClinic?.name, icon: '🏥' },
               { label: 'Doctor', value: selectedDoctor?.user?.name, icon: '👨‍⚕️' },
-              { label: 'Service', value: selectedService?.name, icon: '🩺' },
+              { label: 'Services', value: selectedServices.map(s => s.name).join(', '), icon: '🩺' },
               { label: 'Pet', value: selectedPet?.name, icon: '🐾' },
               { label: 'Date', value: selectedDate ? formatDate(selectedDate) : '', icon: '📅' },
               { label: 'Time', value: selectedTime, icon: '⏰' },
-              { label: 'Amount', value: `${(selectedService?.price || 0).toLocaleString('vi-VN')}đ`, icon: '💰' },
+              { label: 'Amount', value: `${selectedServices.reduce((sum, s) => sum + s.price, 0).toLocaleString('vi-VN')}đ`, icon: '💰' },
             ].map((item, i) => (
               <View key={i} style={styles.confirmRow}>
                 <Text style={styles.confirmIcon}>{item.icon}</Text>
@@ -412,6 +435,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   stepLabel: { textAlign: 'center', fontSize: SIZES.lg, color: colors.textPrimary, ...FONTS.semiBold, marginVertical: SIZES.spacing.md },
   content: { flex: 1, paddingHorizontal: SIZES.spacing.base },
   selectionCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, ...SHADOWS.light },
+  selectionCardActive: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 2, borderColor: colors.primary, ...SHADOWS.light },
   cardEmoji: { fontSize: 32, marginRight: SIZES.spacing.md },
   cardInfo: { flex: 1 },
   cardTitle: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold, marginBottom: 2 },

@@ -62,7 +62,7 @@ const PaymentCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
       <View style={styles.amountCard}>
         <Text style={styles.amountLabel}>Total Amount</Text>
         <Text style={styles.amountValue}>{(appointment.totalAmount || 0).toLocaleString('vi-VN')}đ</Text>
-        <Text style={styles.serviceText}>{typeof appointment.service === 'object' ? appointment.service.name : 'Service'}</Text>
+        <Text style={styles.serviceText}>{Array.isArray(appointment.services) ? appointment.services.map(s => s.name).join(', ') : 'Service'}</Text>
       </View>
 
       <Text style={styles.sectionTitle}>Payment Method</Text>

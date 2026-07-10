@@ -111,7 +111,7 @@ export interface Appointment {
   pet: Pet;
   clinic: Clinic;
   doctor: Doctor;
-  service: Service;
+  services: Service[];
   date: string;
   time: string;
   status: AppointmentStatus;

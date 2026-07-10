@@ -142,9 +142,10 @@ class AdminDashboardService {
    */
   static async getPopularServices() {
     const popular = await Appointment.aggregate([
+      { $unwind: '$services' },
       {
         $group: {
-          _id: '$service',
+          _id: '$services',
           count: { $sum: 1 },
         },
       },

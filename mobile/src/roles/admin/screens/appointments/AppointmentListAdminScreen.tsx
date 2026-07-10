@@ -16,7 +16,7 @@ interface Appointment {
   pet: { _id: string; name: string; species: string };
   doctor: { _id: string; user: { name: string } };
   clinic: { _id: string; name: string };
-  service: { _id: string; name: string; price: number };
+  services: { _id: string; name: string; price: number }[];
 }
 
 const AppointmentListAdminScreen = ({ navigation }: any) => {
@@ -172,7 +172,7 @@ const AppointmentListAdminScreen = ({ navigation }: any) => {
           </View>
           <View style={styles.detailRow}>
             <Icon name="medical-bag" size={16} color="#666" />
-            <Text style={styles.detailText}>{item.service?.name || 'Unknown Service'} ({(item.service?.price || 0).toLocaleString()}đ)</Text>
+            <Text style={styles.detailText}>{Array.isArray(item.services) ? item.services.map(s => s.name).join(', ') : 'Unknown Service'}</Text>
           </View>
         </View>
       </Card>
