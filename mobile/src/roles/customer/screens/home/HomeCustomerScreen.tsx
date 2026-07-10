@@ -15,12 +15,10 @@ import api from '../../../../shared/utils/api';
 import { Clinic, Doctor, Service } from '../../../../shared/types';
 import RatingStars from '../../../../shared/components/RatingStars';
 import LoadingSpinner from '../../../../shared/components/LoadingSpinner';
-import { removeAccents } from '../../../../shared/utils/stringUtils';
 
 const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user } = useCustomer();
   const { colors } = useTheme();
-  const [searchQuery, setSearchQuery] = useState('');
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -52,18 +50,6 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const formatPrice = (price: number) => {
     return price.toLocaleString('vi-VN') + 'đ';
   };
-  
-  const getFilteredData = () => {
-    if (!searchQuery) return { filteredClinics: clinics, filteredDoctors: doctors, filteredServices: services };
-    const query = removeAccents(searchQuery.toLowerCase());
-    return {
-      filteredClinics: clinics.filter(c => removeAccents(c.name.toLowerCase()).includes(query)),
-      filteredDoctors: doctors.filter(d => removeAccents(d.user?.name?.toLowerCase() || '').includes(query)),
-      filteredServices: services.filter(s => removeAccents(s.name.toLowerCase()).includes(query))
-    };
-  };
-
-  const { filteredClinics, filteredDoctors, filteredServices } = getFilteredData();
 
   const styles = getStyles(colors);
 
@@ -84,18 +70,6 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.bannerEmoji}>🐾</Text>
       </View>
 
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Text style={styles.searchIcon}>🔍</Text>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search clinics, doctors..."
-          placeholderTextColor={colors.textLight}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
-
       {/* Quick Actions */}
       <View style={styles.quickActions}>
         {[
@@ -114,17 +88,16 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
 
       {/* Clinics Section */}
-      {(filteredClinics.length > 0 || !searchQuery) && (
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Top Clinics</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'clinics', title: 'All Clinics' })}>
-              <Text style={styles.seeAll}>See All</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={filteredClinics}
-            horizontal
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Top Clinics</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'clinics', title: 'All Clinics' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={clinics}
+          horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item._id}
             contentContainerStyle={styles.horizontalList}
@@ -148,21 +121,19 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               </TouchableOpacity>
             )}
           />
-        </View>
-      )}
+      </View>
 
       {/* Doctors Section */}
-      {(filteredDoctors.length > 0 || !searchQuery) && (
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Top Doctors</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'doctors', title: 'Top Doctors' })}>
-              <Text style={styles.seeAll}>See All</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={filteredDoctors}
-            horizontal
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Top Doctors</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'doctors', title: 'Top Doctors' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={doctors}
+          horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item._id}
             contentContainerStyle={styles.horizontalList}
@@ -180,19 +151,17 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               </TouchableOpacity>
             )}
           />
-        </View>
-      )}
+      </View>
 
       {/* Services Section */}
-      {(filteredServices.length > 0 || !searchQuery) && (
-        <View style={[styles.section, styles.lastSection]}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Our Services</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'services', title: 'Our Services' })}>
-              <Text style={styles.seeAll}>See All</Text>
-            </TouchableOpacity>
-          </View>
-          {filteredServices.slice(0, 5).map((service) => (
+      <View style={[styles.section, styles.lastSection]}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Our Services</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'services', title: 'Our Services' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
+        </View>
+        {services.slice(0, 5).map((service) => (
             <TouchableOpacity
               key={service._id}
               style={styles.serviceCard}
@@ -214,8 +183,7 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               </View>
             </TouchableOpacity>
           ))}
-        </View>
-      )}
+      </View>
     </ScrollView>
   );
 };
@@ -227,9 +195,6 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   welcomeText: { fontSize: SIZES.xl, color: colors.textWhite, ...FONTS.bold, marginBottom: SIZES.spacing.xs },
   bannerSubText: { fontSize: SIZES.md, color: 'rgba(255,255,255,0.85)' },
   bannerEmoji: { fontSize: 48 },
-  searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, marginHorizontal: SIZES.spacing.base, marginTop: SIZES.spacing.base, borderRadius: SIZES.radius.base, paddingHorizontal: SIZES.spacing.base, ...SHADOWS.light },
-  searchIcon: { fontSize: 18, marginRight: SIZES.spacing.sm },
-  searchInput: { flex: 1, paddingVertical: SIZES.spacing.md, fontSize: SIZES.base, color: colors.textPrimary },
   quickActions: { flexDirection: 'row', justifyContent: 'space-around', marginHorizontal: SIZES.spacing.base, marginTop: SIZES.spacing.lg },
   quickActionItem: { alignItems: 'center', width: 70 },
   quickActionIcon: { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.secondaryLight, justifyContent: 'center', alignItems: 'center', marginBottom: SIZES.spacing.sm },

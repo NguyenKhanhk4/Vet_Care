@@ -33,6 +33,21 @@ export interface Pet {
   updatedAt: string;
 }
 
+// Vaccination Types
+export interface Vaccination {
+  _id: string;
+  user: string;
+  pet: Pet;
+  vaccineName: string;
+  vaccineType: string;
+  vaccinationDate: string;
+  nextDueDate: string;
+  notes?: string;
+  status: 'Active' | 'Upcoming' | 'Overdue';
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Clinic Types
 export interface Clinic {
   _id: string;
@@ -211,5 +226,14 @@ export interface BookingFormData {
   pet: string;
   date: string;
   time: string;
+  notes?: string;
+}
+
+export interface VaccinationFormData {
+  pet: string;
+  vaccineName: string;
+  vaccineType?: string;
+  vaccinationDate: string;
+  nextDueDate: string;
   notes?: string;
 }

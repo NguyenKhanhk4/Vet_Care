@@ -31,6 +31,12 @@ import AddPetCustomerScreen from '../screens/pets/AddPetCustomerScreen';
 import EditPetCustomerScreen from '../screens/pets/EditPetCustomerScreen';
 import PetDetailCustomerScreen from '../screens/pets/PetDetailCustomerScreen';
 
+// Import Vaccination Screens
+import VaccinationListCustomerScreen from '../screens/vaccinations/VaccinationListCustomerScreen';
+import VaccinationDetailCustomerScreen from '../screens/vaccinations/VaccinationDetailCustomerScreen';
+import AddVaccinationCustomerScreen from '../screens/vaccinations/AddVaccinationCustomerScreen';
+import EditVaccinationCustomerScreen from '../screens/vaccinations/EditVaccinationCustomerScreen';
+
 // Import Appointment Screens
 import AppointmentListCustomerScreen from '../screens/appointments/AppointmentListCustomerScreen';
 import AppointmentDetailCustomerScreen from '../screens/appointments/AppointmentDetailCustomerScreen';
@@ -80,6 +86,10 @@ export type PetStackParamList = {
   AddPetCustomer: undefined;
   EditPetCustomer: { petId: string };
   PetDetailCustomer: { petId: string };
+  VaccinationListCustomer: undefined;
+  VaccinationDetailCustomer: { vaccinationId: string };
+  AddVaccinationCustomer: { petId?: string };
+  EditVaccinationCustomer: { vaccinationId: string };
 };
 
 export type AppointmentStackParamList = {
@@ -203,6 +213,10 @@ const CustomerNavigator: React.FC = () => {
       <PetStack.Screen name="AddPetCustomer" component={AddPetCustomerScreen} options={{ title: 'Add Pet' }} />
       <PetStack.Screen name="EditPetCustomer" component={EditPetCustomerScreen} options={{ title: 'Edit Pet' }} />
       <PetStack.Screen name="PetDetailCustomer" component={PetDetailCustomerScreen} options={{ title: 'Pet Details' }} />
+      <PetStack.Screen name="VaccinationListCustomer" component={VaccinationListCustomerScreen} options={{ title: 'Vaccinations' }} />
+      <PetStack.Screen name="VaccinationDetailCustomer" component={VaccinationDetailCustomerScreen} options={{ title: 'Vaccination Details' }} />
+      <PetStack.Screen name="AddVaccinationCustomer" component={AddVaccinationCustomerScreen} options={{ title: 'Add Vaccination' }} />
+      <PetStack.Screen name="EditVaccinationCustomer" component={EditVaccinationCustomerScreen} options={{ title: 'Edit Vaccination' }} />
     </PetStack.Navigator>
   );
 

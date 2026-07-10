@@ -76,6 +76,19 @@ const PetDetailCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ ro
         ))}
       </View>
 
+      <TouchableOpacity 
+        style={styles.vaccinationButton} 
+        onPress={() => navigation.navigate('VaccinationListCustomer')}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.vaccinationButtonIcon}>💉</Text>
+        <View style={styles.vaccinationButtonTextContainer}>
+          <Text style={styles.vaccinationButtonTitle}>Vaccinations</Text>
+          <Text style={styles.vaccinationButtonSub}>Manage vaccination records</Text>
+        </View>
+        <Text style={styles.vaccinationButtonArrow}>›</Text>
+      </TouchableOpacity>
+
       <View style={styles.actions}>
         <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditPetCustomer', { petId })} activeOpacity={0.8}>
           <Text style={styles.editButtonText}>✏️ Edit Pet</Text>
@@ -101,6 +114,12 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   infoIcon: { fontSize: 20, width: 36 },
   infoLabel: { flex: 1, fontSize: SIZES.md, color: colors.textSecondary },
   infoValue: { fontSize: SIZES.md, color: colors.textPrimary, ...FONTS.medium, textTransform: 'capitalize' },
+  vaccinationButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, marginHorizontal: SIZES.spacing.base, marginBottom: SIZES.spacing.lg, padding: SIZES.spacing.base, borderRadius: SIZES.radius.base, ...SHADOWS.light },
+  vaccinationButtonIcon: { fontSize: 24, marginRight: SIZES.spacing.md },
+  vaccinationButtonTextContainer: { flex: 1 },
+  vaccinationButtonTitle: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold },
+  vaccinationButtonSub: { fontSize: SIZES.sm, color: colors.textSecondary, marginTop: 2 },
+  vaccinationButtonArrow: { fontSize: 24, color: colors.textLight },
   actions: { flexDirection: 'row', marginHorizontal: SIZES.spacing.base, marginBottom: SIZES.spacing.xxl, gap: SIZES.spacing.md },
   editButton: { flex: 1, backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', ...SHADOWS.light },
   editButtonText: { color: colors.textWhite, fontSize: SIZES.base, ...FONTS.semiBold },
