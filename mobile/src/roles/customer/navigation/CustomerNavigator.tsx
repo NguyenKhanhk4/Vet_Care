@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SIZES, FONTS, ThemeColors } from '../../../shared/constants/theme';
@@ -70,6 +70,7 @@ export type HomeStackParamList = {
   BookingCustomer: { clinicId?: string; doctorId?: string; serviceId?: string };
   PaymentCustomer: { appointmentId: string };
   PaymentSuccessCustomer: { paymentId: string; transactionId: string };
+  NotificationCustomer: undefined;
 };
 
 export type PetStackParamList = {
@@ -89,8 +90,9 @@ export type AppointmentStackParamList = {
   ReviewCustomer: { appointmentId: string };
 };
 
-export type NotificationStackParamList = {
-  NotificationCustomer: undefined;
+export type MedicalStackParamList = {
+  MedicalHistoryCustomer: undefined;
+  MedicalDetailCustomer: { recordId: string };
 };
 
 export type ProfileStackParamList = {
@@ -110,7 +112,7 @@ const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const PetStack = createNativeStackNavigator<PetStackParamList>();
 const AppointmentStack = createNativeStackNavigator<AppointmentStackParamList>();
-const NotificationStack = createNativeStackNavigator<NotificationStackParamList>();
+const MedicalStack = createNativeStackNavigator<MedicalStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 const Tab = createBottomTabNavigator();
 
@@ -129,7 +131,7 @@ const TabIcon = ({ name, focused, colors }: { name: string; focused: boolean; co
     Home: '🏠',
     Pets: '🐾',
     Appointments: '📅',
-    Notifications: '🔔',
+    Medical: '📋',
     Profile: '👤',
   };
 
@@ -172,13 +174,22 @@ const CustomerNavigator: React.FC = () => {
       <HomeStack.Screen
         name="HomeCustomer"
         component={HomeCustomerScreen}
-        options={{ title: 'VetCare', headerLeft: () => null }}
+        options={({ navigation }: any) => ({ 
+          title: 'VetCare', 
+          headerLeft: () => null,
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate('NotificationCustomer')} style={{ marginRight: 15 }}>
+              <Text style={{ fontSize: 20 }}>🔔</Text>
+            </TouchableOpacity>
+          )
+        })}
       />
       <HomeStack.Screen name="ClinicDetailCustomer" component={ClinicDetailCustomerScreen} options={{ title: 'Clinic Details' }} />
       <HomeStack.Screen name="ServiceCustomer" component={ServiceCustomerScreen} options={{ title: 'Service Details' }} />
       <HomeStack.Screen name="BookingCustomer" component={BookingCustomerScreen} options={{ title: 'Book Appointment' }} />
       <HomeStack.Screen name="PaymentCustomer" component={PaymentCustomerScreen} options={{ title: 'Payment' }} />
       <HomeStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
+      <HomeStack.Screen name="NotificationCustomer" component={NotificationCustomerScreen} options={{ title: 'Notifications' }} />
     </HomeStack.Navigator>
   );
 
@@ -205,11 +216,12 @@ const CustomerNavigator: React.FC = () => {
     </AppointmentStack.Navigator>
   );
 
-  // Notification Stack Navigator
-  const NotificationNavigator = () => (
-    <NotificationStack.Navigator screenOptions={screenOptions}>
-      <NotificationStack.Screen name="NotificationCustomer" component={NotificationCustomerScreen} options={{ title: 'Notifications' }} />
-    </NotificationStack.Navigator>
+  // Medical Stack Navigator
+  const MedicalNavigator = () => (
+    <MedicalStack.Navigator screenOptions={screenOptions}>
+      <MedicalStack.Screen name="MedicalHistoryCustomer" component={MedicalHistoryCustomerScreen} options={{ title: 'Medical History' }} />
+      <MedicalStack.Screen name="MedicalDetailCustomer" component={MedicalDetailCustomerScreen} options={{ title: 'Medical Record' }} />
+    </MedicalStack.Navigator>
   );
 
   // Profile Stack Navigator
@@ -251,7 +263,7 @@ const CustomerNavigator: React.FC = () => {
       <Tab.Screen name="Home" component={HomeNavigator} options={{ tabBarLabel: 'Home' }} />
       <Tab.Screen name="Pets" component={PetNavigator} options={{ tabBarLabel: 'My Pets' }} />
       <Tab.Screen name="Appointments" component={AppointmentNavigator} options={{ tabBarLabel: 'Appointments' }} />
-      <Tab.Screen name="Notifications" component={NotificationNavigator} options={{ tabBarLabel: 'Notifications' }} />
+      <Tab.Screen name="Medical" component={MedicalNavigator} options={{ tabBarLabel: 'Medical' }} />
       <Tab.Screen name="Profile" component={ProfileNavigator} options={{ tabBarLabel: 'Profile' }} />
     </Tab.Navigator>
   );
