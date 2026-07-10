@@ -1,4 +1,5 @@
 const Clinic = require('../../models/Clinic');
+const { createAccentInsensitiveRegex } = require('../../utils/stringUtils');
 
 /**
  * Clinic Service - Customer
@@ -14,12 +15,10 @@ class ClinicService {
     const { search, page = 1, limit = 10 } = query;
     const filter = { isActive: true };
 
-    // Search by name or address
+    // Search by name only
     if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { address: { $regex: search, $options: 'i' } },
-      ];
+      const regexPattern = createAccentInsensitiveRegex(search);
+      filter.name = { $regex: regexPattern, $options: 'i' };
     }
 
     const total = await Clinic.countDocuments(filter);

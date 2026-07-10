@@ -1,4 +1,5 @@
 const Doctor = require('../../models/Doctor');
+const { removeAccents } = require('../../utils/stringUtils');
 
 /**
  * Doctor Service - Customer
@@ -29,14 +30,12 @@ class DoctorService {
 
     const doctors = await doctorsQuery;
 
-    // Filter by search term (doctor name from populated user)
+    // Filter by search term (doctor name from populated user only)
     let filteredDoctors = doctors;
     if (search) {
-      const searchLower = search.toLowerCase();
+      const searchLower = removeAccents(search.toLowerCase());
       filteredDoctors = doctors.filter(
-        (doc) =>
-          doc.user?.name?.toLowerCase().includes(searchLower) ||
-          doc.specialization?.toLowerCase().includes(searchLower)
+        (doc) => removeAccents(doc.user?.name?.toLowerCase() || '').includes(searchLower)
       );
     }
 

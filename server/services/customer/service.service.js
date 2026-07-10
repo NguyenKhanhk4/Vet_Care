@@ -1,4 +1,5 @@
 const Service = require('../../models/Service');
+const { createAccentInsensitiveRegex } = require('../../utils/stringUtils');
 
 /**
  * Service Service - Customer
@@ -24,12 +25,10 @@ class ServiceService {
       filter.category = category;
     }
 
-    // Search by name or description
+    // Search by name only
     if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-      ];
+      const regexPattern = createAccentInsensitiveRegex(search);
+      filter.name = { $regex: regexPattern, $options: 'i' };
     }
 
     const total = await Service.countDocuments(filter);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, RefreshControl, TextInput } from 'react-native';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import api from '../../../../shared/utils/api';
@@ -14,23 +14,34 @@ const ExploreCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const { colors } = useTheme();
 
   useEffect(() => {
     navigation.setOptions({ title: title || 'Explore' });
-    fetchData();
-  }, [type]);
+    
+    // Determine if we should show the full-screen spinner (only on initial load)
+    const isFirstLoad = data.length === 0 && !searchQuery;
+    
+    // Debounce search and initial fetch
+    const delayDebounceFn = setTimeout(() => {
+      fetchData(isFirstLoad);
+    }, 400);
 
-  const fetchData = async () => {
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, type]);
+
+  const fetchData = async (showSpinner = true) => {
     try {
-      setIsLoading(true);
+      if (showSpinner) setIsLoading(true);
       setError(null);
-      const res = await api.get(`/${type}?limit=50`);
+      const searchParam = searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : '';
+      const res = await api.get(`/${type}?limit=50${searchParam}`);
       setData(res.data.data || []);
     } catch (err: any) {
       setError(err.response?.data?.message || `Failed to load ${type}`);
     } finally {
-      setIsLoading(false);
+      if (showSpinner) setIsLoading(false);
       setRefreshing(false);
     }
   };
@@ -116,6 +127,18 @@ const ExploreCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <Text style={styles.searchIcon}>🔍</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder={`Search ${type}...`}
+          placeholderTextColor={colors.textLight}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={() => fetchData(false)}
+          returnKeyType="search"
+        />
+      </View>
       <FlatList
         data={data}
         keyExtractor={(item) => item._id}
@@ -135,6 +158,9 @@ const ExploreCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
 
 const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, marginHorizontal: SIZES.spacing.base, marginTop: SIZES.spacing.base, borderRadius: SIZES.radius.base, paddingHorizontal: SIZES.spacing.base, ...SHADOWS.light },
+  searchIcon: { fontSize: 18, marginRight: SIZES.spacing.sm },
+  searchInput: { flex: 1, paddingVertical: SIZES.spacing.md, fontSize: SIZES.base, color: colors.textPrimary },
   listContainer: { padding: SIZES.spacing.base },
   emptyContainer: { padding: SIZES.spacing.xxl, alignItems: 'center' },
   emptyText: { fontSize: SIZES.base, color: colors.textSecondary },
