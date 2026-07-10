@@ -23,6 +23,7 @@ import ForgotPasswordCustomerScreen from '../screens/auth/ForgotPasswordCustomer
 import HomeCustomerScreen from '../screens/home/HomeCustomerScreen';
 import ClinicDetailCustomerScreen from '../screens/home/ClinicDetailCustomerScreen';
 import ServiceCustomerScreen from '../screens/home/ServiceCustomerScreen';
+import ExploreCustomerScreen from '../screens/home/ExploreCustomerScreen';
 
 // Import Pet Screens
 import PetListCustomerScreen from '../screens/pets/PetListCustomerScreen';
@@ -71,6 +72,7 @@ export type HomeStackParamList = {
   PaymentCustomer: { appointmentId: string };
   PaymentSuccessCustomer: { paymentId: string; transactionId: string };
   NotificationCustomer: undefined;
+  ExploreCustomer: { type: string; title: string };
 };
 
 export type PetStackParamList = {
@@ -190,6 +192,7 @@ const CustomerNavigator: React.FC = () => {
       <HomeStack.Screen name="PaymentCustomer" component={PaymentCustomerScreen} options={{ title: 'Payment' }} />
       <HomeStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
       <HomeStack.Screen name="NotificationCustomer" component={NotificationCustomerScreen} options={{ title: 'Notifications' }} />
+      <HomeStack.Screen name="ExploreCustomer" component={ExploreCustomerScreen} options={{ title: 'Explore' }} />
     </HomeStack.Navigator>
   );
 

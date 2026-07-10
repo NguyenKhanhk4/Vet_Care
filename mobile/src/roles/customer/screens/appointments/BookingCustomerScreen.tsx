@@ -39,8 +39,11 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   // Pre-fill from route params
   useEffect(() => {
     const params = route.params || {};
-    if (params.clinicId) loadClinicAndSkip(params.clinicId);
-    else loadClinics();
+    if (params.clinicId || params.doctorId || params.serviceId) {
+      loadPreSelectedAndSkip(params);
+    } else {
+      loadClinics();
+    }
   }, []);
 
   const loadClinics = async () => {
@@ -50,32 +53,97 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
     finally { setIsLoading(false); }
   };
 
-  const loadClinicAndSkip = async (clinicId: string) => {
+  const loadPreSelectedAndSkip = async (params: any) => {
     setIsLoading(true);
     try {
-      const res = await api.get(`/clinics/${clinicId}`);
-      setSelectedClinic(res.data.data);
-      const docRes = await api.get(`/doctors?clinicId=${clinicId}`);
-      setDoctors(docRes.data.data || []);
-      setStep(1);
-    } catch { loadClinics(); }
-    finally { setIsLoading(false); }
+      let currentClinicId = params.clinicId;
+      let svc = null;
+      let doc = null;
+
+      // 1. Resolve Service if exists
+      if (params.serviceId) {
+        const serviceRes = await api.get(`/services/${params.serviceId}`);
+        svc = serviceRes.data.data;
+        setSelectedService(svc);
+        if (!currentClinicId) {
+           currentClinicId = typeof svc.clinic === 'string' ? svc.clinic : svc.clinic._id;
+        }
+      }
+
+      // 2. Resolve Doctor if exists
+      if (params.doctorId) {
+        // Fallback: If your API does not support GET /doctors/:id, you might have to search by clinic
+        // Assuming API supports it or we can just ignore pre-loading doctor object if it fails
+        try {
+          const doctorRes = await api.get(`/doctors/${params.doctorId}`);
+          doc = doctorRes.data.data;
+          setSelectedDoctor(doc);
+          if (!currentClinicId) {
+            currentClinicId = typeof doc.clinic === 'string' ? doc.clinic : doc.clinic._id;
+          }
+        } catch (e) {
+          console.warn("Could not fetch doctor by ID directly, will load list.");
+        }
+      }
+
+      // 3. Resolve Clinic
+      if (currentClinicId) {
+        const clinicRes = await api.get(`/clinics/${currentClinicId}`);
+        setSelectedClinic(clinicRes.data.data);
+        
+        // Fetch remaining options based on what's missing
+        if (!doc) {
+          const docRes = await api.get(`/doctors?clinicId=${currentClinicId}`);
+          setDoctors(docRes.data.data || []);
+        }
+        
+        if (!svc) {
+          const srvRes = await api.get(`/services?clinicId=${currentClinicId}`);
+          setServices(srvRes.data.data || []);
+        }
+      }
+
+      // Determine starting step
+      if (!doc) {
+        setStep(1); // Needs doctor
+      } else if (!svc) {
+        setStep(2); // Needs service
+      } else {
+        const petRes = await api.get('/pets');
+        setPets(petRes.data.data || []);
+        setStep(3);
+      }
+    } catch { 
+      loadClinics(); 
+    } finally { 
+      setIsLoading(false); 
+    }
   };
 
   const handleSelectClinic = async (clinic: Clinic) => {
     setSelectedClinic(clinic);
     setIsLoading(true);
-    try { const res = await api.get(`/doctors?clinicId=${clinic._id}`); setDoctors(res.data.data || []); }
-    catch { Alert.alert('Error', 'Failed to load doctors'); }
+    try { 
+      const res = await api.get(`/doctors?clinicId=${clinic._id}`); 
+      setDoctors(res.data.data || []); 
+      
+      const srvRes = await api.get(`/services?clinicId=${clinic._id}`);
+      setServices(srvRes.data.data || []);
+    }
+    catch { Alert.alert('Error', 'Failed to load data'); }
     finally { setIsLoading(false); setStep(1); }
   };
 
   const handleSelectDoctor = async (doctor: Doctor) => {
     setSelectedDoctor(doctor);
-    setIsLoading(true);
-    try { const res = await api.get(`/services?clinicId=${selectedClinic?._id}`); setServices(res.data.data || []); }
-    catch { Alert.alert('Error', 'Failed to load services'); }
-    finally { setIsLoading(false); setStep(2); }
+    if (selectedService || route.params?.serviceId) {
+      setIsLoading(true);
+      try { const res = await api.get('/pets'); setPets(res.data.data || []); setStep(3); }
+      catch { Alert.alert('Error', 'Failed to load pets'); }
+      finally { setIsLoading(false); }
+    } else {
+      setStep(2);
+    }
   };
 
   const handleSelectService = async (service: Service) => {

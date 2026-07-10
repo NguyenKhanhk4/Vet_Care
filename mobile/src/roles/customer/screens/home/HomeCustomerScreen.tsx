@@ -86,10 +86,10 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       {/* Quick Actions */}
       <View style={styles.quickActions}>
         {[
-          { icon: '🏥', label: 'Find Clinic', action: () => {} },
-          { icon: '📅', label: 'Book Appointment', action: () => navigation.navigate('Appointments', { screen: 'BookingCustomer' }) },
-          { icon: '🐾', label: 'My Pets', action: () => navigation.navigate('Pets') },
-          { icon: '📋', label: 'Medical History', action: () => navigation.navigate('Profile', { screen: 'MedicalHistoryCustomer' }) },
+          { icon: '🏥', label: 'Find Clinic', action: () => navigation.navigate('ExploreCustomer', { type: 'clinics', title: 'All Clinics' }) },
+          { icon: '👨‍⚕️', label: 'Find Doctor', action: () => navigation.navigate('ExploreCustomer', { type: 'doctors', title: 'Top Doctors' }) },
+          { icon: '📋', label: 'Services', action: () => navigation.navigate('ExploreCustomer', { type: 'services', title: 'Our Services' }) },
+          { icon: '📅', label: 'Book Appt', action: () => navigation.navigate('Appointments', { screen: 'BookingCustomer' }) },
         ].map((item, index) => (
           <TouchableOpacity key={index} style={styles.quickActionItem} onPress={item.action} activeOpacity={0.7}>
             <View style={styles.quickActionIcon}>
@@ -104,7 +104,9 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Top Clinics</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'clinics', title: 'All Clinics' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
         </View>
         <FlatList
           data={clinics}
@@ -138,7 +140,9 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Top Doctors</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'doctors', title: 'Top Doctors' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
         </View>
         <FlatList
           data={doctors}
@@ -166,7 +170,9 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={[styles.section, styles.lastSection]}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Our Services</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'services', title: 'Our Services' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
         </View>
         {services.slice(0, 5).map((service) => (
           <TouchableOpacity

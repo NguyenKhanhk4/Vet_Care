@@ -89,7 +89,10 @@ const ServiceCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
 
       <TouchableOpacity
         style={styles.bookButton}
-        onPress={() => navigation.navigate('BookingCustomer', { serviceId: service._id })}
+        onPress={() => navigation.navigate('BookingCustomer', { 
+          serviceId: service._id, 
+          clinicId: typeof service.clinic === 'string' ? service.clinic : (service.clinic as any)._id 
+        })}
         activeOpacity={0.8}
       >
         <Text style={styles.bookButtonText}>Book Appointment</Text>
