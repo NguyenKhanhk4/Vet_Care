@@ -34,6 +34,7 @@ import PetDetailCustomerScreen from '../screens/pets/PetDetailCustomerScreen';
 import AppointmentListCustomerScreen from '../screens/appointments/AppointmentListCustomerScreen';
 import AppointmentDetailCustomerScreen from '../screens/appointments/AppointmentDetailCustomerScreen';
 import BookingCustomerScreen from '../screens/appointments/BookingCustomerScreen';
+import ReviewCustomerScreen from '../screens/appointments/ReviewCustomerScreen';
 
 // Import Medical Screens
 import MedicalHistoryCustomerScreen from '../screens/medical/MedicalHistoryCustomerScreen';
@@ -85,6 +86,7 @@ export type AppointmentStackParamList = {
   PaymentCustomer: { appointmentId: string };
   PaymentSuccessCustomer: { paymentId: string; transactionId: string };
   MedicalDetailCustomer: { recordId: string };
+  ReviewCustomer: { appointmentId: string };
 };
 
 export type NotificationStackParamList = {
@@ -199,6 +201,7 @@ const CustomerNavigator: React.FC = () => {
       <AppointmentStack.Screen name="PaymentCustomer" component={PaymentCustomerScreen} options={{ title: 'Payment' }} />
       <AppointmentStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
       <AppointmentStack.Screen name="MedicalDetailCustomer" component={MedicalDetailCustomerScreen} options={{ title: 'Medical Record' }} />
+      <AppointmentStack.Screen name="ReviewCustomer" component={ReviewCustomerScreen} options={{ title: 'Leave a Review' }} />
     </AppointmentStack.Navigator>
   );
 

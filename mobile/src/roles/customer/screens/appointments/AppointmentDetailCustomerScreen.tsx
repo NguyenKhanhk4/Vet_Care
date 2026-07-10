@@ -47,21 +47,7 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
   };
 
   const handleReview = () => {
-    if (Platform.OS === 'ios') {
-      Alert.prompt('Leave a Review', 'Rate your experience (1-5):', [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Submit', onPress: async (rating?: string) => {
-            try {
-              await api.post('/reviews', { appointmentId, rating: parseInt(rating || '5'), comment: 'Great service!' });
-              Alert.alert('Thank you!', 'Your review has been submitted');
-            } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Failed to submit review'); }
-          }
-        },
-      ]);
-    } else {
-      Alert.alert('Review', 'Review feature - navigate to review screen');
-    }
+    navigation.navigate('ReviewCustomer', { appointmentId });
   };
 
   const styles = getStyles(colors);
@@ -137,7 +123,7 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
         {['completed', 'paid'].includes(a.status) && (
           <>
             <TouchableOpacity style={styles.payButton} onPress={handleReview} activeOpacity={0.8}>
-              <Text style={styles.payButtonText}>⭐ Leave Review</Text>
+              <Text style={styles.payButtonText}>⭐ Review</Text>
             </TouchableOpacity>
           </>
         )}
