@@ -18,6 +18,9 @@ router.use(authorize('customer'));
 // GET /api/customer/appointments?status=pending&page=1&limit=10
 router.get('/', AppointmentController.getAllAppointments);
 
+// GET /api/customer/appointments/booked-times
+router.get('/booked-times', AppointmentController.getBookedTimes);
+
 // GET /api/customer/appointments/:id
 router.get('/:id', AppointmentController.getAppointmentById);
 

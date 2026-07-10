@@ -35,6 +35,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
 
   // Pre-fill from route params
@@ -179,6 +180,20 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
     return dates;
   };
 
+  const handleSelectDate = async (date: string) => {
+    setSelectedDate(date);
+    setSelectedTime('');
+    if (selectedDoctor) {
+      try {
+        const res = await api.get(`/appointments/booked-times?doctorId=${selectedDoctor._id}&date=${date}`);
+        setBookedTimes(res.data.data || []);
+      } catch (error) {
+        console.error('Failed to load booked times', error);
+        setBookedTimes([]);
+      }
+    }
+  };
+
   const handleConfirmBooking = async () => {
     if (!selectedClinic || !selectedDoctor || selectedServices.length === 0 || !selectedPet || !selectedDate || !selectedTime) {
       Alert.alert('Error', 'Please complete all selections');
@@ -317,7 +332,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
             <Text style={styles.sectionLabel}>Select Date</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateScroll}>
               {generateDates().map((date) => (
-                <TouchableOpacity key={date} style={[styles.dateCard, selectedDate === date && styles.dateCardActive]} onPress={() => setSelectedDate(date)} activeOpacity={0.7}>
+                <TouchableOpacity key={date} style={[styles.dateCard, selectedDate === date && styles.dateCardActive]} onPress={() => handleSelectDate(date)} activeOpacity={0.7}>
                   <Text style={[styles.dateDay, selectedDate === date && styles.dateDayActive]}>{new Date(date).toLocaleDateString('en-GB', { weekday: 'short' })}</Text>
                   <Text style={[styles.dateNum, selectedDate === date && styles.dateNumActive]}>{new Date(date).getDate()}</Text>
                   <Text style={[styles.dateMonth, selectedDate === date && styles.dateMonthActive]}>{new Date(date).toLocaleDateString('en-GB', { month: 'short' })}</Text>
@@ -327,11 +342,20 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
 
             <Text style={styles.sectionLabel}>Select Time</Text>
             <View style={styles.timeGrid}>
-              {TIME_SLOTS.map((time) => (
-                <TouchableOpacity key={time} style={[styles.timeSlot, selectedTime === time && styles.timeSlotActive]} onPress={() => setSelectedTime(time)} activeOpacity={0.7}>
-                  <Text style={[styles.timeText, selectedTime === time && styles.timeTextActive]}>{time}</Text>
-                </TouchableOpacity>
-              ))}
+              {TIME_SLOTS.map((time) => {
+                const isBooked = bookedTimes.includes(time);
+                return (
+                  <TouchableOpacity 
+                    key={time} 
+                    style={[styles.timeSlot, selectedTime === time && styles.timeSlotActive, isBooked && styles.timeSlotDisabled]} 
+                    onPress={() => !isBooked && setSelectedTime(time)} 
+                    activeOpacity={isBooked ? 1 : 0.7}
+                    disabled={isBooked}
+                  >
+                    <Text style={[styles.timeText, selectedTime === time && styles.timeTextActive, isBooked && styles.timeTextDisabled]}>{time}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
 
             {selectedDate && selectedTime && (
@@ -461,8 +485,10 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.spacing.sm },
   timeSlot: { paddingVertical: SIZES.spacing.sm, paddingHorizontal: SIZES.spacing.base, borderRadius: SIZES.radius.base, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   timeSlotActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  timeSlotDisabled: { backgroundColor: colors.divider, borderColor: colors.divider },
   timeText: { fontSize: SIZES.md, color: colors.textPrimary },
   timeTextActive: { color: colors.textWhite, ...FONTS.medium },
+  timeTextDisabled: { color: colors.textLight, textDecorationLine: 'line-through' },
   nextButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginTop: SIZES.spacing.xl, ...SHADOWS.light },
   nextButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
   confirmSection: { backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.xl, ...SHADOWS.medium },

@@ -26,6 +26,27 @@ class AppointmentController {
   }
 
   /**
+   * GET /api/customer/appointments/booked-times
+   */
+  static async getBookedTimes(req, res, next) {
+    try {
+      const { doctorId, date } = req.query;
+      if (!doctorId || !date) {
+        return res.status(400).json({ success: false, message: 'doctorId and date are required' });
+      }
+
+      const bookedTimes = await AppointmentService.getBookedTimes(doctorId, date);
+
+      res.status(200).json({
+        success: true,
+        data: bookedTimes,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * GET /api/customer/appointments/:id
    */
   static async getAppointmentById(req, res, next) {

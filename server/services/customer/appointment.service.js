@@ -43,6 +43,27 @@ class AppointmentService {
   }
 
   /**
+   * Get booked times for a specific doctor and date
+   * @param {string} doctorId - Doctor ID
+   * @param {string} date - Date string (YYYY-MM-DD)
+   * @returns {Array<string>} - Array of booked time strings
+   */
+  static async getBookedTimes(doctorId, date) {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const appointments = await Appointment.find({
+      doctor: doctorId,
+      date: { $gte: startOfDay, $lte: endOfDay },
+      status: { $in: ['pending', 'confirmed', 'paid'] }
+    }).select('time');
+
+    return appointments.map(app => app.time);
+  }
+
+  /**
    * Get a specific appointment by ID
    * @param {string} appointmentId - Appointment's MongoDB ObjectId
    * @param {string} customerId - Customer's MongoDB ObjectId
