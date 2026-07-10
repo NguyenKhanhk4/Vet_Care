@@ -59,6 +59,18 @@ class AdminUserService {
       throw error;
     }
 
+    if (user.role === 'doctor') {
+      const Doctor = require('../../models/Doctor');
+      const doctorProfile = await Doctor.findOne({ user: userId }).populate('clinic', 'name address').lean();
+      if (doctorProfile) {
+        user.doctorProfile = doctorProfile;
+      }
+    } else if (user.role === 'customer') {
+      const Pet = require('../../models/Pet');
+      const pets = await Pet.find({ owner: userId }).lean();
+      user.pets = pets;
+    }
+
     return user;
   }
 

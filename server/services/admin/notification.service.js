@@ -13,19 +13,19 @@ class AdminNotificationService {
    */
   static async getNotifications(userId, query = {}) {
     const page = parseInt(query.page) || 1;
-    const limit = parseInt(query.limit) || 20;
+    const limit = parseInt(query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const filter = { user: userId };
-
+    // Admin sees all system notifications
     const [notifications, total, unreadCount] = await Promise.all([
-      Notification.find(filter)
+      Notification.find()
+        .populate('user', 'name role')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
-      Notification.countDocuments(filter),
-      Notification.countDocuments({ ...filter, isRead: false }),
+      Notification.countDocuments(),
+      Notification.countDocuments({ isRead: false }),
     ]);
 
     return {

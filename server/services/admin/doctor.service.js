@@ -18,6 +18,10 @@ class AdminDoctorService {
 
     const filter = {};
 
+    if (query.clinicId) {
+      filter.clinic = query.clinicId;
+    }
+
     if (query.search) {
       // We need to search by user name, so use a pipeline
       const matchingUsers = await User.find({

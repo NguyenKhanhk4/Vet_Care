@@ -1,50 +1,56 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, Alert, RefreshControl } from 'react-native';
-import { Text, Searchbar, useTheme, Card, Avatar, IconButton } from 'react-native-paper';
+import { Text, Searchbar, useTheme, Card, Avatar, Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import adminApi from '../../utils/adminApi';
 import { SIZES, FONTS, SHADOWS } from '../../../../shared/constants/theme';
 
-interface Clinic {
+interface Doctor {
   _id: string;
-  name: string;
-  address: string;
-  phone: string;
-  email: string;
-  description: string;
-  operatingHours: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+    avatar?: string;
+  };
+  specialization: string;
+  experience: number;
+  isActive: boolean;
 }
 
-const ClinicListAdminScreen = ({ navigation }: any) => {
+const ClinicDoctorListAdminScreen = ({ route, navigation }: any) => {
   const { colors } = useTheme();
-  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const { clinicId, clinicName } = route.params;
+
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchClinics = async (pageNumber = 1, isRefresh = false) => {
+  const fetchDoctors = async (pageNumber = 1, isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
-      const response = await adminApi.get('/clinics', {
-        params: { page: pageNumber, limit: 10, search: searchQuery },
+      const response = await adminApi.get('/doctors', {
+        params: { page: pageNumber, limit: 10, search: searchQuery, clinicId },
       });
       
-      const { clinics: fetchedClinics, pagination } = response.data.data;
+      const { doctors: fetchedDoctors, pagination } = response.data.data;
 
       if (isRefresh || pageNumber === 1) {
-        setClinics(fetchedClinics);
+        setDoctors(fetchedDoctors);
       } else {
-        setClinics((prev) => [...prev, ...fetchedClinics]);
+        setDoctors((prev) => [...prev, ...fetchedDoctors]);
       }
 
       setHasMore(pageNumber < pagination.pages);
       setPage(pageNumber);
     } catch (error) {
-      console.error('Error fetching clinics:', error);
-      Alert.alert('Error', 'Failed to load clinics');
+      console.error('Error fetching doctors:', error);
+      Alert.alert('Error', 'Failed to load doctors');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -53,65 +59,70 @@ const ClinicListAdminScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     setLoading(true);
-    fetchClinics(1, false);
+    fetchDoctors(1, false);
   }, [searchQuery]);
 
   const onRefresh = useCallback(() => {
-    fetchClinics(1, true);
+    fetchDoctors(1, true);
   }, [searchQuery]);
 
   const loadMore = () => {
     if (hasMore && !loading && !refreshing) {
-      fetchClinics(page + 1);
+      fetchDoctors(page + 1);
     }
   };
 
-  const renderItem = ({ item }: { item: Clinic }) => (
-    <Card style={styles.card} onPress={() => navigation.navigate('ClinicDoctorList', { clinicId: item._id, clinicName: item.name })}>
+  const renderItem = ({ item }: { item: Doctor }) => (
+    <Card style={styles.card}>
       <View style={styles.cardContent}>
         <Avatar.Icon 
           size={50} 
-          icon="hospital-building" 
+          icon="doctor" 
           style={{ backgroundColor: colors.primary + '20' }}
           color={colors.primary} 
         />
         <View style={styles.infoContainer}>
-          <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.name} numberOfLines={1}>{item.user?.name}</Text>
           <View style={styles.infoRow}>
-            <Icon name="map-marker-outline" size={14} color="#666" />
-            <Text style={styles.infoText} numberOfLines={2}>{item.address || 'N/A'}</Text>
+            <Icon name="stethoscope" size={14} color="#666" />
+            <Text style={styles.infoText} numberOfLines={1}>{item.specialization}</Text>
           </View>
           <View style={styles.infoRow}>
             <Icon name="phone-outline" size={14} color="#666" />
-            <Text style={styles.infoText}>{item.phone || 'N/A'}</Text>
+            <Text style={styles.infoText}>{item.user?.phone || 'N/A'}</Text>
           </View>
-          {item.operatingHours && (
-            <View style={styles.infoRow}>
-              <Icon name="clock-outline" size={14} color="#666" />
-              <Text style={styles.infoText}>{item.operatingHours}</Text>
-            </View>
-          )}
+          <View style={styles.infoRow}>
+            <Icon name="briefcase-outline" size={14} color="#666" />
+            <Text style={styles.infoText}>{item.experience} years exp</Text>
+          </View>
         </View>
-        <IconButton
-          icon="chevron-right"
-          iconColor="#CCC"
-          size={24}
-          onPress={() => navigation.navigate('ClinicDoctorList', { clinicId: item._id, clinicName: item.name })}
-        />
+        <View style={[
+          styles.statusBadge,
+          { backgroundColor: item.isActive ? '#4CAF50' : '#E0E0E0' }
+        ]}>
+          <Text style={[
+            styles.statusBadgeText,
+            { color: item.isActive ? '#fff' : '#666' }
+          ]}>
+            {item.isActive ? 'Active' : 'Inactive'}
+          </Text>
+        </View>
       </View>
     </Card>
   );
 
-  return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+  const ListHeader = () => (
+    <View>
       <View style={styles.header}>
-        <Text style={styles.title}>Clinics</Text>
-        <Text style={styles.subtitle}>Manage VetCare branches</Text>
+        <Button icon="arrow-left" mode="text" onPress={() => navigation.goBack()} textColor={colors.text} style={{ alignSelf: 'flex-start', marginLeft: -8 }}>
+          Back
+        </Button>
+        <Text style={styles.title}>Doctors</Text>
+        <Text style={styles.subtitle}>{clinicName}</Text>
       </View>
-
       <View style={styles.searchContainer}>
         <Searchbar
-          placeholder="Search name, address..."
+          placeholder="Search name, specialization..."
           onChangeText={setSearchQuery}
           value={searchQuery}
           style={styles.searchbar}
@@ -119,18 +130,27 @@ const ClinicListAdminScreen = ({ navigation }: any) => {
           inputStyle={styles.searchInput}
         />
       </View>
+    </View>
+  );
 
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
       {loading && page === 1 ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+        <View style={{ flex: 1 }}>
+          <ListHeader />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
         </View>
       ) : (
         <FlatList
-          data={clinics}
+          data={doctors}
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          ListHeaderComponent={<ListHeader />}
+          stickyHeaderIndices={[0]}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
           }
@@ -138,12 +158,12 @@ const ClinicListAdminScreen = ({ navigation }: any) => {
           onEndReachedThreshold={0.5}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Icon name="hospital-marker" size={60} color="#CCC" />
-              <Text style={styles.emptyText}>No clinics found</Text>
+              <Icon name="doctor" size={60} color="#CCC" />
+              <Text style={styles.emptyText}>No doctors found in this clinic</Text>
             </View>
           }
           ListFooterComponent={
-            hasMore && clinics.length > 0 ? (
+            hasMore && doctors.length > 0 ? (
               <ActivityIndicator size="small" color={colors.primary} style={{ margin: 20 }} />
             ) : null
           }
@@ -160,16 +180,15 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 10,
     paddingBottom: 10,
     backgroundColor: '#fff',
-    ...SHADOWS.small,
-    zIndex: 10,
   },
   title: {
     fontSize: SIZES.xxl,
     ...FONTS.bold,
     color: '#333',
+    marginTop: 4,
   },
   subtitle: {
     fontSize: SIZES.sm,
@@ -197,11 +216,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
-    padding: 16,
     paddingBottom: 100,
   },
   card: {
     marginBottom: 12,
+    marginHorizontal: 16,
     backgroundColor: '#fff',
     borderRadius: 12,
     ...SHADOWS.small,
@@ -214,6 +233,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     flex: 1,
     marginLeft: 16,
+    marginRight: 8,
   },
   name: {
     fontSize: SIZES.md,
@@ -232,6 +252,16 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     flex: 1,
   },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  statusBadgeText: {
+    fontSize: 11,
+    ...FONTS.medium,
+  },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -244,4 +274,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ClinicListAdminScreen;
+export default ClinicDoctorListAdminScreen;
