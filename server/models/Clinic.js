@@ -45,6 +45,14 @@ const clinicSchema = new mongoose.Schema(
       type: String,
       default: '08:00 - 18:00',
     },
+    latitude: {
+      type: Number,
+      default: null,
+    },
+    longitude: {
+      type: Number,
+      default: null,
+    },
     rating: {
       type: Number,
       min: 0,

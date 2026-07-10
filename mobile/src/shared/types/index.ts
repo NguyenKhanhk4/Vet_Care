@@ -58,6 +58,8 @@ export interface Clinic {
   description: string;
   images: string[];
   openingHours: string;
+  latitude?: number;
+  longitude?: number;
   rating: number;
   totalReviews: number;
   isActive: boolean;

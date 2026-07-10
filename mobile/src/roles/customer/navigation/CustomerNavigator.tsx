@@ -21,9 +21,13 @@ import ForgotPasswordCustomerScreen from '../screens/auth/ForgotPasswordCustomer
 
 // Import Main Screens
 import HomeCustomerScreen from '../screens/home/HomeCustomerScreen';
-import ClinicDetailCustomerScreen from '../screens/home/ClinicDetailCustomerScreen';
 import ServiceCustomerScreen from '../screens/home/ServiceCustomerScreen';
 import ExploreCustomerScreen from '../screens/home/ExploreCustomerScreen';
+
+// Import Clinic Screens
+import ClinicDetailCustomerScreen from '../screens/clinics/ClinicDetailCustomerScreen';
+import NearbyClinicCustomerScreen from '../screens/clinics/NearbyClinicCustomerScreen';
+import ClinicListCustomerScreen from '../screens/clinics/ClinicListCustomerScreen';
 
 // Import Pet Screens
 import PetListCustomerScreen from '../screens/pets/PetListCustomerScreen';
@@ -79,6 +83,8 @@ export type HomeStackParamList = {
   PaymentSuccessCustomer: { paymentId: string; transactionId: string };
   NotificationCustomer: undefined;
   ExploreCustomer: { type: string; title: string };
+  NearbyClinicCustomer: undefined;
+  ClinicListCustomer: undefined;
 };
 
 export type PetStackParamList = {
@@ -203,6 +209,8 @@ const CustomerNavigator: React.FC = () => {
       <HomeStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
       <HomeStack.Screen name="NotificationCustomer" component={NotificationCustomerScreen} options={{ title: 'Notifications' }} />
       <HomeStack.Screen name="ExploreCustomer" component={ExploreCustomerScreen} options={{ title: 'Explore' }} />
+      <HomeStack.Screen name="NearbyClinicCustomer" component={NearbyClinicCustomerScreen} options={{ title: 'Nearby Clinics' }} />
+      <HomeStack.Screen name="ClinicListCustomer" component={ClinicListCustomerScreen} options={{ title: 'All Clinics' }} />
     </HomeStack.Navigator>
   );
 

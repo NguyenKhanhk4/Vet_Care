@@ -73,10 +73,10 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       {/* Quick Actions */}
       <View style={styles.quickActions}>
         {[
-          { icon: '🏥', label: 'Find Clinic', action: () => navigation.navigate('ExploreCustomer', { type: 'clinics', title: 'All Clinics' }) },
-          { icon: '👨‍⚕️', label: 'Find Doctor', action: () => navigation.navigate('ExploreCustomer', { type: 'doctors', title: 'Top Doctors' }) },
+          { icon: '📍', label: 'Nearby', action: () => navigation.navigate('NearbyClinicCustomer') },
+          { icon: '🏥', label: 'All Clinics', action: () => navigation.navigate('ClinicListCustomer') },
+          { icon: '👨‍⚕️', label: 'Top Doctors', action: () => navigation.navigate('ExploreCustomer', { type: 'doctors', title: 'Top Doctors' }) },
           { icon: '📋', label: 'Services', action: () => navigation.navigate('ExploreCustomer', { type: 'services', title: 'Our Services' }) },
-          { icon: '📅', label: 'Book Appt', action: () => navigation.navigate('Appointments', { screen: 'BookingCustomer' }) },
         ].map((item, index) => (
           <TouchableOpacity key={index} style={styles.quickActionItem} onPress={item.action} activeOpacity={0.7}>
             <View style={styles.quickActionIcon}>
