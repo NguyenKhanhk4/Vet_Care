@@ -76,8 +76,8 @@ const ServicePriceDetailAdminScreen = ({ route, navigation }: any) => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <Button icon="arrow-left" mode="text" onPress={() => navigation.goBack()} textColor={colors.text}>
-          Back
+        <Button icon="arrow-left" mode="text" onPress={() => navigation.goBack()} textColor={colors.onSurface}>
+          Quay lại
         </Button>
         <Text style={styles.title}>Service Details</Text>
         <View style={{ width: 60 }} />
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 16,
     backgroundColor: '#fff',
-    ...SHADOWS.small,
+    ...SHADOWS.light,
   },
   title: {
     fontSize: SIZES.lg,

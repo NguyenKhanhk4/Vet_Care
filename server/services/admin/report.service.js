@@ -74,7 +74,7 @@ class AdminReportService {
     const payments = await Payment.aggregate([
       {
         $match: {
-          status: 'completed',
+          status: 'PAID',
           createdAt: { $gte: dateRange.start, $lte: dateRange.end },
         },
       },
@@ -92,7 +92,7 @@ class AdminReportService {
     const byMethod = await Payment.aggregate([
       {
         $match: {
-          status: 'completed',
+          status: 'PAID',
           createdAt: { $gte: dateRange.start, $lte: dateRange.end },
         },
       },

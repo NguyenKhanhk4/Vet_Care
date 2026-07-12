@@ -6,6 +6,7 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import adminApi from '../../utils/adminApi';
 import { SIZES, FONTS, SHADOWS } from '../../../../shared/constants/theme';
 import { format } from 'date-fns';
+import AdminBackButton from '../../components/AdminBackButton';
 
 interface Appointment {
   _id: string;
@@ -181,6 +182,7 @@ const AppointmentListAdminScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <AdminBackButton navigation={navigation} />
       <View style={styles.header}>
         <Text style={styles.title}>Appointments</Text>
         <Text style={styles.subtitle}>Manage system bookings</Text>
@@ -228,6 +230,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
+    paddingLeft: 68,
     paddingTop: 20,
     paddingBottom: 10,
     backgroundColor: '#fff',
@@ -248,7 +251,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#EEE',
-    ...SHADOWS.small,
+    ...SHADOWS.light,
   },
   chip: {
     marginRight: 8,
@@ -267,7 +270,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: '#fff',
     borderRadius: 12,
-    ...SHADOWS.small,
+    ...SHADOWS.light,
   },
   cardHeader: {
     flexDirection: 'row',

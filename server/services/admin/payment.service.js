@@ -107,8 +107,11 @@ class AdminPaymentService {
     await payment.save();
 
     // If payment is confirmed, update appointment status to paid
-    if (payment.status === 'completed') {
-      await Appointment.findByIdAndUpdate(payment.appointment, { status: 'paid' });
+    if (payment.status === 'PAID') {
+      await Appointment.findByIdAndUpdate(payment.appointment, {
+        paymentStatus: 'PAID',
+        status: 'confirmed',
+      });
     }
 
     return await Payment.findById(paymentId)

@@ -43,6 +43,7 @@ const adminReviewRoutes = require('./routes/admin/review.routes');
 const adminReportRoutes = require('./routes/admin/report.routes');
 const adminProfileRoutes = require('./routes/admin/profile.routes');
 const adminNotificationRoutes = require('./routes/admin/notification.routes');
+const adminPetRoutes = require('./routes/admin/pet.routes');
 
 // Initialize Express App
 const app = express();
@@ -120,6 +121,7 @@ app.use(`${ADMIN_PREFIX}/reviews`, adminReviewRoutes);
 app.use(`${ADMIN_PREFIX}/reports`, adminReportRoutes);
 app.use(`${ADMIN_PREFIX}/profile`, adminProfileRoutes);
 app.use(`${ADMIN_PREFIX}/notifications`, adminNotificationRoutes);
+app.use(`${ADMIN_PREFIX}/pets`, adminPetRoutes);
 
 // ============================================================
 // Health Check Endpoint

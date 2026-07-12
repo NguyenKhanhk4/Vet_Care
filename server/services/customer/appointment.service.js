@@ -2,6 +2,7 @@ const Appointment = require('../../models/Appointment');
 const Service = require('../../models/Service');
 const Notification = require('../../models/Notification');
 const Doctor = require('../../models/Doctor');
+const AdminNotificationService = require('../admin/admin-notification.service');
 /**
  * Appointment Service - Customer
  * Handles appointment booking, viewing, cancellation, and rescheduling
@@ -136,6 +137,14 @@ class AppointmentService {
       });
     }
 
+    await AdminNotificationService.notifyAdmins({
+      actor: customerId,
+      title: 'Có lịch khám mới',
+      message: `Khách hàng vừa đặt lịch khám vào ${new Date(date).toLocaleDateString('vi-VN')} lúc ${time}.`,
+      type: 'booking',
+      relatedId: appointment._id,
+    });
+
     // Return populated appointment
     return await this.getAppointmentById(appointment._id, customerId);
   }
@@ -238,6 +247,14 @@ class AppointmentService {
         relatedId: appointment._id,
       });
     }
+
+    await AdminNotificationService.notifyAdmins({
+      actor: customerId,
+      title: 'Lịch khám đã bị hủy',
+      message: `Khách hàng đã hủy lịch khám vào ${new Date(appointment.date).toLocaleDateString('vi-VN')} lúc ${appointment.time}.`,
+      type: 'booking',
+      relatedId: appointment._id,
+    });
 
     return appointment;
   }

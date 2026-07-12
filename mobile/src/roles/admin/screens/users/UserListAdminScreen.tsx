@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import adminApi from '../../utils/adminApi';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
+import AdminBackButton from '../../components/AdminBackButton';
 
 interface User {
   _id: string;
@@ -94,9 +95,6 @@ const UserListAdminScreen = ({ route, navigation }: any) => {
             try {
               await adminApi.put(`/users/${user._id}/status`, { isActive: !user.isActive });
               setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isActive: !u.isActive } : u));
-              if (selectedUser && selectedUser._id === user._id) {
-                setSelectedUser({ ...selectedUser, isActive: !user.isActive });
-              }
             } catch (error) {
               Alert.alert('Error', 'Failed to update user status');
             }
@@ -144,6 +142,7 @@ const UserListAdminScreen = ({ route, navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <AdminBackButton navigation={navigation} />
       <View style={styles.header}>
         <Text style={styles.title}>System Users</Text>
         <Text style={styles.subtitle}>Manage all user accounts</Text>
@@ -227,10 +226,11 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
+    paddingLeft: 68,
     paddingTop: 20,
     paddingBottom: 10,
     backgroundColor: '#fff',
-    ...SHADOWS.small,
+    ...SHADOWS.light,
     zIndex: 10,
   },
   title: {
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: '#fff',
     borderRadius: 12,
-    ...SHADOWS.small,
+    ...SHADOWS.light,
   },
   cardContent: {
     flexDirection: 'row',
