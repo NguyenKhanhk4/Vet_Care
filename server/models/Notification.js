@@ -13,6 +13,19 @@ const notificationSchema = new mongoose.Schema(
       required: [true, 'User reference is required'],
       index: true,
     },
+    // The user who triggered the event. For admin notifications, `user` is the
+    // admin recipient while `actor` identifies the customer or doctor involved.
+    actor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    audience: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+      index: true,
+    },
     title: {
       type: String,
       required: [true, 'Notification title is required'],
@@ -38,6 +51,11 @@ const notificationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       default: null, // Can reference appointment, payment, etc.
     },
+    // Links a migrated admin notification to its original user notification.
+    sourceNotification: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Notification',
+    },
   },
   {
     timestamps: true,
@@ -46,5 +64,6 @@ const notificationSchema = new mongoose.Schema(
 
 // Index for efficient querying of unread notifications
 notificationSchema.index({ user: 1, isRead: 1, createdAt: -1 });
+notificationSchema.index({ user: 1, sourceNotification: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('Notification', notificationSchema);

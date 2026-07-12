@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, Dimensions, TouchableOpacity } from 'react-native';
 import { Text, Card, Title, Paragraph, ActivityIndicator } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -7,6 +7,7 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS } from '../../../../shared/constants/theme';
 import adminApi from '../../utils/adminApi';
+import AdminBackButton from '../../components/AdminBackButton';
 
 const { width } = Dimensions.get('window');
 
@@ -69,9 +70,16 @@ const DashboardAdminScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+      <AdminBackButton navigation={navigation} color="#fff" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
       <View style={[styles.header, { backgroundColor: colors.primary }]}>
-        <Text style={styles.headerTitle}>Dashboard</Text>
-        <Text style={styles.headerSubtitle}>System Overview</Text>
+        <View>
+          <Text style={styles.headerTitle}>Dashboard</Text>
+          <Text style={styles.headerSubtitle}>System Overview</Text>
+        </View>
+        <TouchableOpacity style={styles.profileHeader} onPress={() => navigation.navigate('Profile')}>
+          <Icon name="account-circle" size={40} color="#fff" />
+          <Text style={styles.profileHeaderText}>admin</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -87,7 +95,7 @@ const DashboardAdminScreen = ({ navigation }: any) => {
             icon="account-group"
             color="#2196F3"
             bgColor="#E3F2FD"
-            onPress={() => navigation.navigate('Users', { role: 'customer' })}
+            onPress={() => navigation.navigate('Users', { screen: 'UsersMain', params: { role: 'customer' } })}
           />
           <StatCard
             title="Appointments"
@@ -95,7 +103,7 @@ const DashboardAdminScreen = ({ navigation }: any) => {
             icon="calendar-check"
             color="#FF9800"
             bgColor="#FFF3E0"
-            onPress={() => navigation.navigate('Appointments')}
+            onPress={() => navigation.navigate('Appointments', { screen: 'AppointmentsMain' })}
           />
           <StatCard
             title="Doctors"
@@ -103,7 +111,7 @@ const DashboardAdminScreen = ({ navigation }: any) => {
             icon="doctor"
             color="#4CAF50"
             bgColor="#E8F5E9"
-            onPress={() => navigation.navigate('Users', { role: 'doctor' })}
+            onPress={() => navigation.navigate('Users', { screen: 'UsersMain', params: { role: 'doctor' } })}
           />
           <StatCard
             title="Pets"
@@ -111,7 +119,7 @@ const DashboardAdminScreen = ({ navigation }: any) => {
             icon="paw"
             color="#9C27B0"
             bgColor="#F3E5F5"
-            onPress={() => navigation.navigate('Users', { role: 'customer' })}
+            onPress={() => navigation.navigate('PetList')}
           />
           <StatCard
             title="Clinics"
@@ -119,7 +127,7 @@ const DashboardAdminScreen = ({ navigation }: any) => {
             icon="hospital-building"
             color="#E91E63"
             bgColor="#FCE4EC"
-            onPress={() => navigation.navigate('Clinics')}
+            onPress={() => navigation.navigate('Clinics', { screen: 'ClinicList' })}
           />
           <StatCard
             title="Revenue"
@@ -127,6 +135,7 @@ const DashboardAdminScreen = ({ navigation }: any) => {
             icon="cash-multiple"
             color="#009688"
             bgColor="#E0F2F1"
+            onPress={() => navigation.navigate('Revenue', { screen: 'RevenueMain' })}
           />
         </View>
 
@@ -196,10 +205,23 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: SIZES.spacing.lg,
+    paddingLeft: 68,
     paddingTop: SIZES.spacing.md,
     borderBottomLeftRadius: SIZES.radius.xl,
     borderBottomRightRadius: SIZES.radius.xl,
     marginBottom: SIZES.spacing.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  profileHeader: {
+    alignItems: 'center',
+  },
+  profileHeaderText: {
+    ...FONTS.medium,
+    fontSize: SIZES.xs,
+    color: '#fff',
+    marginTop: 2,
   },
   headerTitle: {
     ...FONTS.bold,
@@ -339,7 +361,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     maxHeight: 320,
     overflow: 'hidden',
-    ...SHADOWS.small,
+    ...SHADOWS.light,
     marginBottom: SIZES.spacing.xl,
   },
   notiItem: {

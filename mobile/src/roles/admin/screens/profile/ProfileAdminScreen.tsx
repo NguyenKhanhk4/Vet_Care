@@ -31,17 +31,17 @@ const ProfileAdminScreen = ({ navigation }: any) => {
     );
   };
 
-  const menuItems = [
-    { icon: 'account-edit', title: 'Edit Profile', route: 'EditProfileAdmin' },
-    { icon: 'shield-account', title: 'Security Settings', route: 'SettingsAdmin' },
-    { icon: 'bell-outline', title: 'Notifications', route: 'NotificationsAdmin' },
-    { icon: 'help-circle-outline', title: 'Help & Support', route: 'HelpAdmin' },
-  ];
-
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
+        {/* Header Actions */}
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={28} color={colors.textPrimary} />
+          </TouchableOpacity>
+        </View>
+
         {/* Profile Header */}
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
@@ -65,50 +65,6 @@ const ProfileAdminScreen = ({ navigation }: any) => {
           </View>
         </View>
 
-        {/* Info Cards */}
-        <View style={[styles.infoCard, { backgroundColor: colors.surface, ...SHADOWS.light }]}>
-          <View style={styles.infoRow}>
-            <Icon name="phone" size={24} color={colors.textSecondary} />
-            <View style={styles.infoTextContainer}>
-              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Phone Number</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
-                {adminUser?.phone || 'Not set'}
-              </Text>
-            </View>
-          </View>
-          <Divider style={styles.divider} />
-          <View style={styles.infoRow}>
-            <Icon name="map-marker" size={24} color={colors.textSecondary} />
-            <View style={styles.infoTextContainer}>
-              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Address</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
-                {adminUser?.address || 'Not set'}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Menu Options */}
-        <View style={[styles.menuCard, { backgroundColor: colors.surface, ...SHADOWS.light }]}>
-          {menuItems.map((item, index) => (
-            <React.Fragment key={index}>
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={() => navigation.navigate(item.route)}
-              >
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIconContainer, { backgroundColor: colors.secondaryLight }]}>
-                    <Icon name={item.icon} size={22} color={colors.primary} />
-                  </View>
-                  <Text style={[styles.menuItemText, { color: colors.textPrimary }]}>{item.title}</Text>
-                </View>
-                <Icon name="chevron-right" size={24} color={colors.textLight} />
-              </TouchableOpacity>
-              {index < menuItems.length - 1 && <Divider style={styles.menuDivider} />}
-            </React.Fragment>
-          ))}
-        </View>
-
         {/* Logout Button */}
         <Button
           mode="outlined"
@@ -130,6 +86,15 @@ const ProfileAdminScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    width: '100%',
+    marginBottom: SIZES.spacing.sm,
+  },
+  backButton: {
+    padding: SIZES.spacing.xs,
   },
   scrollContent: {
     padding: SIZES.spacing.lg,
