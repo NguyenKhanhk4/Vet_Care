@@ -19,7 +19,8 @@
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/vetcare.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.VetCare"
     },
     "web": {
       "favicon": "./assets/favicon.png"

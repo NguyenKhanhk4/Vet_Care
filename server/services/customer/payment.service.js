@@ -17,11 +17,10 @@ class PaymentService {
   static async createPayment(userId, paymentData) {
     const { appointmentId, method = 'payos' } = paymentData;
 
-    // Find the appointment
     const appointment = await Appointment.findOne({
       _id: appointmentId,
       customer: userId,
-    }).populate('service', 'price name');
+    }).populate('services', 'price name');
 
     if (!appointment) {
       const error = new Error('Appointment not found');
@@ -48,8 +47,7 @@ class PaymentService {
     // Generate unique order code (must be Number for payOS)
     // Format: last 6 digits of timestamp + 3 random digits
     const orderCode = Number(String(Date.now()).slice(-6) + Math.floor(Math.random() * 1000).toString().padStart(3, '0'));
-    
-    const amount = appointment.totalAmount || (appointment.service && appointment.service.price) || 0;
+    const amount = appointment.totalAmount || (appointment.services && appointment.services[0] && appointment.services[0].price) || 0;
     
     if (amount <= 0 && method === 'payos') {
       const error = new Error('Amount must be greater than 0 for online payment');
@@ -135,7 +133,7 @@ class PaymentService {
         path: 'appointment',
         populate: [
           { path: 'pet', select: 'name species' },
-          { path: 'service', select: 'name price' },
+          { path: 'services', select: 'name price' },
           { path: 'clinic', select: 'name' },
         ],
       })
