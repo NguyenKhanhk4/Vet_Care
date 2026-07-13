@@ -2,6 +2,7 @@ const Payment = require('../../models/Payment');
 const Appointment = require('../../models/Appointment');
 const Notification = require('../../models/Notification');
 const payos = require('../shared/payos.service');
+const AdminNotificationService = require('../admin/admin-notification.service');
 
 /**
  * Payment Service - Customer
@@ -221,6 +222,14 @@ class PaymentService {
             user: payment.user,
             title: 'Payment Successful',
             message: `Payment of ${amount.toLocaleString()}đ has been completed successfully. Your appointment is confirmed.`,
+            type: 'payment',
+            relatedId: payment._id,
+          });
+
+          await AdminNotificationService.notifyAdmins({
+            actor: payment.user,
+            title: 'Thanh toán thành công',
+            message: `Khách hàng đã thanh toán ${amount.toLocaleString('vi-VN')}đ cho lịch khám.`,
             type: 'payment',
             relatedId: payment._id,
           });

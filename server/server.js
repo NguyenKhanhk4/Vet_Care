@@ -21,6 +21,13 @@ const notificationRoutes = require('./routes/customer/notification.routes');
 const reviewRoutes = require('./routes/customer/review.routes');
 const vaccinationRoutes = require('./routes/customer/vaccination.routes');
 
+// Import Doctor Routes
+const doctorAuthRoutes = require('./routes/doctor/auth.routes');
+const doctorProfileRoutes = require('./routes/doctor/profile.routes');
+const doctorAppointmentRoutes = require('./routes/doctor/appointment.routes');
+const doctorMedicalRecordRoutes = require('./routes/doctor/medicalRecord.routes');
+const doctorScheduleRoutes = require('./routes/doctor/schedule.routes');
+const doctorNotificationRoutes = require('./routes/doctor/notification.routes');
 // Import Shared Routes
 const sharedAuthRoutes = require('./routes/shared/auth.routes');
 const sharedPaymentRoutes = require('./routes/shared/payment.routes');
@@ -38,6 +45,7 @@ const adminReviewRoutes = require('./routes/admin/review.routes');
 const adminReportRoutes = require('./routes/admin/report.routes');
 const adminProfileRoutes = require('./routes/admin/profile.routes');
 const adminNotificationRoutes = require('./routes/admin/notification.routes');
+const adminPetRoutes = require('./routes/admin/pet.routes');
 
 // Initialize Express App
 const app = express();
@@ -88,6 +96,17 @@ app.use(`${API_PREFIX}/reviews`, reviewRoutes);
 app.use(`${API_PREFIX}/vaccinations`, vaccinationRoutes);
 
 // ============================================================
+// API Routes - Doctor Role
+// ============================================================
+
+const DOCTOR_API_PREFIX = '/api/doctor';
+
+app.use(`${DOCTOR_API_PREFIX}/auth`, doctorAuthRoutes);
+app.use(`${DOCTOR_API_PREFIX}/profile`, doctorProfileRoutes);
+app.use(`${DOCTOR_API_PREFIX}/appointments`, doctorAppointmentRoutes);
+app.use(`${DOCTOR_API_PREFIX}/medical-records`, doctorMedicalRecordRoutes);
+app.use(`${DOCTOR_API_PREFIX}/schedules`, doctorScheduleRoutes);
+app.use(`${DOCTOR_API_PREFIX}/notifications`, doctorNotificationRoutes);
 // API Routes - Admin Role
 // ============================================================
 
@@ -105,6 +124,7 @@ app.use(`${ADMIN_PREFIX}/reviews`, adminReviewRoutes);
 app.use(`${ADMIN_PREFIX}/reports`, adminReportRoutes);
 app.use(`${ADMIN_PREFIX}/profile`, adminProfileRoutes);
 app.use(`${ADMIN_PREFIX}/notifications`, adminNotificationRoutes);
+app.use(`${ADMIN_PREFIX}/pets`, adminPetRoutes);
 
 // ============================================================
 // Health Check Endpoint
@@ -145,6 +165,7 @@ app.listen(PORT, () => {
   console.log(`🚀 VetCare Server running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Customer API: http://localhost:${PORT}/api/customer`);
+  console.log(`🔗 Doctor API:   http://localhost:${PORT}/api/doctor`);
   console.log(`🔗 Admin API: http://localhost:${PORT}/api/admin`);
 });
 

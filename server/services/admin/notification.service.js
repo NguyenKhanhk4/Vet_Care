@@ -16,16 +16,18 @@ class AdminNotificationService {
     const limit = parseInt(query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    // Admin sees all system notifications
+    // Every admin receives a separate notification so read status is per admin.
+    const filter = { user: userId, audience: 'admin' };
+
     const [notifications, total, unreadCount] = await Promise.all([
-      Notification.find()
-        .populate('user', 'name role')
+      Notification.find(filter)
+        .populate('actor', 'name role email')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
-      Notification.countDocuments(),
-      Notification.countDocuments({ isRead: false }),
+      Notification.countDocuments(filter),
+      Notification.countDocuments({ ...filter, isRead: false }),
     ]);
 
     return {
@@ -47,7 +49,7 @@ class AdminNotificationService {
    */
   static async markAsRead(notificationId, userId) {
     await Notification.findOneAndUpdate(
-      { _id: notificationId, user: userId },
+      { _id: notificationId, user: userId, audience: 'admin' },
       { isRead: true }
     );
 
@@ -60,7 +62,7 @@ class AdminNotificationService {
    */
   static async markAllAsRead(userId) {
     await Notification.updateMany(
-      { user: userId, isRead: false },
+      { user: userId, audience: 'admin', isRead: false },
       { isRead: true }
     );
 

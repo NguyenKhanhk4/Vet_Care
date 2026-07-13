@@ -73,7 +73,7 @@ const ClinicDoctorListAdminScreen = ({ route, navigation }: any) => {
   };
 
   const renderItem = ({ item }: { item: Doctor }) => (
-    <Card style={styles.card}>
+    <Card style={styles.card} onPress={() => navigation.navigate('UserDetail', { userId: item.user._id })}>
       <View style={styles.cardContent}>
         <Avatar.Icon 
           size={50} 
@@ -114,8 +114,8 @@ const ClinicDoctorListAdminScreen = ({ route, navigation }: any) => {
   const ListHeader = () => (
     <View>
       <View style={styles.header}>
-        <Button icon="arrow-left" mode="text" onPress={() => navigation.goBack()} textColor={colors.text} style={{ alignSelf: 'flex-start', marginLeft: -8 }}>
-          Back
+        <Button icon="arrow-left" mode="text" onPress={() => navigation.goBack()} textColor={colors.onSurface} style={{ alignSelf: 'flex-start', marginLeft: -8 }}>
+          Quay lại
         </Button>
         <Text style={styles.title}>Doctors</Text>
         <Text style={styles.subtitle}>{clinicName}</Text>
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     backgroundColor: '#fff',
     borderRadius: 12,
-    ...SHADOWS.small,
+    ...SHADOWS.light,
   },
   cardContent: {
     flexDirection: 'row',

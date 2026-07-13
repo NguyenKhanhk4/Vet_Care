@@ -80,7 +80,7 @@ class AdminDashboardService {
     const revenue = await Payment.aggregate([
       {
         $match: {
-          status: 'completed',
+          status: 'PAID',
           createdAt: { $gte: sixMonthsAgo },
         },
       },

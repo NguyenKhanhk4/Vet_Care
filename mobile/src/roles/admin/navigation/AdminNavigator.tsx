@@ -15,7 +15,7 @@ import ProfileAdminScreen from '../screens/profile/ProfileAdminScreen';
 import UserListAdminScreen from '../screens/users/UserListAdminScreen';
 import AppointmentListAdminScreen from '../screens/appointments/AppointmentListAdminScreen';
 import ClinicListAdminScreen from '../screens/clinics/ClinicListAdminScreen';
-import PlaceholderScreen from '../screens/PlaceholderScreen';
+import RevenueAdminScreen from '../screens/revenue/RevenueAdminScreen';
 
 import ServicePriceListAdminScreen from '../screens/services/ServicePriceListAdminScreen';
 import AddServicePriceAdminScreen from '../screens/services/AddServicePriceAdminScreen';
@@ -24,9 +24,60 @@ import ServicePriceDetailAdminScreen from '../screens/services/ServicePriceDetai
 import ClinicDoctorListAdminScreen from '../screens/clinics/ClinicDoctorListAdminScreen';
 import UserDetailAdminScreen from '../screens/users/UserDetailAdminScreen';
 import NotificationListAdminScreen from '../screens/notifications/NotificationListAdminScreen';
+import PetListAdminScreen from '../screens/pets/PetListAdminScreen';
 
-const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const DashboardStack = createNativeStackNavigator();
+const UsersStack = createNativeStackNavigator();
+const AppointmentsStack = createNativeStackNavigator();
+const ClinicStack = createNativeStackNavigator();
+const ServicesStack = createNativeStackNavigator();
+const RevenueStack = createNativeStackNavigator();
+
+const DashboardStackNavigator = () => (
+  <DashboardStack.Navigator screenOptions={{ headerShown: false }}>
+    <DashboardStack.Screen name="DashboardMain" component={DashboardAdminScreen} />
+    <DashboardStack.Screen name="NotificationList" component={NotificationListAdminScreen} />
+    <DashboardStack.Screen name="Profile" component={ProfileAdminScreen} />
+    <DashboardStack.Screen name="PetList" component={PetListAdminScreen} />
+  </DashboardStack.Navigator>
+);
+
+const UsersStackNavigator = () => (
+  <UsersStack.Navigator screenOptions={{ headerShown: false }}>
+    <UsersStack.Screen name="UsersMain" component={UserListAdminScreen} />
+    <UsersStack.Screen name="UserDetail" component={UserDetailAdminScreen} />
+  </UsersStack.Navigator>
+);
+
+const AppointmentsStackNavigator = () => (
+  <AppointmentsStack.Navigator screenOptions={{ headerShown: false }}>
+    <AppointmentsStack.Screen name="AppointmentsMain" component={AppointmentListAdminScreen} />
+  </AppointmentsStack.Navigator>
+);
+
+const ClinicStackNavigator = () => (
+  <ClinicStack.Navigator screenOptions={{ headerShown: false }}>
+    <ClinicStack.Screen name="ClinicList" component={ClinicListAdminScreen} />
+    <ClinicStack.Screen name="ClinicDoctorList" component={ClinicDoctorListAdminScreen} />
+    <ClinicStack.Screen name="UserDetail" component={UserDetailAdminScreen} />
+  </ClinicStack.Navigator>
+);
+
+const ServicesStackNavigator = () => (
+  <ServicesStack.Navigator screenOptions={{ headerShown: false }}>
+    <ServicesStack.Screen name="ServicesMain" component={ServicePriceListAdminScreen} />
+    <ServicesStack.Screen name="ServiceAdd" component={AddServicePriceAdminScreen} />
+    <ServicesStack.Screen name="ServiceEdit" component={EditServicePriceAdminScreen} />
+    <ServicesStack.Screen name="ServiceDetail" component={ServicePriceDetailAdminScreen} />
+  </ServicesStack.Navigator>
+);
+
+const RevenueStackNavigator = () => (
+  <RevenueStack.Navigator screenOptions={{ headerShown: false }}>
+    <RevenueStack.Screen name="RevenueMain" component={RevenueAdminScreen} />
+  </RevenueStack.Navigator>
+);
 
 // Tab Icon Component
 const TabIcon = ({ name, focused, colors }: { name: string; focused: boolean; colors: ThemeColors }) => {
@@ -36,7 +87,7 @@ const TabIcon = ({ name, focused, colors }: { name: string; focused: boolean; co
     Appointments: 'calendar-check',
     Clinics: 'hospital-building',
     Services: 'medical-bag',
-    Profile: 'shield-account',
+    Revenue: 'cash-multiple',
   };
 
   const iconName = icons[name] || 'circle';
@@ -44,7 +95,7 @@ const TabIcon = ({ name, focused, colors }: { name: string; focused: boolean; co
   return (
     <View style={styles.tabIconContainer}>
       <Icon 
-        name={iconName} 
+        name={iconName as any}
         size={26} 
         color={focused ? colors.primary : colors.textLight} 
       />
@@ -52,34 +103,10 @@ const TabIcon = ({ name, focused, colors }: { name: string; focused: boolean; co
   );
 };
 
-// Main Admin Tab Navigator
-const MainAdminNavigator = () => {
-  const { colors } = useTheme();
-
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarIcon: ({ focused }) => <TabIcon name={route.name} focused={focused} colors={colors} />,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textLight,
-        tabBarStyle: [styles.tabBar, { backgroundColor: colors.surface, borderTopColor: colors.divider }],
-        tabBarLabelStyle: styles.tabBarLabel,
-      })}
-    >
-      <Tab.Screen name="Dashboard" component={DashboardAdminScreen} />
-      <Tab.Screen name="Users" component={UserListAdminScreen} />
-      <Tab.Screen name="Appointments" component={AppointmentListAdminScreen} />
-      <Tab.Screen name="Clinics" component={ClinicListAdminScreen} />
-      <Tab.Screen name="Services" component={ServicePriceListAdminScreen} />
-      <Tab.Screen name="Profile" component={ProfileAdminScreen} />
-    </Tab.Navigator>
-  );
-};
-
 // Root Admin Navigator
 const AdminNavigator = () => {
-  const { isAdminAuthenticated, isLoading } = useContext(AdminContext);
+  const { isLoading } = useContext(AdminContext);
+  const { colors } = useTheme();
 
   if (isLoading) {
     return (
@@ -89,19 +116,25 @@ const AdminNavigator = () => {
     );
   }
 
-  // We no longer need AuthNavigator here because RootNavigator handles it.
-  // But just in case AdminContext somehow isn't synced, we could show a fallback.
-  // For now, if they are not authenticated, they shouldn't even be here.
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="AdminTabs" component={MainAdminNavigator} />
-      <Stack.Screen name="ServiceAdd" component={AddServicePriceAdminScreen} />
-      <Stack.Screen name="ServiceEdit" component={EditServicePriceAdminScreen} />
-      <Stack.Screen name="ServiceDetail" component={ServicePriceDetailAdminScreen} />
-      <Stack.Screen name="ClinicDoctorList" component={ClinicDoctorListAdminScreen} />
-      <Stack.Screen name="UserDetail" component={UserDetailAdminScreen} />
-      <Stack.Screen name="NotificationList" component={NotificationListAdminScreen} />
-    </Stack.Navigator>
+    <Tab.Navigator
+      backBehavior="history"
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ focused }) => <TabIcon name={route.name} focused={focused} colors={colors} />,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textLight,
+        tabBarStyle: [styles.tabBar, { backgroundColor: colors.surface, borderTopColor: colors.divider }],
+        tabBarLabelStyle: styles.tabBarLabel,
+      })}
+    >
+      <Tab.Screen name="Dashboard" component={DashboardStackNavigator} />
+      <Tab.Screen name="Users" component={UsersStackNavigator} />
+      <Tab.Screen name="Appointments" component={AppointmentsStackNavigator} />
+      <Tab.Screen name="Clinics" component={ClinicStackNavigator} />
+      <Tab.Screen name="Services" component={ServicesStackNavigator} />
+      <Tab.Screen name="Revenue" component={RevenueStackNavigator} />
+    </Tab.Navigator>
   );
 };
 
