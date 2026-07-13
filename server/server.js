@@ -1,3 +1,4 @@
+// Trigger restart
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -18,6 +19,7 @@ const medicalRecordRoutes = require('./routes/customer/medicalRecord.routes');
 const paymentRoutes = require('./routes/customer/payment.routes');
 const notificationRoutes = require('./routes/customer/notification.routes');
 const reviewRoutes = require('./routes/customer/review.routes');
+const vaccinationRoutes = require('./routes/customer/vaccination.routes');
 
 // Import Doctor Routes
 const doctorAuthRoutes = require('./routes/doctor/auth.routes');
@@ -91,6 +93,7 @@ app.use(`${API_PREFIX}/medical-records`, medicalRecordRoutes);
 app.use(`${API_PREFIX}/payments`, paymentRoutes);
 app.use(`${API_PREFIX}/notifications`, notificationRoutes);
 app.use(`${API_PREFIX}/reviews`, reviewRoutes);
+app.use(`${API_PREFIX}/vaccinations`, vaccinationRoutes);
 
 // ============================================================
 // API Routes - Doctor Role

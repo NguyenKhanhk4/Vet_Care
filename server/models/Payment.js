@@ -42,6 +42,11 @@ const paymentSchema = new mongoose.Schema(
       enum: ['PENDING', 'PAID', 'FAILED', 'CANCELLED'],
       default: 'PENDING',
     },
+    method: {
+      type: String,
+      enum: ['payos', 'cash'],
+      default: 'payos',
+    },
     transactionId: {
       type: String,
     },

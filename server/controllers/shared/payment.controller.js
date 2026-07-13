@@ -23,6 +23,24 @@ class SharedPaymentController {
   }
 
   /**
+   * POST /api/payment/verify/:orderCode
+   * Actively queries payOS to verify payment and update DB
+   */
+  static async verifyPayment(req, res, next) {
+    try {
+      const { orderCode } = req.params;
+      const result = await PaymentService.verifyPayment(Number(orderCode));
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * POST /api/payment/webhook
    */
   static async handleWebhook(req, res) {

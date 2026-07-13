@@ -33,6 +33,21 @@ export interface Pet {
   updatedAt: string;
 }
 
+// Vaccination Types
+export interface Vaccination {
+  _id: string;
+  user: string;
+  pet: Pet;
+  vaccineName: string;
+  vaccineType: string;
+  vaccinationDate: string;
+  nextDueDate: string;
+  notes?: string;
+  status: 'Active' | 'Upcoming' | 'Overdue';
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Clinic Types
 export interface Clinic {
   _id: string;
@@ -43,6 +58,8 @@ export interface Clinic {
   description: string;
   images: string[];
   openingHours: string;
+  latitude?: number;
+  longitude?: number;
   rating: number;
   totalReviews: number;
   isActive: boolean;
@@ -94,12 +111,14 @@ export interface Appointment {
   pet: Pet;
   clinic: Clinic;
   doctor: Doctor;
-  service: Service;
+  services: Service[];
   date: string;
   time: string;
   status: AppointmentStatus;
   notes: string;
   totalAmount: number;
+  paymentStatus: 'PENDING' | 'PAID';
+  paymentMethod: 'cash' | 'payos';
   createdAt: string;
   updatedAt: string;
 }
@@ -211,5 +230,14 @@ export interface BookingFormData {
   pet: string;
   date: string;
   time: string;
+  notes?: string;
+}
+
+export interface VaccinationFormData {
+  pet: string;
+  vaccineName: string;
+  vaccineType?: string;
+  vaccinationDate: string;
+  nextDueDate: string;
   notes?: string;
 }

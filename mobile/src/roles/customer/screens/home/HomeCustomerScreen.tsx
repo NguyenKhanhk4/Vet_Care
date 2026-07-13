@@ -19,7 +19,6 @@ import LoadingSpinner from '../../../../shared/components/LoadingSpinner';
 const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user } = useCustomer();
   const { colors } = useTheme();
-  const [searchQuery, setSearchQuery] = useState('');
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -71,25 +70,13 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.bannerEmoji}>🐾</Text>
       </View>
 
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Text style={styles.searchIcon}>🔍</Text>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search clinics, doctors..."
-          placeholderTextColor={colors.textLight}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
-
       {/* Quick Actions */}
       <View style={styles.quickActions}>
         {[
-          { icon: '🏥', label: 'Find Clinic', action: () => {} },
-          { icon: '📅', label: 'Book Appointment', action: () => navigation.navigate('Appointments', { screen: 'BookingCustomer' }) },
-          { icon: '🐾', label: 'My Pets', action: () => navigation.navigate('Pets') },
-          { icon: '📋', label: 'Medical History', action: () => navigation.navigate('Profile', { screen: 'MedicalHistoryCustomer' }) },
+          { icon: '📍', label: 'Nearby', action: () => navigation.navigate('NearbyClinicCustomer') },
+          { icon: '🏥', label: 'All Clinics', action: () => navigation.navigate('ClinicListCustomer') },
+          { icon: '👨‍⚕️', label: 'Top Doctors', action: () => navigation.navigate('ExploreCustomer', { type: 'doctors', title: 'Top Doctors' }) },
+          { icon: '📋', label: 'Services', action: () => navigation.navigate('ExploreCustomer', { type: 'services', title: 'Our Services' }) },
         ].map((item, index) => (
           <TouchableOpacity key={index} style={styles.quickActionItem} onPress={item.action} activeOpacity={0.7}>
             <View style={styles.quickActionIcon}>
@@ -104,92 +91,98 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Top Clinics</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'clinics', title: 'All Clinics' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
         </View>
         <FlatList
           data={clinics}
           horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.horizontalList}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.clinicCard}
-              onPress={() => navigation.navigate('ClinicDetailCustomer', { clinicId: item._id })}
-              activeOpacity={0.8}
-            >
-              <View style={styles.clinicImagePlaceholder}>
-                <Text style={styles.clinicEmoji}>🏥</Text>
-              </View>
-              <View style={styles.clinicInfo}>
-                <Text style={styles.clinicName} numberOfLines={1}>{item.name}</Text>
-                <Text style={styles.clinicAddress} numberOfLines={1}>📍 {item.address}</Text>
-                <View style={styles.clinicRating}>
-                  <RatingStars rating={item.rating} size={14} />
-                  <Text style={styles.reviewCount}>({item.totalReviews})</Text>
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={styles.horizontalList}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.clinicCard}
+                onPress={() => navigation.navigate('ClinicDetailCustomer', { clinicId: item._id })}
+                activeOpacity={0.8}
+              >
+                <View style={styles.clinicImagePlaceholder}>
+                  <Text style={styles.clinicEmoji}>🏥</Text>
                 </View>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
+                <View style={styles.clinicInfo}>
+                  <Text style={styles.clinicName} numberOfLines={1}>{item.name}</Text>
+                  <Text style={styles.clinicAddress} numberOfLines={1}>📍 {item.address}</Text>
+                  <View style={styles.clinicRating}>
+                    <RatingStars rating={item.rating} size={14} />
+                    <Text style={styles.reviewCount}>({item.totalReviews})</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
       </View>
 
       {/* Doctors Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Top Doctors</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'doctors', title: 'Top Doctors' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
         </View>
         <FlatList
           data={doctors}
           horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.horizontalList}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.doctorCard} activeOpacity={0.8}>
-              <View style={styles.doctorAvatar}>
-                <Text style={styles.doctorEmoji}>👨‍⚕️</Text>
-              </View>
-              <Text style={styles.doctorName} numberOfLines={1}>{item.user?.name || 'Doctor'}</Text>
-              <Text style={styles.doctorSpec} numberOfLines={1}>{item.specialization}</Text>
-              <View style={styles.doctorRating}>
-                <RatingStars rating={item.rating} size={12} />
-              </View>
-              <Text style={styles.doctorExp}>{item.experience} yrs exp</Text>
-            </TouchableOpacity>
-          )}
-        />
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={styles.horizontalList}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.doctorCard} activeOpacity={0.8}>
+                <View style={styles.doctorAvatar}>
+                  <Text style={styles.doctorEmoji}>👨‍⚕️</Text>
+                </View>
+                <Text style={styles.doctorName} numberOfLines={1}>{item.user?.name || 'Doctor'}</Text>
+                <Text style={styles.doctorSpec} numberOfLines={1}>{item.specialization}</Text>
+                <View style={styles.doctorRating}>
+                  <RatingStars rating={item.rating} size={12} />
+                </View>
+                <Text style={styles.doctorExp}>{item.experience} yrs exp</Text>
+              </TouchableOpacity>
+            )}
+          />
       </View>
 
       {/* Services Section */}
       <View style={[styles.section, styles.lastSection]}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Our Services</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ExploreCustomer', { type: 'services', title: 'Our Services' })}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
         </View>
         {services.slice(0, 5).map((service) => (
-          <TouchableOpacity
-            key={service._id}
-            style={styles.serviceCard}
-            onPress={() => navigation.navigate('ServiceCustomer', { serviceId: service._id })}
-            activeOpacity={0.8}
-          >
-            <View style={styles.serviceIcon}>
-              <Text style={styles.serviceEmoji}>
-                {service.category === 'checkup' ? '🩺' : service.category === 'vaccination' ? '💉' : service.category === 'surgery' ? '🔬' : service.category === 'grooming' ? '✂️' : service.category === 'dental' ? '🦷' : service.category === 'emergency' ? '🚨' : service.category === 'laboratory' ? '🧪' : '📋'}
-              </Text>
-            </View>
-            <View style={styles.serviceInfo}>
-              <Text style={styles.serviceName}>{service.name}</Text>
-              <Text style={styles.serviceDesc} numberOfLines={1}>{service.description}</Text>
-            </View>
-            <View style={styles.servicePrice}>
-              <Text style={styles.priceText}>{formatPrice(service.price)}</Text>
-              <Text style={styles.durationText}>{service.duration} min</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+            <TouchableOpacity
+              key={service._id}
+              style={styles.serviceCard}
+              onPress={() => navigation.navigate('ServiceCustomer', { serviceId: service._id })}
+              activeOpacity={0.8}
+            >
+              <View style={styles.serviceIcon}>
+                <Text style={styles.serviceEmoji}>
+                  {service.category === 'checkup' ? '🩺' : service.category === 'vaccination' ? '💉' : service.category === 'surgery' ? '🔬' : service.category === 'grooming' ? '✂️' : service.category === 'dental' ? '🦷' : service.category === 'emergency' ? '🚨' : service.category === 'laboratory' ? '🧪' : '📋'}
+                </Text>
+              </View>
+              <View style={styles.serviceInfo}>
+                <Text style={styles.serviceName}>{service.name}</Text>
+                <Text style={styles.serviceDesc} numberOfLines={1}>{service.description}</Text>
+              </View>
+              <View style={styles.servicePrice}>
+                <Text style={styles.priceText}>{formatPrice(service.price)}</Text>
+                <Text style={styles.durationText}>{service.duration} min</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
       </View>
     </ScrollView>
   );
@@ -202,9 +195,6 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   welcomeText: { fontSize: SIZES.xl, color: colors.textWhite, ...FONTS.bold, marginBottom: SIZES.spacing.xs },
   bannerSubText: { fontSize: SIZES.md, color: 'rgba(255,255,255,0.85)' },
   bannerEmoji: { fontSize: 48 },
-  searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, marginHorizontal: SIZES.spacing.base, marginTop: SIZES.spacing.base, borderRadius: SIZES.radius.base, paddingHorizontal: SIZES.spacing.base, ...SHADOWS.light },
-  searchIcon: { fontSize: 18, marginRight: SIZES.spacing.sm },
-  searchInput: { flex: 1, paddingVertical: SIZES.spacing.md, fontSize: SIZES.base, color: colors.textPrimary },
   quickActions: { flexDirection: 'row', justifyContent: 'space-around', marginHorizontal: SIZES.spacing.base, marginTop: SIZES.spacing.lg },
   quickActionItem: { alignItems: 'center', width: 70 },
   quickActionIcon: { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.secondaryLight, justifyContent: 'center', alignItems: 'center', marginBottom: SIZES.spacing.sm },

@@ -30,7 +30,7 @@ class AdminAppointmentService {
           populate: { path: 'user', select: 'name' },
         })
         .populate('clinic', 'name address')
-        .populate('service', 'name price duration')
+        .populate('services', 'name price duration')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -66,7 +66,7 @@ class AdminAppointmentService {
         ],
       })
       .populate('clinic', 'name address phone')
-      .populate('service', 'name price duration category description')
+      .populate('services', 'name price duration category description')
       .lean();
 
     if (!appointment) {
@@ -104,7 +104,7 @@ class AdminAppointmentService {
         populate: { path: 'user', select: 'name' },
       })
       .populate('clinic', 'name')
-      .populate('service', 'name price');
+      .populate('services', 'name price');
 
     if (!appointment) {
       const error = new Error('Appointment not found');

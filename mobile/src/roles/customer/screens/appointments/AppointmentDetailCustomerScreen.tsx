@@ -34,30 +34,36 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
   const handleCancel = () => {
     Alert.alert('Cancel Appointment', 'Are you sure you want to cancel this appointment?', [
       { text: 'No', style: 'cancel' },
-      { text: 'Yes, Cancel', style: 'destructive', onPress: async () => {
-        try {
-          await api.delete(`/appointments/${appointmentId}`);
-          Alert.alert('Cancelled', 'Appointment cancelled successfully');
-          fetchAppointment();
-        } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Failed to cancel'); }
-      }},
+      {
+        text: 'Yes, Cancel', style: 'destructive', onPress: async () => {
+          try {
+            await api.delete(`/appointments/${appointmentId}`);
+            Alert.alert('Cancelled', 'Appointment cancelled successfully');
+            fetchAppointment();
+          } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Failed to cancel'); }
+        }
+      },
     ]);
   };
 
   const handleReview = () => {
-    if (Platform.OS === 'ios') {
-      Alert.prompt('Leave a Review', 'Rate your experience (1-5):', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Submit', onPress: async (rating?: string) => {
-          try {
-            await api.post('/reviews', { appointmentId, rating: parseInt(rating || '5'), comment: 'Great service!' });
-            Alert.alert('Thank you!', 'Your review has been submitted');
-          } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Failed to submit review'); }
-        }},
-      ]);
-    } else {
-      Alert.alert('Review', 'Review feature - navigate to review screen');
-    }
+    navigation.navigate('ReviewCustomer', { appointmentId });
+  };
+
+  const handleChangePaymentMethod = () => {
+    const newMethod = appointment?.paymentMethod === 'cash' ? 'payos' : 'cash';
+    const methodText = newMethod === 'cash' ? 'Tiền mặt' : 'Thanh toán Online (payOS)';
+    
+    Alert.alert('Thay đổi phương thức thanh toán', `Bạn muốn đổi sang ${methodText}?`, [
+      { text: 'Hủy', style: 'cancel' },
+      { text: 'Đồng ý', onPress: async () => {
+        try {
+          await api.put(`/appointments/${appointmentId}`, { paymentMethod: newMethod });
+          Alert.alert('Thành công', 'Đã cập nhật phương thức thanh toán');
+          fetchAppointment();
+        } catch (err: any) { Alert.alert('Lỗi', err.response?.data?.message || 'Không thể cập nhật'); }
+      }}
+    ]);
   };
 
   const styles = getStyles(colors);
@@ -104,10 +110,12 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
         <Text style={styles.infoSub}>{typeof a.doctor === 'object' ? a.doctor.specialization : ''}</Text>
       </View>
 
-      {/* Service Info */}
+      {/* Services Info */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>🩺 Service</Text>
-        <Text style={styles.infoValue}>{typeof a.service === 'object' ? a.service.name : 'Service'}</Text>
+        <Text style={styles.cardTitle}>🩺 Services</Text>
+        {Array.isArray(a.services) ? a.services.map((s, index) => (
+          <Text key={index} style={styles.infoValue}>{s.name}</Text>
+        )) : <Text style={styles.infoValue}>Service</Text>}
       </View>
 
       {/* Notes */}
@@ -120,22 +128,28 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
 
       {/* Actions */}
       <View style={styles.actions}>
+        {a.status === 'pending' && a.paymentStatus !== 'PAID' && (
+          <View style={styles.paymentActionRow}>
+            {a.paymentMethod === 'payos' && (
+              <TouchableOpacity style={[styles.payButton, styles.halfButton]} onPress={() => navigation.navigate('PaymentCustomer', { appointmentId: a._id })} activeOpacity={0.8}>
+                <Text style={styles.payButtonText}>💳 Pay Now</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={[styles.changeMethodButton, a.paymentMethod === 'payos' ? styles.halfButton : styles.fullButton]} onPress={handleChangePaymentMethod} activeOpacity={0.8}>
+              <Text style={styles.changeMethodText}>🔄 Đổi PTTT</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        
         {['pending', 'confirmed'].includes(a.status) && (
-          <>
-            <TouchableOpacity style={styles.payButton} onPress={() => navigation.navigate('PaymentCustomer', { appointmentId: a._id })} activeOpacity={0.8}>
-              <Text style={styles.payButtonText}>💳 Pay Now</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} activeOpacity={0.8}>
-              <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
-            </TouchableOpacity>
-          </>
+          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} activeOpacity={0.8}>
+            <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
+          </TouchableOpacity>
         )}
         {['completed', 'paid'].includes(a.status) && (
-          <>
-            <TouchableOpacity style={styles.payButton} onPress={handleReview} activeOpacity={0.8}>
-              <Text style={styles.payButtonText}>⭐ Leave Review</Text>
-            </TouchableOpacity>
-          </>
+          <TouchableOpacity style={styles.payButton} onPress={handleReview} activeOpacity={0.8}>
+            <Text style={styles.payButtonText}>⭐ Review</Text>
+          </TouchableOpacity>
         )}
       </View>
     </ScrollView>
@@ -153,6 +167,11 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   infoValue: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold },
   infoSub: { fontSize: SIZES.md, color: colors.textSecondary, marginTop: 4 },
   actions: { padding: SIZES.spacing.base, marginBottom: SIZES.spacing.xxl },
+  paymentActionRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: SIZES.spacing.sm },
+  halfButton: { flex: 0.48, marginBottom: 0 },
+  fullButton: { flex: 1, marginBottom: 0 },
+  changeMethodButton: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.primary },
+  changeMethodText: { color: colors.primary, fontSize: SIZES.base, ...FONTS.semiBold },
   payButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginBottom: SIZES.spacing.sm, ...SHADOWS.light },
   payButtonText: { color: colors.textWhite, fontSize: SIZES.base, ...FONTS.semiBold },
   cancelButton: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.error },

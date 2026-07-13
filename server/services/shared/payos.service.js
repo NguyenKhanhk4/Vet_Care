@@ -1,3 +1,4 @@
+require('dotenv').config();
 const PayOS = require('@payos/node');
 const PayOSClass = PayOS.PayOS || PayOS;
 

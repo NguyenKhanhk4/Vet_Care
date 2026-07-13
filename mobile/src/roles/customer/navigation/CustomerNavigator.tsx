@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SIZES, FONTS, ThemeColors } from '../../../shared/constants/theme';
@@ -21,8 +21,13 @@ import ForgotPasswordCustomerScreen from '../screens/auth/ForgotPasswordCustomer
 
 // Import Main Screens
 import HomeCustomerScreen from '../screens/home/HomeCustomerScreen';
-import ClinicDetailCustomerScreen from '../screens/home/ClinicDetailCustomerScreen';
 import ServiceCustomerScreen from '../screens/home/ServiceCustomerScreen';
+import ExploreCustomerScreen from '../screens/home/ExploreCustomerScreen';
+
+// Import Clinic Screens
+import ClinicDetailCustomerScreen from '../screens/clinics/ClinicDetailCustomerScreen';
+import NearbyClinicCustomerScreen from '../screens/clinics/NearbyClinicCustomerScreen';
+import ClinicListCustomerScreen from '../screens/clinics/ClinicListCustomerScreen';
 
 // Import Pet Screens
 import PetListCustomerScreen from '../screens/pets/PetListCustomerScreen';
@@ -30,10 +35,17 @@ import AddPetCustomerScreen from '../screens/pets/AddPetCustomerScreen';
 import EditPetCustomerScreen from '../screens/pets/EditPetCustomerScreen';
 import PetDetailCustomerScreen from '../screens/pets/PetDetailCustomerScreen';
 
+// Import Vaccination Screens
+import VaccinationListCustomerScreen from '../screens/vaccinations/VaccinationListCustomerScreen';
+import VaccinationDetailCustomerScreen from '../screens/vaccinations/VaccinationDetailCustomerScreen';
+import AddVaccinationCustomerScreen from '../screens/vaccinations/AddVaccinationCustomerScreen';
+import EditVaccinationCustomerScreen from '../screens/vaccinations/EditVaccinationCustomerScreen';
+
 // Import Appointment Screens
 import AppointmentListCustomerScreen from '../screens/appointments/AppointmentListCustomerScreen';
 import AppointmentDetailCustomerScreen from '../screens/appointments/AppointmentDetailCustomerScreen';
 import BookingCustomerScreen from '../screens/appointments/BookingCustomerScreen';
+import ReviewCustomerScreen from '../screens/appointments/ReviewCustomerScreen';
 
 // Import Medical Screens
 import MedicalHistoryCustomerScreen from '../screens/medical/MedicalHistoryCustomerScreen';
@@ -71,8 +83,12 @@ export type HomeStackParamList = {
   BookingCustomer: { clinicId?: string; doctorId?: string; serviceId?: string };
   PaymentCustomer: { appointmentId: string };
   PaymentWebViewCustomer: { checkoutUrl: string; orderCode: number };
-  PaymentSuccessCustomer: { orderCode?: number; appointmentId?: string };
+  PaymentSuccessCustomer: { orderCode?: number; appointmentId?: string; method?: string };
   PaymentFailedCustomer: { orderCode?: number; appointmentId?: string };
+  NotificationCustomer: undefined;
+  ExploreCustomer: { type: string; title: string };
+  NearbyClinicCustomer: undefined;
+  ClinicListCustomer: undefined;
 };
 
 export type PetStackParamList = {
@@ -80,6 +96,10 @@ export type PetStackParamList = {
   AddPetCustomer: undefined;
   EditPetCustomer: { petId: string };
   PetDetailCustomer: { petId: string };
+  VaccinationListCustomer: undefined;
+  VaccinationDetailCustomer: { vaccinationId: string };
+  AddVaccinationCustomer: { petId?: string };
+  EditVaccinationCustomer: { vaccinationId: string };
 };
 
 export type AppointmentStackParamList = {
@@ -91,10 +111,12 @@ export type AppointmentStackParamList = {
   PaymentSuccessCustomer: { orderCode?: number; appointmentId?: string };
   PaymentFailedCustomer: { orderCode?: number; appointmentId?: string };
   MedicalDetailCustomer: { recordId: string };
+  ReviewCustomer: { appointmentId: string };
 };
 
-export type NotificationStackParamList = {
-  NotificationCustomer: undefined;
+export type MedicalStackParamList = {
+  MedicalHistoryCustomer: undefined;
+  MedicalDetailCustomer: { recordId: string };
 };
 
 export type ProfileStackParamList = {
@@ -114,7 +136,7 @@ const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const PetStack = createNativeStackNavigator<PetStackParamList>();
 const AppointmentStack = createNativeStackNavigator<AppointmentStackParamList>();
-const NotificationStack = createNativeStackNavigator<NotificationStackParamList>();
+const MedicalStack = createNativeStackNavigator<MedicalStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 const Tab = createBottomTabNavigator();
 
@@ -133,7 +155,7 @@ const TabIcon = ({ name, focused, colors }: { name: string; focused: boolean; co
     Home: '🏠',
     Pets: '🐾',
     Appointments: '📅',
-    Notifications: '🔔',
+    Medical: '📋',
     Profile: '👤',
   };
 
@@ -176,7 +198,15 @@ const CustomerNavigator: React.FC = () => {
       <HomeStack.Screen
         name="HomeCustomer"
         component={HomeCustomerScreen}
-        options={{ title: 'VetCare', headerLeft: () => null }}
+        options={({ navigation }: any) => ({
+          title: 'VetCare',
+          headerLeft: () => null,
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate('NotificationCustomer')} style={{ marginRight: 15 }}>
+              <Text style={{ fontSize: 20 }}>🔔</Text>
+            </TouchableOpacity>
+          )
+        })}
       />
       <HomeStack.Screen name="ClinicDetailCustomer" component={ClinicDetailCustomerScreen} options={{ title: 'Clinic Details' }} />
       <HomeStack.Screen name="ServiceCustomer" component={ServiceCustomerScreen} options={{ title: 'Service Details' }} />
@@ -185,6 +215,10 @@ const CustomerNavigator: React.FC = () => {
       <HomeStack.Screen name="PaymentWebViewCustomer" component={PaymentWebViewCustomerScreen} options={{ title: 'Checkout', headerShown: false }} />
       <HomeStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
       <HomeStack.Screen name="PaymentFailedCustomer" component={PaymentFailedCustomerScreen} options={{ title: 'Payment Failed', headerShown: false }} />
+      <HomeStack.Screen name="NotificationCustomer" component={NotificationCustomerScreen} options={{ title: 'Notifications' }} />
+      <HomeStack.Screen name="ExploreCustomer" component={ExploreCustomerScreen} options={{ title: 'Explore' }} />
+      <HomeStack.Screen name="NearbyClinicCustomer" component={NearbyClinicCustomerScreen} options={{ title: 'Nearby Clinics' }} />
+      <HomeStack.Screen name="ClinicListCustomer" component={ClinicListCustomerScreen} options={{ title: 'All Clinics' }} />
     </HomeStack.Navigator>
   );
 
@@ -195,6 +229,10 @@ const CustomerNavigator: React.FC = () => {
       <PetStack.Screen name="AddPetCustomer" component={AddPetCustomerScreen} options={{ title: 'Add Pet' }} />
       <PetStack.Screen name="EditPetCustomer" component={EditPetCustomerScreen} options={{ title: 'Edit Pet' }} />
       <PetStack.Screen name="PetDetailCustomer" component={PetDetailCustomerScreen} options={{ title: 'Pet Details' }} />
+      <PetStack.Screen name="VaccinationListCustomer" component={VaccinationListCustomerScreen} options={{ title: 'Vaccinations' }} />
+      <PetStack.Screen name="VaccinationDetailCustomer" component={VaccinationDetailCustomerScreen} options={{ title: 'Vaccination Details' }} />
+      <PetStack.Screen name="AddVaccinationCustomer" component={AddVaccinationCustomerScreen} options={{ title: 'Add Vaccination' }} />
+      <PetStack.Screen name="EditVaccinationCustomer" component={EditVaccinationCustomerScreen} options={{ title: 'Edit Vaccination' }} />
     </PetStack.Navigator>
   );
 
@@ -209,14 +247,16 @@ const CustomerNavigator: React.FC = () => {
       <AppointmentStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
       <AppointmentStack.Screen name="PaymentFailedCustomer" component={PaymentFailedCustomerScreen} options={{ title: 'Payment Failed', headerShown: false }} />
       <AppointmentStack.Screen name="MedicalDetailCustomer" component={MedicalDetailCustomerScreen} options={{ title: 'Medical Record' }} />
+      <AppointmentStack.Screen name="ReviewCustomer" component={ReviewCustomerScreen} options={{ title: 'Leave a Review' }} />
     </AppointmentStack.Navigator>
   );
 
-  // Notification Stack Navigator
-  const NotificationNavigator = () => (
-    <NotificationStack.Navigator screenOptions={screenOptions}>
-      <NotificationStack.Screen name="NotificationCustomer" component={NotificationCustomerScreen} options={{ title: 'Notifications' }} />
-    </NotificationStack.Navigator>
+  // Medical Stack Navigator
+  const MedicalNavigator = () => (
+    <MedicalStack.Navigator screenOptions={screenOptions}>
+      <MedicalStack.Screen name="MedicalHistoryCustomer" component={MedicalHistoryCustomerScreen} options={{ title: 'Medical History' }} />
+      <MedicalStack.Screen name="MedicalDetailCustomer" component={MedicalDetailCustomerScreen} options={{ title: 'Medical Record' }} />
+    </MedicalStack.Navigator>
   );
 
   // Profile Stack Navigator
@@ -258,7 +298,7 @@ const CustomerNavigator: React.FC = () => {
       <Tab.Screen name="Home" component={HomeNavigator} options={{ tabBarLabel: 'Home' }} />
       <Tab.Screen name="Pets" component={PetNavigator} options={{ tabBarLabel: 'My Pets' }} />
       <Tab.Screen name="Appointments" component={AppointmentNavigator} options={{ tabBarLabel: 'Appointments' }} />
-      <Tab.Screen name="Notifications" component={NotificationNavigator} options={{ tabBarLabel: 'Notifications' }} />
+      <Tab.Screen name="Medical" component={MedicalNavigator} options={{ tabBarLabel: 'Medical' }} />
       <Tab.Screen name="Profile" component={ProfileNavigator} options={{ tabBarLabel: 'Profile' }} />
     </Tab.Navigator>
   );

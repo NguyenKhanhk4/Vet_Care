@@ -37,8 +37,8 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
       }
 
       try {
-        const statusUrl = API_BASE_URL.replace('/customer', '') + `/payment/status/${orderCode}`;
-        const res = await axios.get(statusUrl);
+        const verifyUrl = API_BASE_URL.replace('/customer', '') + `/payment/verify/${orderCode}`;
+        const res = await axios.post(verifyUrl);
         const status = res.data?.data?.status;
 
         if (status === 'PAID') {
@@ -61,18 +61,31 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
     }
   };
 
-  const onNavigationStateChange = (navState: any) => {
-    const { url } = navState;
-    // Check if the URL matches the RETURN_URL or CANCEL_URL pattern
-    if (url.includes('payment-success')) {
-      // It might still be pending in DB, but the user returned.
-      // We can let the polling catch the actual status, or redirect directly if we trust the redirect.
-      // For safety, let the polling determine the final screen if possible.
-      setIsLoading(true);
-    } else if (url.includes('payment-failed')) {
-      stopPolling();
+  const verifyAndNavigate = async (success: boolean) => {
+    stopPolling();
+    if (success) {
+      try {
+        const verifyUrl = API_BASE_URL.replace('/customer', '') + `/payment/verify/${orderCode}`;
+        await axios.post(verifyUrl);
+      } catch (err) {
+        console.error('Verify payment error:', err);
+      }
+      navigation.replace('PaymentSuccessCustomer', { orderCode });
+    } else {
       navigation.replace('PaymentFailedCustomer', { orderCode });
     }
+  };
+
+  const onShouldStartLoadWithRequest = (request: any) => {
+    const { url } = request;
+    if (url.includes('payment-success')) {
+      verifyAndNavigate(true);
+      return false;
+    } else if (url.includes('payment-failed')) {
+      verifyAndNavigate(false);
+      return false;
+    }
+    return true;
   };
 
   const styles = getStyles(colors);
@@ -102,7 +115,8 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
           onLoadStart={() => setIsLoading(true)}
           onLoadEnd={() => setIsLoading(false)}
           onError={() => { setIsLoading(false); setHasError(true); }}
-          onNavigationStateChange={onNavigationStateChange}
+          originWhitelist={['*']}
+          onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
           startInLoadingState={true}
           renderLoading={() => (
             <View style={styles.loadingContainer}>

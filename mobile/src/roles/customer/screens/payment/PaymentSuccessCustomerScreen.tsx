@@ -4,7 +4,7 @@ import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants
 import { useTheme } from '../../../../shared/context/ThemeContext';
 
 const PaymentSuccessCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
-  const { orderCode } = route.params || {};
+  const { orderCode, method } = route.params || {};
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
@@ -14,8 +14,12 @@ const PaymentSuccessCustomerScreen: React.FC<{ route: any; navigation: any }> = 
         <View style={styles.iconCircle}>
           <Text style={styles.icon}>✅</Text>
         </View>
-        <Text style={styles.title}>Thanh toán thành công</Text>
-        <Text style={styles.subtitle}>Lịch hẹn của bạn đã được đặt</Text>
+        <Text style={styles.title}>
+          {method === 'cash' ? 'Đặt lịch thành công' : method === 'payos_later' ? 'Đặt lịch thành công' : 'Thanh toán thành công'}
+        </Text>
+        <Text style={styles.subtitle}>
+          {method === 'cash' ? 'Vui lòng thanh toán trực tiếp tại phòng khám' : method === 'payos_later' ? 'Vui lòng thanh toán chuyển khoản trước giờ hẹn' : 'Lịch hẹn của bạn đã được đặt'}
+        </Text>
 
         {orderCode && (
           <View style={styles.transactionCard}>

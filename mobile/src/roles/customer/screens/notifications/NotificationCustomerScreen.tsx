@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { useTheme } from '../../../../shared/context/ThemeContext';
@@ -21,6 +21,7 @@ const NotificationCustomerScreen: React.FC<{ navigation: any }> = ({ navigation 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const { colors } = useTheme();
 
   useFocusEffect(useCallback(() => {
@@ -43,12 +44,15 @@ const NotificationCustomerScreen: React.FC<{ navigation: any }> = ({ navigation 
     } catch (error) { console.error('Error marking all read:', error); }
   };
 
-  const handleMarkRead = async (id: string) => {
-    try {
-      await api.put(`/notifications/${id}/read`);
-      setNotifications((prev) => prev.map((n) => n._id === id ? { ...n, isRead: true } : n));
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (error) { console.error('Error:', error); }
+  const handleNotificationPress = async (item: Notification) => {
+    setSelectedNotification(item);
+    if (!item.isRead) {
+      try {
+        await api.put(`/notifications/${item._id}/read`);
+        setNotifications((prev) => prev.map((n) => n._id === item._id ? { ...n, isRead: true } : n));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      } catch (error) { console.error('Error:', error); }
+    }
   };
 
   const timeAgo = (dateStr: string) => {
@@ -85,7 +89,7 @@ const NotificationCustomerScreen: React.FC<{ navigation: any }> = ({ navigation 
           renderItem={({ item }) => (
             <TouchableOpacity
               style={[styles.notifCard, !item.isRead && styles.notifCardUnread]}
-              onPress={() => handleMarkRead(item._id)}
+              onPress={() => handleNotificationPress(item)}
               activeOpacity={0.8}
             >
               <View style={styles.notifIcon}>
@@ -102,6 +106,39 @@ const NotificationCustomerScreen: React.FC<{ navigation: any }> = ({ navigation 
             </TouchableOpacity>
           )}
         />
+      )}
+
+      {/* Notification Detail Modal */}
+      {selectedNotification && (
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={!!selectedNotification}
+          onRequestClose={() => setSelectedNotification(null)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalEmoji}>
+                  {TYPE_ICONS[selectedNotification.type] || '📋'}
+                </Text>
+                <Text style={styles.modalTitle}>{selectedNotification.title}</Text>
+              </View>
+              <Text style={styles.modalTime}>{new Date(selectedNotification.createdAt).toLocaleString('vi-VN')}</Text>
+              <View style={styles.modalDivider} />
+              <ScrollView style={styles.modalMessageScroll}>
+                <Text style={styles.modalMessage}>{selectedNotification.message}</Text>
+              </ScrollView>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setSelectedNotification(null)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       )}
     </View>
   );
@@ -123,6 +160,19 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginLeft: SIZES.spacing.sm },
   notifMessage: { fontSize: SIZES.sm, color: colors.textSecondary, marginTop: 4, lineHeight: 18 },
   notifTime: { fontSize: SIZES.xs, color: colors.textLight, marginTop: 6 },
+  
+  // Modal Styles
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: SIZES.spacing.lg },
+  modalContent: { backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.xl, width: '100%', maxHeight: '80%', ...SHADOWS.dark },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: SIZES.spacing.sm },
+  modalEmoji: { fontSize: 32, marginRight: SIZES.spacing.md },
+  modalTitle: { flex: 1, fontSize: SIZES.lg, color: colors.textPrimary, ...FONTS.bold },
+  modalTime: { fontSize: SIZES.sm, color: colors.textLight, marginBottom: SIZES.spacing.md },
+  modalDivider: { height: 1, backgroundColor: colors.divider, marginBottom: SIZES.spacing.md },
+  modalMessageScroll: { marginBottom: SIZES.spacing.xl },
+  modalMessage: { fontSize: SIZES.base, color: colors.textSecondary, lineHeight: 24 },
+  closeButton: { backgroundColor: colors.primary, paddingVertical: SIZES.spacing.md, borderRadius: SIZES.radius.base, alignItems: 'center' },
+  closeButtonText: { color: colors.textWhite, fontSize: SIZES.md, ...FONTS.bold },
 });
 
 export default NotificationCustomerScreen;

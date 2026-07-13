@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import api from '../../../../shared/utils/api';
@@ -12,9 +12,10 @@ import { Clinic, Doctor, Service } from '../../../../shared/types';
 import RatingStars from '../../../../shared/components/RatingStars';
 import LoadingSpinner from '../../../../shared/components/LoadingSpinner';
 import ErrorMessage from '../../../../shared/components/ErrorMessage';
+import { formatDistance } from '../../../../shared/utils/locationUtils';
 
 const ClinicDetailCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
-  const { clinicId } = route.params;
+  const { clinicId, distance } = route.params;
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -46,6 +47,15 @@ const ClinicDetailCustomerScreen: React.FC<{ route: any; navigation: any }> = ({
 
   const formatPrice = (price: number) => price.toLocaleString('vi-VN') + 'đ';
 
+  const openDirections = () => {
+    if (!clinic?.latitude || !clinic?.longitude) {
+      Alert.alert('Lỗi', 'Không có dữ liệu tọa độ cho phòng khám này.');
+      return;
+    }
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${clinic.latitude},${clinic.longitude}`;
+    Linking.openURL(url).catch(() => Alert.alert('Lỗi', 'Không thể mở Google Maps.'));
+  };
+
   const styles = getStyles(colors);
 
   if (isLoading) return <LoadingSpinner message="Loading..." />;
@@ -63,6 +73,12 @@ const ClinicDetailCustomerScreen: React.FC<{ route: any; navigation: any }> = ({
             <RatingStars rating={clinic.rating} size={16} showValue />
             <Text style={styles.reviewCount}>({clinic.totalReviews} reviews)</Text>
           </View>
+          {distance !== undefined && (
+            <View style={styles.distanceBadge}>
+              <Text style={styles.distanceIcon}>🚗</Text>
+              <Text style={styles.distanceText}>Cách bạn {formatDistance(distance)}</Text>
+            </View>
+          )}
         </View>
       </View>
 
@@ -125,14 +141,24 @@ const ClinicDetailCustomerScreen: React.FC<{ route: any; navigation: any }> = ({
         ))}
       </View>
 
-      {/* Book Button */}
-      <TouchableOpacity
-        style={styles.bookButton}
-        onPress={() => navigation.navigate('BookingCustomer', { clinicId: clinic._id })}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.bookButtonText}>Book Appointment</Text>
-      </TouchableOpacity>
+      {/* Action Buttons */}
+      <View style={styles.actionButtonsContainer}>
+        <TouchableOpacity
+          style={styles.bookButton}
+          onPress={() => navigation.navigate('BookingCustomer', { clinicId: clinic._id })}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.bookButtonText}>Đặt lịch khám</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.directionButton}
+          onPress={openDirections}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.directionButtonText}>Chỉ đường</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -146,6 +172,9 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   clinicName: { fontSize: SIZES.xxl, color: colors.textPrimary, ...FONTS.bold, marginBottom: SIZES.spacing.sm },
   ratingRow: { flexDirection: 'row', alignItems: 'center' },
   reviewCount: { fontSize: SIZES.sm, color: colors.textLight, marginLeft: SIZES.spacing.sm },
+  distanceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, alignSelf: 'flex-start', marginTop: SIZES.spacing.sm },
+  distanceIcon: { fontSize: 12, marginRight: 4 },
+  distanceText: { fontSize: SIZES.sm, color: colors.primaryDark, ...FONTS.semiBold },
   infoSection: { backgroundColor: colors.surface, margin: SIZES.spacing.base, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, ...SHADOWS.light },
   infoRow: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: SIZES.spacing.sm },
   infoIcon: { fontSize: 18, marginRight: SIZES.spacing.md, marginTop: 2 },
@@ -171,8 +200,11 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   servicePriceContainer: { alignItems: 'flex-end' },
   servicePrice: { fontSize: SIZES.md, color: colors.primary, ...FONTS.bold },
   serviceDuration: { fontSize: SIZES.xs, color: colors.textLight, marginTop: 2 },
-  bookButton: { backgroundColor: colors.primary, margin: SIZES.spacing.base, marginBottom: SIZES.spacing.xxl, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', ...SHADOWS.medium },
-  bookButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
+  actionButtonsContainer: { flexDirection: 'row', margin: SIZES.spacing.base, marginBottom: SIZES.spacing.xxl, gap: SIZES.spacing.md },
+  bookButton: { flex: 2, backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', ...SHADOWS.medium },
+  bookButtonText: { color: colors.textWhite, fontSize: SIZES.md, ...FONTS.semiBold },
+  directionButton: { flex: 1, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.primary, ...SHADOWS.light },
+  directionButtonText: { color: colors.primary, fontSize: SIZES.md, ...FONTS.semiBold },
 });
 
 export default ClinicDetailCustomerScreen;

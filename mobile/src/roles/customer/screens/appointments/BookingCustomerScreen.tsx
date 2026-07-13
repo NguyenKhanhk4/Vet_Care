@@ -19,6 +19,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'payos_now' | 'payos_later' | 'cash'>('payos_now');
   const { colors } = useTheme();
 
   // Data lists
@@ -30,17 +31,21 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   // Selections
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
 
   // Pre-fill from route params
   useEffect(() => {
     const params = route.params || {};
-    if (params.clinicId) loadClinicAndSkip(params.clinicId);
-    else loadClinics();
+    if (params.clinicId || params.doctorId || params.serviceId) {
+      loadPreSelectedAndSkip(params);
+    } else {
+      loadClinics();
+    }
   }, []);
 
   const loadClinics = async () => {
@@ -50,36 +55,109 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
     finally { setIsLoading(false); }
   };
 
-  const loadClinicAndSkip = async (clinicId: string) => {
+  const loadPreSelectedAndSkip = async (params: any) => {
     setIsLoading(true);
     try {
-      const res = await api.get(`/clinics/${clinicId}`);
-      setSelectedClinic(res.data.data);
-      const docRes = await api.get(`/doctors?clinicId=${clinicId}`);
-      setDoctors(docRes.data.data || []);
-      setStep(1);
-    } catch { loadClinics(); }
-    finally { setIsLoading(false); }
+      let currentClinicId = params.clinicId;
+      let svc = null;
+      let doc = null;
+
+      // 1. Resolve Service if exists
+      if (params.serviceId) {
+        const serviceRes = await api.get(`/services/${params.serviceId}`);
+        svc = serviceRes.data.data;
+        setSelectedServices([svc]);
+        if (!currentClinicId) {
+           currentClinicId = typeof svc.clinic === 'string' ? svc.clinic : svc.clinic._id;
+        }
+      }
+
+      // 2. Resolve Doctor if exists
+      if (params.doctorId) {
+        // Fallback: If your API does not support GET /doctors/:id, you might have to search by clinic
+        // Assuming API supports it or we can just ignore pre-loading doctor object if it fails
+        try {
+          const doctorRes = await api.get(`/doctors/${params.doctorId}`);
+          doc = doctorRes.data.data;
+          setSelectedDoctor(doc);
+          if (!currentClinicId) {
+            currentClinicId = typeof doc.clinic === 'string' ? doc.clinic : doc.clinic._id;
+          }
+        } catch (e) {
+          console.warn("Could not fetch doctor by ID directly, will load list.");
+        }
+      }
+
+      // 3. Resolve Clinic
+      if (currentClinicId) {
+        const clinicRes = await api.get(`/clinics/${currentClinicId}`);
+        setSelectedClinic(clinicRes.data.data);
+        
+        // Fetch remaining options based on what's missing
+        if (!doc) {
+          const docRes = await api.get(`/doctors?clinicId=${currentClinicId}`);
+          setDoctors(docRes.data.data || []);
+        }
+        
+        if (!svc) {
+          const srvRes = await api.get(`/services?clinicId=${currentClinicId}`);
+          setServices(srvRes.data.data || []);
+        }
+      }
+
+      // Determine starting step
+      if (!doc) {
+        setStep(1); // Needs doctor
+      } else if (!svc) {
+        setStep(2); // Needs service
+      } else {
+        const petRes = await api.get('/pets');
+        setPets(petRes.data.data || []);
+        setStep(3);
+      }
+    } catch { 
+      loadClinics(); 
+    } finally { 
+      setIsLoading(false); 
+    }
   };
 
   const handleSelectClinic = async (clinic: Clinic) => {
     setSelectedClinic(clinic);
     setIsLoading(true);
-    try { const res = await api.get(`/doctors?clinicId=${clinic._id}`); setDoctors(res.data.data || []); }
-    catch { Alert.alert('Error', 'Failed to load doctors'); }
+    try { 
+      const res = await api.get(`/doctors?clinicId=${clinic._id}`); 
+      setDoctors(res.data.data || []); 
+      
+      const srvRes = await api.get(`/services?clinicId=${clinic._id}`);
+      setServices(srvRes.data.data || []);
+    }
+    catch { Alert.alert('Error', 'Failed to load data'); }
     finally { setIsLoading(false); setStep(1); }
   };
 
   const handleSelectDoctor = async (doctor: Doctor) => {
     setSelectedDoctor(doctor);
-    setIsLoading(true);
-    try { const res = await api.get(`/services?clinicId=${selectedClinic?._id}`); setServices(res.data.data || []); }
-    catch { Alert.alert('Error', 'Failed to load services'); }
-    finally { setIsLoading(false); setStep(2); }
+    if (selectedServices.length > 0 || route.params?.serviceId) {
+      setIsLoading(true);
+      try { const res = await api.get('/pets'); setPets(res.data.data || []); setStep(3); }
+      catch { Alert.alert('Error', 'Failed to load pets'); }
+      finally { setIsLoading(false); }
+    } else {
+      setStep(2);
+    }
   };
 
-  const handleSelectService = async (service: Service) => {
-    setSelectedService(service);
+  const handleToggleService = (service: Service) => {
+    setSelectedServices(prev => {
+      const exists = prev.find(s => s._id === service._id);
+      if (exists) return prev.filter(s => s._id !== service._id);
+      return [...prev, service];
+    });
+  };
+
+  const handleConfirmServices = async () => {
+    if (selectedServices.length === 0) return;
     setIsLoading(true);
     try { const res = await api.get('/pets'); setPets(res.data.data || []); }
     catch { Alert.alert('Error', 'Failed to load pets'); }
@@ -102,25 +180,48 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
     return dates;
   };
 
+  const handleSelectDate = async (date: string) => {
+    setSelectedDate(date);
+    setSelectedTime('');
+    if (selectedDoctor) {
+      try {
+        const res = await api.get(`/appointments/booked-times?doctorId=${selectedDoctor._id}&date=${date}`);
+        setBookedTimes(res.data.data || []);
+      } catch (error) {
+        console.error('Failed to load booked times', error);
+        setBookedTimes([]);
+      }
+    }
+  };
+
   const handleConfirmBooking = async () => {
-    if (!selectedClinic || !selectedDoctor || !selectedService || !selectedPet || !selectedDate || !selectedTime) {
+    if (!selectedClinic || !selectedDoctor || selectedServices.length === 0 || !selectedPet || !selectedDate || !selectedTime) {
       Alert.alert('Error', 'Please complete all selections');
       return;
     }
     try {
       setIsSubmitting(true);
       const res = await api.post('/appointments', {
-        clinic: selectedClinic._id, doctor: selectedDoctor._id, service: selectedService._id,
+        clinic: selectedClinic._id, doctor: selectedDoctor._id, services: selectedServices.map(s => s._id),
         pet: selectedPet._id, date: selectedDate, time: selectedTime, notes,
+        paymentMethod: paymentMethod === 'cash' ? 'cash' : 'payos',
       });
       
       const appointmentId = res.data.data._id;
       
-      // Directly create payment to show QR Code
-      const paymentRes = await api.post('/payments/create', { appointmentId });
-      const { checkoutUrl, orderCode } = paymentRes.data.data;
-      
-      navigation.replace('PaymentWebViewCustomer', { checkoutUrl, orderCode });
+      // Directly create payment to show QR Code or Complete Cash Booking
+      if (paymentMethod === 'cash') {
+        const paymentRes = await api.post('/payments/create', { appointmentId, method: 'cash' });
+        navigation.replace('PaymentSuccessCustomer', { orderCode: paymentRes.data.data.orderCode, method: 'cash' });
+      } else if (paymentMethod === 'payos_later') {
+        // Just navigate to success screen
+        navigation.replace('PaymentSuccessCustomer', { appointmentId, method: 'payos_later' });
+      } else {
+        // payos_now
+        const paymentRes = await api.post('/payments/create', { appointmentId, method: 'payos' });
+        const { checkoutUrl, orderCode } = paymentRes.data.data;
+        navigation.replace('PaymentWebViewCustomer', { checkoutUrl, orderCode });
+      }
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.message || 'Failed to book appointment');
     } finally { setIsSubmitting(false); }
@@ -175,20 +276,35 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
           </TouchableOpacity>
         ))}
 
-        {/* Step 2: Select Service */}
-        {step === 2 && services.map((service) => (
-          <TouchableOpacity key={service._id} style={styles.selectionCard} onPress={() => handleSelectService(service)} activeOpacity={0.7}>
-            <Text style={styles.cardEmoji}>🩺</Text>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>{service.name}</Text>
-              <Text style={styles.cardSubtitle}>{service.description}</Text>
-            </View>
-            <View style={styles.priceCol}>
-              <Text style={styles.priceText}>{service.price.toLocaleString('vi-VN')}đ</Text>
-              <Text style={styles.durationText}>{service.duration}min</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+        {/* Step 2: Select Services */}
+        {step === 2 && (
+          <View>
+            <Text style={styles.sectionLabel}>Select one or more services</Text>
+            {services.map((service) => {
+              const isSelected = selectedServices.some(s => s._id === service._id);
+              return (
+                <TouchableOpacity key={service._id} style={isSelected ? styles.selectionCardActive : styles.selectionCard} onPress={() => handleToggleService(service)} activeOpacity={0.7}>
+                  <Text style={styles.cardEmoji}>🩺</Text>
+                  <View style={styles.cardInfo}>
+                    <Text style={styles.cardTitle}>{service.name}</Text>
+                    <Text style={styles.cardSubtitle}>{service.description}</Text>
+                  </View>
+                  <View style={styles.priceCol}>
+                    <Text style={styles.priceText}>{service.price.toLocaleString('vi-VN')}đ</Text>
+                    <Text style={styles.durationText}>{service.duration}min</Text>
+                  </View>
+                  {isSelected && <Text style={[styles.checkIcon, { marginLeft: 8 }]}>✅</Text>}
+                </TouchableOpacity>
+              );
+            })}
+            
+            {selectedServices.length > 0 && (
+              <TouchableOpacity style={styles.nextButton} onPress={handleConfirmServices} activeOpacity={0.8}>
+                <Text style={styles.nextButtonText}>Continue</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
 
         {/* Step 3: Select Pet */}
         {step === 3 && (
@@ -216,7 +332,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
             <Text style={styles.sectionLabel}>Select Date</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateScroll}>
               {generateDates().map((date) => (
-                <TouchableOpacity key={date} style={[styles.dateCard, selectedDate === date && styles.dateCardActive]} onPress={() => setSelectedDate(date)} activeOpacity={0.7}>
+                <TouchableOpacity key={date} style={[styles.dateCard, selectedDate === date && styles.dateCardActive]} onPress={() => handleSelectDate(date)} activeOpacity={0.7}>
                   <Text style={[styles.dateDay, selectedDate === date && styles.dateDayActive]}>{new Date(date).toLocaleDateString('en-GB', { weekday: 'short' })}</Text>
                   <Text style={[styles.dateNum, selectedDate === date && styles.dateNumActive]}>{new Date(date).getDate()}</Text>
                   <Text style={[styles.dateMonth, selectedDate === date && styles.dateMonthActive]}>{new Date(date).toLocaleDateString('en-GB', { month: 'short' })}</Text>
@@ -226,11 +342,20 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
 
             <Text style={styles.sectionLabel}>Select Time</Text>
             <View style={styles.timeGrid}>
-              {TIME_SLOTS.map((time) => (
-                <TouchableOpacity key={time} style={[styles.timeSlot, selectedTime === time && styles.timeSlotActive]} onPress={() => setSelectedTime(time)} activeOpacity={0.7}>
-                  <Text style={[styles.timeText, selectedTime === time && styles.timeTextActive]}>{time}</Text>
-                </TouchableOpacity>
-              ))}
+              {TIME_SLOTS.map((time) => {
+                const isBooked = bookedTimes.includes(time);
+                return (
+                  <TouchableOpacity 
+                    key={time} 
+                    style={[styles.timeSlot, selectedTime === time && styles.timeSlotActive, isBooked && styles.timeSlotDisabled]} 
+                    onPress={() => !isBooked && setSelectedTime(time)} 
+                    activeOpacity={isBooked ? 1 : 0.7}
+                    disabled={isBooked}
+                  >
+                    <Text style={[styles.timeText, selectedTime === time && styles.timeTextActive, isBooked && styles.timeTextDisabled]}>{time}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
 
             {selectedDate && selectedTime && (
@@ -248,11 +373,11 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
             {[
               { label: 'Clinic', value: selectedClinic?.name, icon: '🏥' },
               { label: 'Doctor', value: selectedDoctor?.user?.name, icon: '👨‍⚕️' },
-              { label: 'Service', value: selectedService?.name, icon: '🩺' },
+              { label: 'Services', value: selectedServices.map(s => s.name).join(', '), icon: '🩺' },
               { label: 'Pet', value: selectedPet?.name, icon: '🐾' },
               { label: 'Date', value: selectedDate ? formatDate(selectedDate) : '', icon: '📅' },
               { label: 'Time', value: selectedTime, icon: '⏰' },
-              { label: 'Amount', value: `${(selectedService?.price || 0).toLocaleString('vi-VN')}đ`, icon: '💰' },
+              { label: 'Amount', value: `${selectedServices.reduce((sum, s) => sum + s.price, 0).toLocaleString('vi-VN')}đ`, icon: '💰' },
             ].map((item, i) => (
               <View key={i} style={styles.confirmRow}>
                 <Text style={styles.confirmIcon}>{item.icon}</Text>
@@ -260,6 +385,48 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
                 <Text style={styles.confirmValue}>{item.value}</Text>
               </View>
             ))}
+
+            {/* Payment Method Selector */}
+            <Text style={[styles.sectionLabel, { marginTop: SIZES.spacing.xl, marginBottom: SIZES.spacing.md }]}>Payment Method</Text>
+            
+            <TouchableOpacity 
+              style={paymentMethod === 'payos_now' ? styles.methodCardActive : styles.methodCard}
+              onPress={() => setPaymentMethod('payos_now')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.methodIcon}>💳</Text>
+              <View style={styles.methodInfo}>
+                <Text style={styles.methodName}>Thanh toán Online (Ngay)</Text>
+                <Text style={styles.methodDesc}>Quét mã QR PayOS để thanh toán ngay</Text>
+              </View>
+              {paymentMethod === 'payos_now' && <Text style={styles.checkIcon}>✅</Text>}
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={paymentMethod === 'payos_later' ? styles.methodCardActive : styles.methodCard}
+              onPress={() => setPaymentMethod('payos_later')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.methodIcon}>⏱️</Text>
+              <View style={styles.methodInfo}>
+                <Text style={styles.methodName}>Thanh toán Online (Sau)</Text>
+                <Text style={styles.methodDesc}>Tạo lịch trước, thanh toán chuyển khoản sau</Text>
+              </View>
+              {paymentMethod === 'payos_later' && <Text style={styles.checkIcon}>✅</Text>}
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={paymentMethod === 'cash' ? styles.methodCardActive : styles.methodCard}
+              onPress={() => setPaymentMethod('cash')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.methodIcon}>💵</Text>
+              <View style={styles.methodInfo}>
+                <Text style={styles.methodName}>Thanh toán Tiền mặt</Text>
+                <Text style={styles.methodDesc}>Thanh toán trực tiếp tại phòng khám</Text>
+              </View>
+              {paymentMethod === 'cash' && <Text style={styles.checkIcon}>✅</Text>}
+            </TouchableOpacity>
 
             <TouchableOpacity style={[styles.bookButton, isSubmitting && styles.disabled]} onPress={handleConfirmBooking} disabled={isSubmitting} activeOpacity={0.8}>
               <Text style={styles.bookButtonText}>{isSubmitting ? 'Booking...' : 'Confirm Booking'}</Text>
@@ -292,6 +459,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   stepLabel: { textAlign: 'center', fontSize: SIZES.lg, color: colors.textPrimary, ...FONTS.semiBold, marginVertical: SIZES.spacing.md },
   content: { flex: 1, paddingHorizontal: SIZES.spacing.base },
   selectionCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, ...SHADOWS.light },
+  selectionCardActive: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 2, borderColor: colors.primary, ...SHADOWS.light },
   cardEmoji: { fontSize: 32, marginRight: SIZES.spacing.md },
   cardInfo: { flex: 1 },
   cardTitle: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold, marginBottom: 2 },
@@ -317,8 +485,10 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.spacing.sm },
   timeSlot: { paddingVertical: SIZES.spacing.sm, paddingHorizontal: SIZES.spacing.base, borderRadius: SIZES.radius.base, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   timeSlotActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  timeSlotDisabled: { backgroundColor: colors.divider, borderColor: colors.divider },
   timeText: { fontSize: SIZES.md, color: colors.textPrimary },
   timeTextActive: { color: colors.textWhite, ...FONTS.medium },
+  timeTextDisabled: { color: colors.textLight, textDecorationLine: 'line-through' },
   nextButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginTop: SIZES.spacing.xl, ...SHADOWS.light },
   nextButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
   confirmSection: { backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.xl, ...SHADOWS.medium },
@@ -332,6 +502,13 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   bookButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.bold },
   backButton: { paddingVertical: SIZES.spacing.md, paddingHorizontal: SIZES.spacing.xl, borderTopWidth: 1, borderTopColor: colors.divider, backgroundColor: colors.surface },
   backButtonText: { fontSize: SIZES.base, color: colors.primary, ...FONTS.medium },
+  methodCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.background, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 1, borderColor: colors.border },
+  methodCardActive: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 2, borderColor: colors.primary, ...SHADOWS.light },
+  methodIcon: { fontSize: 24, marginRight: SIZES.spacing.base },
+  methodInfo: { flex: 1 },
+  methodName: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold },
+  methodDesc: { fontSize: SIZES.sm, color: colors.textSecondary, marginTop: 2 },
+  checkIcon: { fontSize: 18 },
 });
 
 export default BookingCustomerScreen;
