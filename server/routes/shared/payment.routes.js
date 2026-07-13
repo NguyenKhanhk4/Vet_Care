@@ -10,6 +10,7 @@ const router = express.Router();
  */
 
 router.get('/status/:orderCode', SharedPaymentController.getPaymentStatus);
+router.post('/verify/:orderCode', SharedPaymentController.verifyPayment);
 router.post('/webhook', SharedPaymentController.handleWebhook);
 
 module.exports = router;

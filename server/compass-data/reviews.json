@@ -1,0 +1,26 @@
+[
+  {
+    "_id": "6a5494f9b51254b56dbb4192",
+    "appointment": "6a5494f9b51254b56dbb418c",
+    "customer": "6a5494f8b51254b56dbb40dc",
+    "doctor": "6a5494f9b51254b56dbb413f",
+    "clinic": "6a5494f9b51254b56dbb410e",
+    "rating": 5,
+    "comment": "Bác sĩ rất nhiệt tình và chu đáo!",
+    "createdAt": "2026-07-13T07:34:17.967Z",
+    "updatedAt": "2026-07-13T07:34:17.967Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41ae",
+    "appointment": "6a5494f9b51254b56dbb41a8",
+    "customer": "6a5494f9b51254b56dbb40e8",
+    "doctor": "6a5494f9b51254b56dbb415d",
+    "clinic": "6a5494f9b51254b56dbb4110",
+    "rating": 5,
+    "comment": "Bác sĩ rất nhiệt tình và chu đáo!",
+    "createdAt": "2026-07-13T07:34:17.978Z",
+    "updatedAt": "2026-07-13T07:34:17.978Z",
+    "__v": 0
+  }
+]

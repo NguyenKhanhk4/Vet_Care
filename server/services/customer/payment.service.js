@@ -68,8 +68,8 @@ class PaymentService {
         status: 'PENDING'
       });
 
-      // Update Appointment to confirmed, but keep paymentStatus as UNPAID or PENDING
-      appointment.status = 'confirmed';
+      // Update Appointment to pending, await doctor confirmation
+      appointment.status = 'pending';
       // appointment.paymentStatus remains UNPAID until paid at clinic
       await appointment.save();
 
@@ -177,6 +177,77 @@ class PaymentService {
       throw error;
     }
     return { status: payment.status };
+  }
+
+  /**
+   * Verify payment status by querying payOS directly
+   * Used as fallback when webhook can't reach localhost
+   * @param {number} orderCode - payOS order code
+   * @returns {Object} - { status, appointment }
+   */
+  static async verifyPayment(orderCode) {
+    const payment = await Payment.findOne({ orderCode });
+    if (!payment) {
+      const error = new Error('Payment not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Already resolved, just return current status
+    if (payment.status === 'PAID') {
+      return { status: 'PAID', alreadyProcessed: true };
+    }
+
+    // Query payOS for real transaction status
+    try {
+      const payosInfo = await payos.paymentRequests.get(orderCode);
+      
+      if (payosInfo.status === 'PAID') {
+        // Update Payment
+        payment.status = 'PAID';
+        payment.paidAt = new Date();
+        payment.transactionId = payosInfo.id || payosInfo.paymentLinkId;
+        payment.rawResponse = payosInfo;
+        await payment.save();
+
+        // Update Appointment
+        const appointment = await Appointment.findById(payment.appointment);
+        if (appointment) {
+          appointment.paymentStatus = 'PAID';
+          appointment.status = 'confirmed';
+          await appointment.save();
+
+          // Send notification
+          await Notification.create({
+            user: payment.user,
+            title: 'Payment Successful',
+            message: `Thanh toán ${(payment.amount || 0).toLocaleString('vi-VN')}đ thành công. Lịch hẹn đã được xác nhận.`,
+            type: 'payment',
+            relatedId: payment._id,
+          });
+
+          await AdminNotificationService.notifyAdmins({
+            actor: payment.user,
+            title: 'Thanh toán thành công',
+            message: `Khách hàng đã thanh toán ${(payment.amount || 0).toLocaleString('vi-VN')}đ cho lịch khám.`,
+            type: 'payment',
+            relatedId: payment._id,
+          });
+        }
+
+        return { status: 'PAID', alreadyProcessed: false };
+      } else if (payosInfo.status === 'CANCELLED') {
+        payment.status = 'FAILED';
+        await payment.save();
+        return { status: 'FAILED' };
+      }
+
+      return { status: payment.status };
+    } catch (err) {
+      console.error('Error querying payOS:', err);
+      // If payOS query fails, return current DB status
+      return { status: payment.status };
+    }
   }
 
   /**

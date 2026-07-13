@@ -1,0 +1,302 @@
+[
+  {
+    "_id": "6a5494f9b51254b56dbb4180",
+    "customer": "6a5494f8b51254b56dbb40d6",
+    "pet": "6a5494f9b51254b56dbb4112",
+    "clinic": "6a5494f9b51254b56dbb4108",
+    "doctor": "6a5494f9b51254b56dbb4130",
+    "services": [
+      "6a5494f9b51254b56dbb4162"
+    ],
+    "date": "2026-07-11T07:34:17.956Z",
+    "time": "09:00",
+    "status": "confirmed",
+    "notes": "",
+    "totalAmount": 2000,
+    "paymentStatus": "PAID",
+    "paymentMethod": "payos",
+    "createdAt": "2026-07-13T07:34:17.957Z",
+    "updatedAt": "2026-07-13T07:34:17.957Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb4184",
+    "customer": "6a5494f8b51254b56dbb40d8",
+    "pet": "6a5494f9b51254b56dbb4114",
+    "clinic": "6a5494f9b51254b56dbb410a",
+    "doctor": "6a5494f9b51254b56dbb4135",
+    "services": [
+      "6a5494f9b51254b56dbb4164"
+    ],
+    "date": "2026-07-12T07:34:17.959Z",
+    "time": "09:01",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 2500,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "cash",
+    "createdAt": "2026-07-13T07:34:17.960Z",
+    "updatedAt": "2026-07-13T07:34:17.960Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb4188",
+    "customer": "6a5494f8b51254b56dbb40da",
+    "pet": "6a5494f9b51254b56dbb4116",
+    "clinic": "6a5494f9b51254b56dbb410c",
+    "doctor": "6a5494f9b51254b56dbb413a",
+    "services": [
+      "6a5494f9b51254b56dbb4166"
+    ],
+    "date": "2026-07-13T07:34:17.961Z",
+    "time": "09:02",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 3000,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "payos",
+    "createdAt": "2026-07-13T07:34:17.962Z",
+    "updatedAt": "2026-07-13T07:34:17.962Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb418c",
+    "customer": "6a5494f8b51254b56dbb40dc",
+    "pet": "6a5494f9b51254b56dbb4118",
+    "clinic": "6a5494f9b51254b56dbb410e",
+    "doctor": "6a5494f9b51254b56dbb413f",
+    "services": [
+      "6a5494f9b51254b56dbb4168"
+    ],
+    "date": "2026-07-14T07:34:17.964Z",
+    "time": "09:03",
+    "status": "completed",
+    "notes": "",
+    "totalAmount": 3500,
+    "paymentStatus": "PAID",
+    "paymentMethod": "cash",
+    "createdAt": "2026-07-13T07:34:17.964Z",
+    "updatedAt": "2026-07-13T07:34:17.964Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb4194",
+    "customer": "6a5494f8b51254b56dbb40de",
+    "pet": "6a5494f9b51254b56dbb411a",
+    "clinic": "6a5494f9b51254b56dbb4110",
+    "doctor": "6a5494f9b51254b56dbb4144",
+    "services": [
+      "6a5494f9b51254b56dbb416a"
+    ],
+    "date": "2026-07-15T07:34:17.967Z",
+    "time": "09:04",
+    "status": "confirmed",
+    "notes": "",
+    "totalAmount": 4000,
+    "paymentStatus": "PAID",
+    "paymentMethod": "payos",
+    "createdAt": "2026-07-13T07:34:17.967Z",
+    "updatedAt": "2026-07-13T07:34:17.967Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb4198",
+    "customer": "6a5494f8b51254b56dbb40e0",
+    "pet": "6a5494f9b51254b56dbb411c",
+    "clinic": "6a5494f9b51254b56dbb4108",
+    "doctor": "6a5494f9b51254b56dbb4149",
+    "services": [
+      "6a5494f9b51254b56dbb416c"
+    ],
+    "date": "2026-07-11T07:34:17.969Z",
+    "time": "09:05",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 4500,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "cash",
+    "createdAt": "2026-07-13T07:34:17.969Z",
+    "updatedAt": "2026-07-13T07:34:17.969Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb419c",
+    "customer": "6a5494f8b51254b56dbb40e2",
+    "pet": "6a5494f9b51254b56dbb411e",
+    "clinic": "6a5494f9b51254b56dbb410a",
+    "doctor": "6a5494f9b51254b56dbb414e",
+    "services": [
+      "6a5494f9b51254b56dbb416e"
+    ],
+    "date": "2026-07-12T07:34:17.971Z",
+    "time": "09:06",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 5000,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "payos",
+    "createdAt": "2026-07-13T07:34:17.971Z",
+    "updatedAt": "2026-07-13T07:34:17.971Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41a0",
+    "customer": "6a5494f8b51254b56dbb40e4",
+    "pet": "6a5494f9b51254b56dbb4120",
+    "clinic": "6a5494f9b51254b56dbb410c",
+    "doctor": "6a5494f9b51254b56dbb4153",
+    "services": [
+      "6a5494f9b51254b56dbb4170"
+    ],
+    "date": "2026-07-13T07:34:17.972Z",
+    "time": "09:07",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 5500,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "cash",
+    "createdAt": "2026-07-13T07:34:17.973Z",
+    "updatedAt": "2026-07-13T07:34:17.973Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41a4",
+    "customer": "6a5494f8b51254b56dbb40e6",
+    "pet": "6a5494f9b51254b56dbb4122",
+    "clinic": "6a5494f9b51254b56dbb410e",
+    "doctor": "6a5494f9b51254b56dbb4158",
+    "services": [
+      "6a5494f9b51254b56dbb4172"
+    ],
+    "date": "2026-07-14T07:34:17.974Z",
+    "time": "09:08",
+    "status": "confirmed",
+    "notes": "",
+    "totalAmount": 6000,
+    "paymentStatus": "PAID",
+    "paymentMethod": "payos",
+    "createdAt": "2026-07-13T07:34:17.974Z",
+    "updatedAt": "2026-07-13T07:34:17.974Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41a8",
+    "customer": "6a5494f9b51254b56dbb40e8",
+    "pet": "6a5494f9b51254b56dbb4124",
+    "clinic": "6a5494f9b51254b56dbb4110",
+    "doctor": "6a5494f9b51254b56dbb415d",
+    "services": [
+      "6a5494f9b51254b56dbb4174"
+    ],
+    "date": "2026-07-15T07:34:17.975Z",
+    "time": "09:09",
+    "status": "completed",
+    "notes": "",
+    "totalAmount": 6500,
+    "paymentStatus": "PAID",
+    "paymentMethod": "cash",
+    "createdAt": "2026-07-13T07:34:17.976Z",
+    "updatedAt": "2026-07-13T07:34:17.976Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41b0",
+    "customer": "6a5494f9b51254b56dbb40ea",
+    "pet": "6a5494f9b51254b56dbb4126",
+    "clinic": "6a5494f9b51254b56dbb4108",
+    "doctor": "6a5494f9b51254b56dbb4130",
+    "services": [
+      "6a5494f9b51254b56dbb4176"
+    ],
+    "date": "2026-07-11T07:34:17.979Z",
+    "time": "09:00",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 7000,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "payos",
+    "createdAt": "2026-07-13T07:34:17.979Z",
+    "updatedAt": "2026-07-13T07:34:17.979Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41b4",
+    "customer": "6a5494f9b51254b56dbb40ec",
+    "pet": "6a5494f9b51254b56dbb4128",
+    "clinic": "6a5494f9b51254b56dbb410a",
+    "doctor": "6a5494f9b51254b56dbb4135",
+    "services": [
+      "6a5494f9b51254b56dbb4178"
+    ],
+    "date": "2026-07-12T07:34:17.980Z",
+    "time": "09:01",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 7500,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "cash",
+    "createdAt": "2026-07-13T07:34:17.980Z",
+    "updatedAt": "2026-07-13T07:34:17.980Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41b8",
+    "customer": "6a5494f9b51254b56dbb40ee",
+    "pet": "6a5494f9b51254b56dbb412a",
+    "clinic": "6a5494f9b51254b56dbb410c",
+    "doctor": "6a5494f9b51254b56dbb413a",
+    "services": [
+      "6a5494f9b51254b56dbb417a"
+    ],
+    "date": "2026-07-13T07:34:17.982Z",
+    "time": "09:02",
+    "status": "confirmed",
+    "notes": "",
+    "totalAmount": 8000,
+    "paymentStatus": "PAID",
+    "paymentMethod": "payos",
+    "createdAt": "2026-07-13T07:34:17.982Z",
+    "updatedAt": "2026-07-13T07:34:17.982Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41bc",
+    "customer": "6a5494f9b51254b56dbb40f0",
+    "pet": "6a5494f9b51254b56dbb412c",
+    "clinic": "6a5494f9b51254b56dbb410e",
+    "doctor": "6a5494f9b51254b56dbb413f",
+    "services": [
+      "6a5494f9b51254b56dbb417c"
+    ],
+    "date": "2026-07-14T07:34:17.983Z",
+    "time": "09:03",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 8500,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "cash",
+    "createdAt": "2026-07-13T07:34:17.983Z",
+    "updatedAt": "2026-07-13T07:34:17.983Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a5494f9b51254b56dbb41c0",
+    "customer": "6a5494f9b51254b56dbb40f2",
+    "pet": "6a5494f9b51254b56dbb412e",
+    "clinic": "6a5494f9b51254b56dbb4110",
+    "doctor": "6a5494f9b51254b56dbb4144",
+    "services": [
+      "6a5494f9b51254b56dbb417e"
+    ],
+    "date": "2026-07-15T07:34:17.984Z",
+    "time": "09:04",
+    "status": "pending",
+    "notes": "",
+    "totalAmount": 9000,
+    "paymentStatus": "PENDING",
+    "paymentMethod": "payos",
+    "createdAt": "2026-07-13T07:34:17.984Z",
+    "updatedAt": "2026-07-13T07:34:17.984Z",
+    "__v": 0
+  }
+]

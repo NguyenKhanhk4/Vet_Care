@@ -31,7 +31,8 @@ router.post(
     body('pet').notEmpty().withMessage('Pet is required').isMongoId().withMessage('Invalid pet ID'),
     body('clinic').notEmpty().withMessage('Clinic is required').isMongoId().withMessage('Invalid clinic ID'),
     body('doctor').notEmpty().withMessage('Doctor is required').isMongoId().withMessage('Invalid doctor ID'),
-    body('service').notEmpty().withMessage('Service is required').isMongoId().withMessage('Invalid service ID'),
+    body('services').isArray({ min: 1 }).withMessage('At least one service is required'),
+    body('services.*').isMongoId().withMessage('Invalid service ID'),
     body('date').notEmpty().withMessage('Date is required').isISO8601().withMessage('Invalid date format'),
     body('time')
       .notEmpty().withMessage('Time is required')

@@ -37,8 +37,8 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
       }
 
       try {
-        const statusUrl = API_BASE_URL.replace('/customer', '') + `/payment/status/${orderCode}`;
-        const res = await axios.get(statusUrl);
+        const verifyUrl = API_BASE_URL.replace('/customer', '') + `/payment/verify/${orderCode}`;
+        const res = await axios.post(verifyUrl);
         const status = res.data?.data?.status;
 
         if (status === 'PAID') {
@@ -61,15 +61,28 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
     }
   };
 
+  const verifyAndNavigate = async (success: boolean) => {
+    stopPolling();
+    if (success) {
+      try {
+        const verifyUrl = API_BASE_URL.replace('/customer', '') + `/payment/verify/${orderCode}`;
+        await axios.post(verifyUrl);
+      } catch (err) {
+        console.error('Verify payment error:', err);
+      }
+      navigation.replace('PaymentSuccessCustomer', { orderCode });
+    } else {
+      navigation.replace('PaymentFailedCustomer', { orderCode });
+    }
+  };
+
   const onShouldStartLoadWithRequest = (request: any) => {
     const { url } = request;
     if (url.includes('payment-success')) {
-      stopPolling();
-      navigation.replace('PaymentSuccessCustomer', { orderCode });
+      verifyAndNavigate(true);
       return false;
     } else if (url.includes('payment-failed')) {
-      stopPolling();
-      navigation.replace('PaymentFailedCustomer', { orderCode });
+      verifyAndNavigate(false);
       return false;
     }
     return true;

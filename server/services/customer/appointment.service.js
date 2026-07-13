@@ -226,7 +226,7 @@ class AppointmentService {
     }
 
     // Update allowed fields
-    const allowedUpdates = ['date', 'time', 'notes'];
+    const allowedUpdates = ['date', 'time', 'notes', 'paymentMethod'];
     allowedUpdates.forEach((field) => {
       if (updateData[field] !== undefined) {
         appointment[field] = field === 'date' ? new Date(updateData[field]) : updateData[field];

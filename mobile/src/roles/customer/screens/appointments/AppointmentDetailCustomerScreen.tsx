@@ -50,6 +50,22 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
     navigation.navigate('ReviewCustomer', { appointmentId });
   };
 
+  const handleChangePaymentMethod = () => {
+    const newMethod = appointment?.paymentMethod === 'cash' ? 'payos' : 'cash';
+    const methodText = newMethod === 'cash' ? 'Tiền mặt' : 'Thanh toán Online (payOS)';
+    
+    Alert.alert('Thay đổi phương thức thanh toán', `Bạn muốn đổi sang ${methodText}?`, [
+      { text: 'Hủy', style: 'cancel' },
+      { text: 'Đồng ý', onPress: async () => {
+        try {
+          await api.put(`/appointments/${appointmentId}`, { paymentMethod: newMethod });
+          Alert.alert('Thành công', 'Đã cập nhật phương thức thanh toán');
+          fetchAppointment();
+        } catch (err: any) { Alert.alert('Lỗi', err.response?.data?.message || 'Không thể cập nhật'); }
+      }}
+    ]);
+  };
+
   const styles = getStyles(colors);
 
   if (isLoading) return <LoadingSpinner message="Loading..." />;
@@ -112,22 +128,28 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
 
       {/* Actions */}
       <View style={styles.actions}>
+        {a.status === 'pending' && a.paymentStatus !== 'PAID' && (
+          <View style={styles.paymentActionRow}>
+            {a.paymentMethod === 'payos' && (
+              <TouchableOpacity style={[styles.payButton, styles.halfButton]} onPress={() => navigation.navigate('PaymentCustomer', { appointmentId: a._id })} activeOpacity={0.8}>
+                <Text style={styles.payButtonText}>💳 Pay Now</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={[styles.changeMethodButton, a.paymentMethod === 'payos' ? styles.halfButton : styles.fullButton]} onPress={handleChangePaymentMethod} activeOpacity={0.8}>
+              <Text style={styles.changeMethodText}>🔄 Đổi PTTT</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        
         {['pending', 'confirmed'].includes(a.status) && (
-          <>
-            <TouchableOpacity style={styles.payButton} onPress={() => navigation.navigate('PaymentCustomer', { appointmentId: a._id })} activeOpacity={0.8}>
-              <Text style={styles.payButtonText}>💳 Pay Now</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} activeOpacity={0.8}>
-              <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
-            </TouchableOpacity>
-          </>
+          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} activeOpacity={0.8}>
+            <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
+          </TouchableOpacity>
         )}
         {['completed', 'paid'].includes(a.status) && (
-          <>
-            <TouchableOpacity style={styles.payButton} onPress={handleReview} activeOpacity={0.8}>
-              <Text style={styles.payButtonText}>⭐ Review</Text>
-            </TouchableOpacity>
-          </>
+          <TouchableOpacity style={styles.payButton} onPress={handleReview} activeOpacity={0.8}>
+            <Text style={styles.payButtonText}>⭐ Review</Text>
+          </TouchableOpacity>
         )}
       </View>
     </ScrollView>
@@ -145,6 +167,11 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   infoValue: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold },
   infoSub: { fontSize: SIZES.md, color: colors.textSecondary, marginTop: 4 },
   actions: { padding: SIZES.spacing.base, marginBottom: SIZES.spacing.xxl },
+  paymentActionRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: SIZES.spacing.sm },
+  halfButton: { flex: 0.48, marginBottom: 0 },
+  fullButton: { flex: 1, marginBottom: 0 },
+  changeMethodButton: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.primary },
+  changeMethodText: { color: colors.primary, fontSize: SIZES.base, ...FONTS.semiBold },
   payButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginBottom: SIZES.spacing.sm, ...SHADOWS.light },
   payButtonText: { color: colors.textWhite, fontSize: SIZES.base, ...FONTS.semiBold },
   cancelButton: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.error },
