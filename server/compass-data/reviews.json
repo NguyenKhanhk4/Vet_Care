@@ -1,26 +1,26 @@
 [
   {
-    "_id": "6a5494f9b51254b56dbb4192",
-    "appointment": "6a5494f9b51254b56dbb418c",
-    "customer": "6a5494f8b51254b56dbb40dc",
-    "doctor": "6a5494f9b51254b56dbb413f",
-    "clinic": "6a5494f9b51254b56dbb410e",
+    "_id": "6a5675bd550cb2afd2ee25ad",
+    "appointment": "6a5675bd550cb2afd2ee25a7",
+    "customer": "6a5675bb550cb2afd2ee24f7",
+    "doctor": "6a5675bd550cb2afd2ee255a",
+    "clinic": "6a5675bd550cb2afd2ee2529",
     "rating": 5,
     "comment": "Bác sĩ rất nhiệt tình và chu đáo!",
-    "createdAt": "2026-07-13T07:34:17.967Z",
-    "updatedAt": "2026-07-13T07:34:17.967Z",
+    "createdAt": "2026-07-14T17:45:33.654Z",
+    "updatedAt": "2026-07-14T17:45:33.654Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb41ae",
-    "appointment": "6a5494f9b51254b56dbb41a8",
-    "customer": "6a5494f9b51254b56dbb40e8",
-    "doctor": "6a5494f9b51254b56dbb415d",
-    "clinic": "6a5494f9b51254b56dbb4110",
+    "_id": "6a5675bd550cb2afd2ee25c9",
+    "appointment": "6a5675bd550cb2afd2ee25c3",
+    "customer": "6a5675bc550cb2afd2ee2503",
+    "doctor": "6a5675bd550cb2afd2ee2578",
+    "clinic": "6a5675bd550cb2afd2ee252b",
     "rating": 5,
     "comment": "Bác sĩ rất nhiệt tình và chu đáo!",
-    "createdAt": "2026-07-13T07:34:17.978Z",
-    "updatedAt": "2026-07-13T07:34:17.978Z",
+    "createdAt": "2026-07-14T17:45:33.680Z",
+    "updatedAt": "2026-07-14T17:45:33.680Z",
     "__v": 0
   }
 ]

@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { useDoctor } from '../../context/DoctorContext';
-import { doctorApi } from '../../services/doctorApi';
+import { doctorApi, getImageUrl } from '../../services/doctorApi';
 
 const nameRegex = /^[\p{L}\s]+$/u;
 const phoneRegex = /^[0-9]{10,11}$/;
@@ -49,7 +49,7 @@ const EditProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) 
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -124,7 +124,7 @@ const EditProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) 
         <View style={styles.avatarSection}>
           <TouchableOpacity onPress={pickImage} style={styles.avatarContainer}>
             {avatarUri ? (
-              <Image source={{ uri: avatarUri }} style={styles.avatar} />
+              <Image source={{ uri: getImageUrl(avatarUri) || avatarUri }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
                 <Text style={styles.avatarPlaceholderText}>{doctor?.user?.name?.charAt(0) || 'D'}</Text>

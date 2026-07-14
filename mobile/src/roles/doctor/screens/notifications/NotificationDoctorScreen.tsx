@@ -2,53 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, Platform } from 'react-native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
-import { doctorApi } from '../../services/doctorApi';
+import { useNotifications } from '../../hooks/useNotifications';
+import LoadingScreen from '../../components/LoadingScreen';
+import EmptyState from '../../components/EmptyState';
 
 const NotificationDoctorScreen: React.FC = () => {
   const { colors } = useTheme();
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { notifications, loading, fetchNotifications, markAsRead, markAllAsRead } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  const fetchNotifications = async () => {
-    try {
-      const response = await doctorApi.get('/notifications');
-      setNotifications(response.data.data);
-      setUnreadCount(response.data.unreadCount);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [fetchNotifications]);
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    fetchNotifications();
-  };
-
-  const markAsRead = async (id: string) => {
-    try {
-      await doctorApi.put(`/notifications/${id}/read`);
-      fetchNotifications();
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    try {
-      await doctorApi.put('/notifications/read-all');
-      fetchNotifications();
-    } catch (error) {
-      console.error('Error marking all notifications as read:', error);
-    }
+    await fetchNotifications();
+    setRefreshing(false);
   };
 
   const getIcon = (type: string) => {
@@ -75,9 +46,7 @@ const NotificationDoctorScreen: React.FC = () => {
       </View>
 
       {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
+        <LoadingScreen />
       ) : (
         <FlatList
           data={notifications}
@@ -86,17 +55,17 @@ const NotificationDoctorScreen: React.FC = () => {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={[styles.card, !item.isRead && styles.unreadCard]}
+              style={[styles.card, !item.read && styles.unreadCard]}
               onPress={() => markAsRead(item._id)}
-              disabled={item.isRead}
+              disabled={item.read}
             >
               <View style={styles.iconContainer}>
                 <Text style={styles.icon}>{getIcon(item.type)}</Text>
               </View>
               <View style={styles.infoContainer}>
                 <View style={styles.titleRow}>
-                  <Text style={[styles.title, !item.isRead && styles.unreadText]}>{item.title}</Text>
-                  {!item.isRead && <View style={styles.unreadDot} />}
+                  <Text style={[styles.title, !item.read && styles.unreadText]}>{item.title}</Text>
+                  {!item.read && <View style={styles.unreadDot} />}
                 </View>
                 <Text style={styles.message}>{item.message}</Text>
                 <Text style={styles.timeText}>{new Date(item.createdAt).toLocaleString('vi-VN')}</Text>
@@ -104,10 +73,7 @@ const NotificationDoctorScreen: React.FC = () => {
             </TouchableOpacity>
           )}
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📭</Text>
-              <Text style={styles.emptyText}>Bạn chưa có thông báo nào.</Text>
-            </View>
+            <EmptyState icon="📭" text="Bạn chưa có thông báo nào." />
           }
         />
       )}

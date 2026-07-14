@@ -1,35 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { doctorApi } from '../../services/doctorApi';
-import { translateSpecies } from '../../../../shared/utils/translate';
+import { useSchedule } from '../../hooks/useSchedule';
+import LoadingScreen from '../../components/LoadingScreen';
+import EmptyState from '../../components/EmptyState';
+import AppointmentCard from '../../components/AppointmentCard';
 
 const TodayScheduleDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { colors } = useTheme();
-  const [schedule, setSchedule] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { todaySchedule: schedule, loading, fetchTodaySchedule } = useSchedule();
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchSchedule = async () => {
-    try {
-      const response = await doctorApi.get('/schedules/today');
-      setSchedule(response.data.data);
-    } catch (error) {
-      console.error('Error fetching today schedule:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      fetchTodaySchedule();
+    }, [fetchTodaySchedule])
+  );
 
-  useEffect(() => {
-    fetchSchedule();
-  }, []);
-
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    fetchSchedule();
+    await fetchTodaySchedule();
+    setRefreshing(false);
   };
 
   const getStatusText = (status: string) => {
@@ -55,11 +49,7 @@ const TodayScheduleDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }
   const styles = getStyles(colors);
 
   if (loading) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   return (
@@ -68,6 +58,17 @@ const TodayScheduleDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }
         <Text style={styles.headerTitle}>Lịch Khám Hôm Nay</Text>
         <Text style={styles.headerDate}>{new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
       </View>
+
+      <TouchableOpacity 
+        style={styles.weeklyBanner}
+        onPress={() => navigation.navigate('WeeklySchedule')}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 20, marginRight: 10 }}>📅</Text>
+          <Text style={styles.weeklyBannerText}>Xem lịch trình cả tuần</Text>
+        </View>
+        <Text style={styles.weeklyBannerArrow}>→</Text>
+      </TouchableOpacity>
 
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>
@@ -90,28 +91,14 @@ const TodayScheduleDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }
         contentContainerStyle={styles.listContainer}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
+          <AppointmentCard
+            appointment={item}
             onPress={() => navigation.navigate('AppointmentDetail', { id: item._id })}
-          >
-            <View style={styles.timeSection}>
-              <Text style={styles.timeText}>{item.time}</Text>
-              <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
-                <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>{getStatusText(item.status)}</Text>
-              </View>
-            </View>
-            <View style={styles.infoSection}>
-              <Text style={styles.petName}>🐾 {item.pet?.name} ({translateSpecies(item.pet?.species)})</Text>
-              <Text style={styles.customerName}>👤 {item.customer.name}</Text>
-              <Text style={styles.serviceName}>🩺 {item.service.name}</Text>
-            </View>
-          </TouchableOpacity>
+            showTimeOnly
+          />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>🏖️</Text>
-            <Text style={styles.emptyText}>Hôm nay bạn không có lịch khám nào.</Text>
-          </View>
+          <EmptyState icon="🏖️" text="Hôm nay bạn không có lịch khám nào." />
         }
       />
     </View>
@@ -122,10 +109,24 @@ const getStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     center: { justifyContent: 'center', alignItems: 'center' },
-    header: { padding: SIZES.spacing.lg, backgroundColor: colors.surface, ...SHADOWS.light },
+    header: { padding: SIZES.spacing.lg, paddingTop: 60, backgroundColor: colors.surface, ...SHADOWS.light },
     headerTitle: { fontSize: SIZES.title, color: colors.textPrimary, ...FONTS.bold },
     headerDate: { fontSize: SIZES.md, color: colors.primary, ...FONTS.medium, marginTop: 4 },
-    statsContainer: { flexDirection: 'row', backgroundColor: colors.surface, marginTop: SIZES.spacing.sm, paddingVertical: SIZES.spacing.md, ...SHADOWS.light },
+    weeklyBanner: { 
+      marginHorizontal: SIZES.spacing.lg, 
+      marginTop: SIZES.spacing.lg, 
+      backgroundColor: colors.primary + '15', 
+      padding: SIZES.spacing.md, 
+      borderRadius: SIZES.radius.lg, 
+      flexDirection: 'row', 
+      justifyContent: 'space-between', 
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.primary + '30'
+    },
+    weeklyBannerText: { fontSize: SIZES.md, color: colors.primary, ...FONTS.bold },
+    weeklyBannerArrow: { fontSize: 20, color: colors.primary, ...FONTS.bold },
+    statsContainer: { flexDirection: 'row', backgroundColor: colors.surface, marginTop: SIZES.spacing.lg, paddingVertical: SIZES.spacing.md, ...SHADOWS.light },
     statBox: { flex: 1, alignItems: 'center', borderRightWidth: 1, borderColor: colors.border },
     statNumber: { fontSize: SIZES.xl, color: colors.primary, ...FONTS.bold },
     statLabel: { fontSize: SIZES.sm, color: colors.textSecondary },

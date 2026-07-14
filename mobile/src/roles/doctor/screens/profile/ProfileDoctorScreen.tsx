@@ -2,16 +2,19 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { useDoctor } from '../../context/DoctorContext';
 import { useTheme } from '../../../../shared/context/ThemeContext';
+import { AuthContext } from '../../../../shared/context/AuthContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
+import { getImageUrl } from '../../services/doctorApi';
 
 const ProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const { doctor, logout } = useDoctor();
+  const { doctor } = useDoctor();
+  const { logoutUnified } = React.useContext(AuthContext);
   const { colors } = useTheme();
 
   const handleLogout = () => {
     Alert.alert('Đăng xuất', 'Bạn có chắc chắn muốn đăng xuất?', [
       { text: 'Hủy', style: 'cancel' },
-      { text: 'Đăng xuất', style: 'destructive', onPress: logout },
+      { text: 'Đăng xuất', style: 'destructive', onPress: logoutUnified },
     ]);
   };
 
@@ -26,7 +29,7 @@ const ProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={styles.profileSection}>
         <View style={styles.avatarContainer}>
           {doctor?.user.avatar ? (
-            <Image source={{ uri: doctor.user.avatar }} style={styles.avatar} />
+            <Image source={{ uri: getImageUrl(doctor.user.avatar) || doctor.user.avatar }} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder}>
               <Text style={styles.avatarText}>{doctor?.user?.name?.charAt(0) || 'D'}</Text>

@@ -12,7 +12,7 @@ class DoctorScheduleController {
 
   static async getWeeklySchedule(req, res, next) {
     try {
-      const result = await DoctorScheduleService.getWeeklySchedule(req.user._id);
+      const result = await DoctorScheduleService.getWeeklySchedule(req.user._id, req.query.date);
       res.status(200).json({ success: true, data: result });
     } catch (error) {
       next(error);

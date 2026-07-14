@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
@@ -39,9 +40,11 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
     }
   };
 
-  useEffect(() => {
-    fetchAppointment();
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAppointment();
+    }, [id])
+  );
 
   const updateStatus = async (status: string, confirmMessage: string) => {
     Alert.alert('Xác nhận', confirmMessage, [
@@ -137,16 +140,16 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
         {/* Service Info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Dịch Vụ & Thanh Toán</Text>
-          <View style={styles.infoRow}><Text style={styles.label}>Dịch vụ:</Text><Text style={styles.value}>{appointment.service?.name}</Text></View>
-          <View style={styles.infoRow}><Text style={styles.label}>Thời lượng:</Text><Text style={styles.value}>{appointment.service?.duration} phút</Text></View>
-          <View style={styles.infoRow}><Text style={styles.label}>Giá dịch vụ:</Text><Text style={styles.value}>{(appointment.totalAmount || appointment.service?.price || 0).toLocaleString('vi-VN')} VNĐ</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Dịch vụ:</Text><Text style={styles.value}>{appointment.services?.map((s: any) => s.name).join(', ')}</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Thời lượng:</Text><Text style={styles.value}>{appointment.services?.reduce((total: number, s: any) => total + (s.duration || 0), 0)} phút</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Giá dịch vụ:</Text><Text style={styles.value}>{(appointment.totalAmount || appointment.services?.reduce((total: number, s: any) => total + (s.price || 0), 0) || 0).toLocaleString('vi-VN')} VNĐ</Text></View>
           {medicalRecord && medicalRecord.cost > 0 && (
             <View style={styles.infoRow}><Text style={styles.label}>Phát sinh:</Text><Text style={styles.value}>{medicalRecord.cost.toLocaleString('vi-VN')} VNĐ</Text></View>
           )}
           <View style={[styles.infoRow, { borderTopWidth: 1, borderColor: colors.border, paddingTop: 8, marginTop: 4 }]}>
             <Text style={[styles.label, { ...FONTS.bold, color: colors.textPrimary }]}>Tổng tiền:</Text>
             <Text style={[styles.value, { color: colors.primary, ...FONTS.bold, fontSize: SIZES.lg }]}>
-              {((appointment.totalAmount || appointment.service?.price || 0) + (medicalRecord?.cost || 0)).toLocaleString('vi-VN')} VNĐ
+              {((appointment.totalAmount || appointment.services?.reduce((total: number, s: any) => total + (s.price || 0), 0) || 0) + (medicalRecord?.cost || 0)).toLocaleString('vi-VN')} VNĐ
             </Text>
           </View>
           {appointment.notes && (
@@ -202,7 +205,7 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
 
               {appointment.status === 'completed' && (
                 <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('MedicalRecordDoctor', { appointmentId: appointment._id, existingRecord: medicalRecord })}>
-                  <Text style={styles.actionBtnText}>{medicalRecord ? '📝 Sửa Bệnh Án' : '📝 Cập Nhật Bệnh Án'}</Text>
+                  <Text style={styles.actionBtnText}>{medicalRecord ? '📝 Sửa Bệnh Án' : '📝 Thêm Mới Bệnh Án'}</Text>
                 </TouchableOpacity>
               )}
             </>

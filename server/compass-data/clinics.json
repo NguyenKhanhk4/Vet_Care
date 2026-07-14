@@ -1,6 +1,6 @@
 [
   {
-    "_id": "6a5494f9b51254b56dbb4108",
+    "_id": "6a5675bd550cb2afd2ee2523",
     "name": "Phòng khám Thú y VetCare Cơ sở 1",
     "address": "100 Nguyễn Văn Cừ, Quận 1, TP.HCM",
     "phone": "0909000001",
@@ -12,12 +12,12 @@
     "rating": 4.1,
     "totalReviews": 15,
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.906Z",
-    "updatedAt": "2026-07-13T07:34:17.906Z",
+    "createdAt": "2026-07-14T17:45:33.551Z",
+    "updatedAt": "2026-07-14T17:45:33.551Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb410a",
+    "_id": "6a5675bd550cb2afd2ee2525",
     "name": "Phòng khám Thú y VetCare Cơ sở 2",
     "address": "200 Nguyễn Văn Cừ, Quận 2, TP.HCM",
     "phone": "0909000002",
@@ -29,12 +29,12 @@
     "rating": 4.2,
     "totalReviews": 30,
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.908Z",
-    "updatedAt": "2026-07-13T07:34:17.908Z",
+    "createdAt": "2026-07-14T17:45:33.553Z",
+    "updatedAt": "2026-07-14T17:45:33.553Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb410c",
+    "_id": "6a5675bd550cb2afd2ee2527",
     "name": "Phòng khám Thú y VetCare Cơ sở 3",
     "address": "300 Nguyễn Văn Cừ, Quận 3, TP.HCM",
     "phone": "0909000003",
@@ -46,12 +46,12 @@
     "rating": 4.3,
     "totalReviews": 45,
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.909Z",
-    "updatedAt": "2026-07-13T07:34:17.909Z",
+    "createdAt": "2026-07-14T17:45:33.555Z",
+    "updatedAt": "2026-07-14T17:45:33.555Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb410e",
+    "_id": "6a5675bd550cb2afd2ee2529",
     "name": "Phòng khám Thú y VetCare Cơ sở 4",
     "address": "400 Nguyễn Văn Cừ, Quận 4, TP.HCM",
     "phone": "0909000004",
@@ -63,12 +63,12 @@
     "rating": 4.4,
     "totalReviews": 60,
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.910Z",
-    "updatedAt": "2026-07-13T07:34:17.910Z",
+    "createdAt": "2026-07-14T17:45:33.556Z",
+    "updatedAt": "2026-07-14T17:45:33.556Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb4110",
+    "_id": "6a5675bd550cb2afd2ee252b",
     "name": "Phòng khám Thú y VetCare Cơ sở 5",
     "address": "500 Nguyễn Văn Cừ, Quận 5, TP.HCM",
     "phone": "0909000005",
@@ -80,8 +80,8 @@
     "rating": 4.5,
     "totalReviews": 75,
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.911Z",
-    "updatedAt": "2026-07-13T07:34:17.911Z",
+    "createdAt": "2026-07-14T17:45:33.558Z",
+    "updatedAt": "2026-07-14T17:45:33.558Z",
     "__v": 0
   }
 ]
