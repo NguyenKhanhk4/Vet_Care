@@ -140,7 +140,15 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
 
         {/* Customer Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Thông Tin Khách Hàng</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.spacing.sm, borderBottomWidth: 1, borderColor: colors.border, paddingBottom: 5 }}>
+            <Text style={[styles.sectionTitle, { borderBottomWidth: 0, marginBottom: 0, paddingBottom: 0 }]}>Thông Tin Khách Hàng</Text>
+            <TouchableOpacity 
+              style={{ backgroundColor: colors.primary + '15', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}
+              onPress={() => navigation.navigate('CustomerPetsDoctor', { customerId: appointment.customer?._id, customerName: appointment.customer?.name })}
+            >
+              <Text style={{ color: colors.primary, fontSize: SIZES.sm, ...FONTS.bold }}>🐾 Danh sách thú cưng</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.infoRow}><Text style={styles.label}>Tên:</Text><Text style={styles.value}>{appointment.customer?.name}</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Điện thoại:</Text><Text style={styles.value}>{appointment.customer?.phone}</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Email:</Text><Text style={styles.value}>{appointment.customer?.email}</Text></View>

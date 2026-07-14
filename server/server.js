@@ -28,6 +28,7 @@ const doctorAppointmentRoutes = require('./routes/doctor/appointment.routes');
 const doctorMedicalRecordRoutes = require('./routes/doctor/medicalRecord.routes');
 const doctorScheduleRoutes = require('./routes/doctor/schedule.routes');
 const doctorNotificationRoutes = require('./routes/doctor/notification.routes');
+const doctorCustomerRoutes = require('./routes/doctor/customer.routes');
 // Import Shared Routes
 const sharedAuthRoutes = require('./routes/shared/auth.routes');
 const sharedPaymentRoutes = require('./routes/shared/payment.routes');
@@ -107,6 +108,7 @@ app.use(`${DOCTOR_API_PREFIX}/appointments`, doctorAppointmentRoutes);
 app.use(`${DOCTOR_API_PREFIX}/medical-records`, doctorMedicalRecordRoutes);
 app.use(`${DOCTOR_API_PREFIX}/schedules`, doctorScheduleRoutes);
 app.use(`${DOCTOR_API_PREFIX}/notifications`, doctorNotificationRoutes);
+app.use(`${DOCTOR_API_PREFIX}/customers`, doctorCustomerRoutes);
 // API Routes - Admin Role
 // ============================================================
 

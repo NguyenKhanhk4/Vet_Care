@@ -21,6 +21,7 @@ import EditProfileDoctorScreen from '../screens/profile/EditProfileDoctorScreen'
 import ChangePasswordDoctorScreen from '../screens/profile/ChangePasswordDoctorScreen';
 import MedicalHistoryDoctorScreen from '../screens/medical/MedicalHistoryDoctorScreen';
 import NotificationDoctorScreen from '../screens/notifications/NotificationDoctorScreen';
+import CustomerPetsDoctorScreen from '../screens/customer/CustomerPetsDoctorScreen';
 
 const Tab = createBottomTabNavigator();
 const MainStack = createNativeStackNavigator();
@@ -81,6 +82,7 @@ const DoctorNavigator = () => {
       <MainStack.Screen name="EditProfile" component={EditProfileDoctorScreen} />
       <MainStack.Screen name="ChangePassword" component={ChangePasswordDoctorScreen} />
       <MainStack.Screen name="Notifications" component={NotificationDoctorScreen} />
+      <MainStack.Screen name="CustomerPetsDoctor" component={CustomerPetsDoctorScreen} />
     </MainStack.Navigator>
   );
 };
