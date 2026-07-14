@@ -21,10 +21,12 @@ const ProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const styles = getStyles(colors);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Hồ Sơ Của Tôi</Text>
       </View>
+
+      <ScrollView contentContainerStyle={styles.scrollContent}>
 
       <View style={styles.profileSection}>
         <View style={styles.avatarContainer}>
@@ -80,16 +82,17 @@ const ProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </TouchableOpacity>
 
       <Text style={styles.versionText}>Phiên bản 1.0.0</Text>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const getStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: SIZES.spacing.lg, paddingTop: 60, backgroundColor: colors.surface, ...SHADOWS.light, borderBottomLeftRadius: 30, borderBottomRightRadius: 30, marginBottom: SIZES.spacing.md },
+    headerTitle: { fontSize: 24, color: colors.textPrimary, ...FONTS.bold },
     scrollContent: { padding: SIZES.spacing.lg, paddingBottom: 50 },
-    header: { marginBottom: SIZES.spacing.xl, marginTop: 20 },
-    headerTitle: { fontSize: SIZES.title, color: colors.textPrimary, ...FONTS.bold },
     profileSection: { alignItems: 'center', backgroundColor: colors.surface, padding: SIZES.spacing.xl, borderRadius: SIZES.radius.lg, marginBottom: SIZES.spacing.xl, ...SHADOWS.medium },
     avatarContainer: { marginBottom: SIZES.spacing.md },
     avatar: { width: 100, height: 100, borderRadius: 50 },

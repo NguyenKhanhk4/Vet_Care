@@ -12,7 +12,7 @@ export const useNotifications = () => {
     try {
       setLoading(true);
       const response = await doctorApi.get(DOCTOR_API_ENDPOINTS.NOTIFICATIONS);
-      setNotifications(response.data.data?.notifications || []);
+      setNotifications(response.data?.notifications || []);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -29,7 +29,7 @@ export const useNotifications = () => {
   const markAsRead = async (id: string) => {
     try {
       await doctorApi.put(`${DOCTOR_API_ENDPOINTS.NOTIFICATIONS}/${id}/read`);
-      setNotifications(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));
+      setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
@@ -38,7 +38,7 @@ export const useNotifications = () => {
   const markAllAsRead = async () => {
     try {
       await doctorApi.put(`${DOCTOR_API_ENDPOINTS.NOTIFICATIONS}/read-all`);
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     } catch (error) {
       console.error('Error marking all as read:', error);
     }
