@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Image, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,7 +8,7 @@ import * as yup from 'yup';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { useDoctor } from '../../context/DoctorContext';
-import { doctorApi } from '../../services/doctorApi';
+import { doctorApi, getImageUrl } from '../../services/doctorApi';
 
 const nameRegex = /^[\p{L}\s]+$/u;
 const phoneRegex = /^[0-9]{10,11}$/;
@@ -49,7 +50,7 @@ const EditProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) 
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -114,17 +115,17 @@ const EditProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) 
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backIcon}>←</Text>
+          <Ionicons name="arrow-back" size={28} color={colors.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Chỉnh Sửa Hồ Sơ</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.avatarSection}>
           <TouchableOpacity onPress={pickImage} style={styles.avatarContainer}>
             {avatarUri ? (
-              <Image source={{ uri: avatarUri }} style={styles.avatar} />
+              <Image source={{ uri: getImageUrl(avatarUri) || avatarUri }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
                 <Text style={styles.avatarPlaceholderText}>{doctor?.user?.name?.charAt(0) || 'D'}</Text>
@@ -271,10 +272,9 @@ const EditProfileDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) 
 const getStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.spacing.lg, backgroundColor: colors.surface, ...SHADOWS.light },
-    backButton: { padding: SIZES.spacing.xs },
-    backIcon: { fontSize: 24, color: colors.textPrimary },
-    headerTitle: { fontSize: SIZES.title, color: colors.textPrimary, ...FONTS.bold },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.spacing.lg, paddingTop: 60, backgroundColor: colors.surface, ...SHADOWS.light, borderBottomLeftRadius: 30, borderBottomRightRadius: 30, marginBottom: SIZES.spacing.md },
+    backButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.primary + '15', alignItems: 'center', justifyContent: 'center' },
+    headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, color: colors.textPrimary, ...FONTS.bold, marginHorizontal: 10 },
     scrollContent: { padding: SIZES.spacing.lg, paddingBottom: 50 },
     avatarSection: { alignItems: 'center', marginBottom: SIZES.spacing.xl },
     avatarContainer: { position: 'relative', width: 100, height: 100 },

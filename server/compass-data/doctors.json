@@ -1,8 +1,8 @@
 [
   {
-    "_id": "6a5494f9b51254b56dbb4130",
-    "user": "6a5494f9b51254b56dbb40f4",
-    "clinic": "6a5494f9b51254b56dbb4108",
+    "_id": "6a5675bd550cb2afd2ee254b",
+    "user": "6a5675bc550cb2afd2ee250f",
+    "clinic": "6a5675bd550cb2afd2ee2523",
     "specialization": "Phẫu thuật",
     "experience": 3,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -14,30 +14,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb4131"
+        "_id": "6a5675bd550cb2afd2ee254c"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4132"
+        "_id": "6a5675bd550cb2afd2ee254d"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4133"
+        "_id": "6a5675bd550cb2afd2ee254e"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.929Z",
-    "updatedAt": "2026-07-13T07:34:17.929Z",
+    "createdAt": "2026-07-14T17:45:33.585Z",
+    "updatedAt": "2026-07-14T17:45:33.585Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb4135",
-    "user": "6a5494f9b51254b56dbb40f6",
-    "clinic": "6a5494f9b51254b56dbb410a",
+    "_id": "6a5675bd550cb2afd2ee2550",
+    "user": "6a5675bc550cb2afd2ee2511",
+    "clinic": "6a5675bd550cb2afd2ee2525",
     "specialization": "Khám tổng quát",
     "experience": 4,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -49,30 +49,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb4136"
+        "_id": "6a5675bd550cb2afd2ee2551"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4137"
+        "_id": "6a5675bd550cb2afd2ee2552"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4138"
+        "_id": "6a5675bd550cb2afd2ee2553"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.931Z",
-    "updatedAt": "2026-07-13T07:34:17.931Z",
+    "createdAt": "2026-07-14T17:45:33.588Z",
+    "updatedAt": "2026-07-14T17:45:33.588Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb413a",
-    "user": "6a5494f9b51254b56dbb40f8",
-    "clinic": "6a5494f9b51254b56dbb410c",
+    "_id": "6a5675bd550cb2afd2ee2555",
+    "user": "6a5675bc550cb2afd2ee2513",
+    "clinic": "6a5675bd550cb2afd2ee2527",
     "specialization": "Phẫu thuật",
     "experience": 5,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -84,30 +84,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb413b"
+        "_id": "6a5675bd550cb2afd2ee2556"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb413c"
+        "_id": "6a5675bd550cb2afd2ee2557"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb413d"
+        "_id": "6a5675bd550cb2afd2ee2558"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.933Z",
-    "updatedAt": "2026-07-13T07:34:17.933Z",
+    "createdAt": "2026-07-14T17:45:33.591Z",
+    "updatedAt": "2026-07-14T17:45:33.591Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb413f",
-    "user": "6a5494f9b51254b56dbb40fa",
-    "clinic": "6a5494f9b51254b56dbb410e",
+    "_id": "6a5675bd550cb2afd2ee255a",
+    "user": "6a5675bc550cb2afd2ee2515",
+    "clinic": "6a5675bd550cb2afd2ee2529",
     "specialization": "Khám tổng quát",
     "experience": 6,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -119,30 +119,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb4140"
+        "_id": "6a5675bd550cb2afd2ee255b"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4141"
+        "_id": "6a5675bd550cb2afd2ee255c"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4142"
+        "_id": "6a5675bd550cb2afd2ee255d"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.934Z",
-    "updatedAt": "2026-07-13T07:34:17.934Z",
+    "createdAt": "2026-07-14T17:45:33.593Z",
+    "updatedAt": "2026-07-14T17:45:33.593Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb4144",
-    "user": "6a5494f9b51254b56dbb40fc",
-    "clinic": "6a5494f9b51254b56dbb4110",
+    "_id": "6a5675bd550cb2afd2ee255f",
+    "user": "6a5675bd550cb2afd2ee2517",
+    "clinic": "6a5675bd550cb2afd2ee252b",
     "specialization": "Phẫu thuật",
     "experience": 7,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -154,30 +154,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb4145"
+        "_id": "6a5675bd550cb2afd2ee2560"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4146"
+        "_id": "6a5675bd550cb2afd2ee2561"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4147"
+        "_id": "6a5675bd550cb2afd2ee2562"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.936Z",
-    "updatedAt": "2026-07-13T07:34:17.936Z",
+    "createdAt": "2026-07-14T17:45:33.595Z",
+    "updatedAt": "2026-07-14T17:45:33.595Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb4149",
-    "user": "6a5494f9b51254b56dbb40fe",
-    "clinic": "6a5494f9b51254b56dbb4108",
+    "_id": "6a5675bd550cb2afd2ee2564",
+    "user": "6a5675bd550cb2afd2ee2519",
+    "clinic": "6a5675bd550cb2afd2ee2523",
     "specialization": "Khám tổng quát",
     "experience": 8,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -189,30 +189,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb414a"
+        "_id": "6a5675bd550cb2afd2ee2565"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb414b"
+        "_id": "6a5675bd550cb2afd2ee2566"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb414c"
+        "_id": "6a5675bd550cb2afd2ee2567"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.937Z",
-    "updatedAt": "2026-07-13T07:34:17.937Z",
+    "createdAt": "2026-07-14T17:45:33.597Z",
+    "updatedAt": "2026-07-14T17:45:33.597Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb414e",
-    "user": "6a5494f9b51254b56dbb4100",
-    "clinic": "6a5494f9b51254b56dbb410a",
+    "_id": "6a5675bd550cb2afd2ee2569",
+    "user": "6a5675bd550cb2afd2ee251b",
+    "clinic": "6a5675bd550cb2afd2ee2525",
     "specialization": "Phẫu thuật",
     "experience": 9,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -224,30 +224,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb414f"
+        "_id": "6a5675bd550cb2afd2ee256a"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4150"
+        "_id": "6a5675bd550cb2afd2ee256b"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4151"
+        "_id": "6a5675bd550cb2afd2ee256c"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.938Z",
-    "updatedAt": "2026-07-13T07:34:17.938Z",
+    "createdAt": "2026-07-14T17:45:33.599Z",
+    "updatedAt": "2026-07-14T17:45:33.599Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb4153",
-    "user": "6a5494f9b51254b56dbb4102",
-    "clinic": "6a5494f9b51254b56dbb410c",
+    "_id": "6a5675bd550cb2afd2ee256e",
+    "user": "6a5675bd550cb2afd2ee251d",
+    "clinic": "6a5675bd550cb2afd2ee2527",
     "specialization": "Khám tổng quát",
     "experience": 10,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -259,30 +259,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb4154"
+        "_id": "6a5675bd550cb2afd2ee256f"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4155"
+        "_id": "6a5675bd550cb2afd2ee2570"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4156"
+        "_id": "6a5675bd550cb2afd2ee2571"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.939Z",
-    "updatedAt": "2026-07-13T07:34:17.939Z",
+    "createdAt": "2026-07-14T17:45:33.601Z",
+    "updatedAt": "2026-07-14T17:45:33.601Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb4158",
-    "user": "6a5494f9b51254b56dbb4104",
-    "clinic": "6a5494f9b51254b56dbb410e",
+    "_id": "6a5675bd550cb2afd2ee2573",
+    "user": "6a5675bd550cb2afd2ee251f",
+    "clinic": "6a5675bd550cb2afd2ee2529",
     "specialization": "Phẫu thuật",
     "experience": 11,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -294,30 +294,30 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb4159"
+        "_id": "6a5675bd550cb2afd2ee2574"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb415a"
+        "_id": "6a5675bd550cb2afd2ee2575"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb415b"
+        "_id": "6a5675bd550cb2afd2ee2576"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.941Z",
-    "updatedAt": "2026-07-13T07:34:17.941Z",
+    "createdAt": "2026-07-14T17:45:33.603Z",
+    "updatedAt": "2026-07-14T17:45:33.603Z",
     "__v": 0
   },
   {
-    "_id": "6a5494f9b51254b56dbb415d",
-    "user": "6a5494f9b51254b56dbb4106",
-    "clinic": "6a5494f9b51254b56dbb4110",
+    "_id": "6a5675bd550cb2afd2ee2578",
+    "user": "6a5675bd550cb2afd2ee2521",
+    "clinic": "6a5675bd550cb2afd2ee252b",
     "specialization": "Khám tổng quát",
     "experience": 12,
     "bio": "Bác sĩ thú y tận tâm, yêu thương động vật.",
@@ -329,24 +329,24 @@
         "day": "monday",
         "startTime": "08:00",
         "endTime": "12:00",
-        "_id": "6a5494f9b51254b56dbb415e"
+        "_id": "6a5675bd550cb2afd2ee2579"
       },
       {
         "day": "wednesday",
         "startTime": "13:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb415f"
+        "_id": "6a5675bd550cb2afd2ee257a"
       },
       {
         "day": "friday",
         "startTime": "08:00",
         "endTime": "17:00",
-        "_id": "6a5494f9b51254b56dbb4160"
+        "_id": "6a5675bd550cb2afd2ee257b"
       }
     ],
     "isActive": true,
-    "createdAt": "2026-07-13T07:34:17.942Z",
-    "updatedAt": "2026-07-13T07:34:17.942Z",
+    "createdAt": "2026-07-14T17:45:33.605Z",
+    "updatedAt": "2026-07-14T17:45:33.605Z",
     "__v": 0
   }
 ]

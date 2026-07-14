@@ -6,10 +6,7 @@ import { DoctorProfile } from '../types';
 interface DoctorContextType {
   doctor: DoctorProfile | null;
   isLoading: boolean;
-  login: (email: string, password?: string) => Promise<void>;
-  logout: () => Promise<void>;
   updateProfile: () => Promise<void>;
-  forgotPassword: (email: string) => Promise<void>;
 }
 
 const DoctorContext = createContext<DoctorContextType | undefined>(undefined);
@@ -36,26 +33,6 @@ export const DoctorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const login = async (email: string, password?: string) => {
-    try {
-      setIsLoading(true);
-      const res = await doctorApi.post('/auth/login', { email, password });
-      const { token, doctor: doctorData, user } = res.data.data;
-      doctorData.user = user;
-      await AsyncStorage.setItem('doctorToken', token);
-      setDoctor(doctorData);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Đăng nhập thất bại');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = async () => {
-    await AsyncStorage.removeItem('doctorToken');
-    setDoctor(null);
-  };
-
   const updateProfile = async () => {
     try {
       const res = await doctorApi.get('/profile');
@@ -68,16 +45,8 @@ export const DoctorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const forgotPassword = async (email: string) => {
-    try {
-      await doctorApi.post('/auth/forgot-password', { email });
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Yêu cầu thất bại');
-    }
-  };
-
   return (
-    <DoctorContext.Provider value={{ doctor, isLoading, login, logout, updateProfile, forgotPassword }}>
+    <DoctorContext.Provider value={{ doctor, isLoading, updateProfile }}>
       {children}
     </DoctorContext.Provider>
   );

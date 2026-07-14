@@ -7,9 +7,9 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base URL for the API - change this to your server URL
-const API_BASE_URL = 'http://10.0.2.2:5000/api/customer'; // Android Emulator
+const API_BASE_URL = 'http://10.0.2.2:5001/api/customer'; // Android Emulator
 // const API_BASE_URL = 'http://localhost:5001/api/customer'; // iOS Simulator
-// const API_BASE_URL = 'http://YOUR_IP:5000/api/customer'; // Physical Device
+// const API_BASE_URL = 'http://YOUR_IP:5001/api/customer'; // Physical Device
 
 // Create Axios instance
 const api = axios.create({

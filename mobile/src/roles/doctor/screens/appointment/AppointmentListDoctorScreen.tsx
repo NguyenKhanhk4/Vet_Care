@@ -1,59 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView, TextInput } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
-import { doctorApi } from '../../services/doctorApi';
-import { translateSpecies } from '../../../../shared/utils/translate';
+import { useAppointments } from '../../hooks/useAppointments';
+import LoadingScreen from '../../components/LoadingScreen';
+import EmptyState from '../../components/EmptyState';
+import AppointmentCard from '../../components/AppointmentCard';
 
 const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { colors } = useTheme();
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState('all'); // all, pending, confirmed, completed, cancelled
+  const { appointments, loading, fetchAppointments } = useAppointments();
+  const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchAppointments = async () => {
-    try {
-      const url = filter === 'all' ? '/appointments' : `/appointments?status=${filter}`;
-      const response = await doctorApi.get(url);
-      setAppointments(response.data.appointments || []);
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+  const filteredAppointments = appointments?.filter(appt => {
+    if (!searchQuery) return true;
+    const lowerQuery = searchQuery.toLowerCase();
+    const customerMatch = appt.customer?.name?.toLowerCase().includes(lowerQuery) || appt.customer?.phone?.includes(lowerQuery);
+    const petMatch = appt.pet?.name?.toLowerCase().includes(lowerQuery);
+    const serviceMatch = appt.services?.some((s: any) => s.name?.toLowerCase().includes(lowerQuery));
+    return customerMatch || petMatch || serviceMatch;
+  });
 
-  useEffect(() => {
-    setLoading(true);
-    fetchAppointments();
-  }, [filter]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAppointments(filter === 'all' ? undefined : filter);
+    }, [filter, fetchAppointments])
+  );
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    fetchAppointments();
+    await fetchAppointments(filter === 'all' ? undefined : filter);
+    setRefreshing(false);
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Chờ xác nhận';
-      case 'confirmed': return 'Đã xác nhận';
-      case 'completed': return 'Hoàn thành';
-      case 'cancelled': return 'Đã hủy';
-      default: return status;
-    }
-  };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return colors.warning;
-      case 'confirmed': return colors.primary;
-      case 'completed': return colors.success;
-      case 'cancelled': return colors.error;
-      default: return colors.textSecondary;
-    }
-  };
 
   const FilterTab = ({ label, value }: { label: string, value: string }) => (
     <TouchableOpacity
@@ -69,7 +53,25 @@ const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Quản Lý Lịch Hẹn</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.headerTitle}>Quản Lý Lịch Hẹn</Text>
+          <Ionicons name="calendar" size={28} color={colors.primary} />
+        </View>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={22} color={colors.primary} style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Tìm khách hàng, thú cưng, SĐT..."
+            placeholderTextColor={colors.textLight}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+              <Ionicons name="close-circle" size={20} color={colors.textLight} />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       <View style={styles.filterContainer}>
@@ -83,47 +85,21 @@ const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation
       </View>
 
       {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
+        <LoadingScreen />
       ) : (
         <FlatList
-          data={appointments}
+          data={filteredAppointments}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContainer}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
+            <AppointmentCard
+              appointment={item}
               onPress={() => navigation.navigate('AppointmentDetail', { id: item._id })}
-            >
-              <View style={styles.cardHeader}>
-                <Text style={styles.dateText}>📅 {new Date(item.date).toLocaleDateString('vi-VN')} lúc {item.time}</Text>
-                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
-                  <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>{getStatusText(item.status)}</Text>
-                </View>
-              </View>
-              <View style={styles.cardBody}>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Khách hàng:</Text>
-                  <Text style={styles.infoValue}>{item.customer?.name}</Text>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Thú cưng:</Text>
-                  <Text style={styles.infoValue}>{item.pet?.name} ({translateSpecies(item.pet?.species)})</Text>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Dịch vụ:</Text>
-                  <Text style={styles.infoValue}>{item.service?.name}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
+            />
           )}
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📋</Text>
-              <Text style={styles.emptyText}>Không tìm thấy lịch hẹn nào.</Text>
-            </View>
+            <EmptyState icon="📋" text="Không tìm thấy lịch hẹn nào." />
           }
         />
       )}
@@ -135,10 +111,15 @@ const getStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    header: { padding: SIZES.spacing.lg, backgroundColor: colors.surface, ...SHADOWS.light },
-    headerTitle: { fontSize: SIZES.title, color: colors.textPrimary, ...FONTS.bold },
-    filterContainer: { paddingVertical: SIZES.spacing.md, backgroundColor: colors.surface, borderBottomWidth: 1, borderColor: colors.border },
-    filterTab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.background, marginRight: 10, borderWidth: 1, borderColor: colors.border },
+    header: { padding: SIZES.spacing.lg, paddingTop: 60, backgroundColor: colors.surface, ...SHADOWS.light, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, zIndex: 1 },
+    headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.spacing.md },
+    headerTitle: { fontSize: 24, color: colors.textPrimary, ...FONTS.bold },
+    searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 24, paddingHorizontal: 16, height: 48, borderWidth: 1, borderColor: colors.divider, ...SHADOWS.light },
+    searchIcon: { marginRight: 8 },
+    searchInput: { flex: 1, height: '100%', color: colors.textPrimary, fontSize: 15, ...FONTS.medium },
+    clearButton: { padding: 4 },
+    filterContainer: { paddingVertical: SIZES.spacing.md, backgroundColor: colors.background },
+    filterTab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.surface, marginRight: 10, ...SHADOWS.light },
     filterText: { fontSize: SIZES.sm, color: colors.textSecondary, ...FONTS.medium },
     listContainer: { padding: SIZES.spacing.lg },
     card: { backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.lg, marginBottom: SIZES.spacing.md, ...SHADOWS.light },

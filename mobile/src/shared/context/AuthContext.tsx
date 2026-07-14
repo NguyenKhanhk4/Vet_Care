@@ -83,6 +83,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (data.user.role === 'admin') {
           await AsyncStorage.setItem('adminToken', data.token);
           await AsyncStorage.setItem('adminUser', JSON.stringify(data.user));
+        } else if (data.user.role === 'doctor') {
+          await AsyncStorage.setItem('doctorToken', data.token);
+          await AsyncStorage.setItem('doctorUser', JSON.stringify(data.user));
         }
 
         setUser(data.user);
@@ -103,6 +106,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await AsyncStorage.removeItem('user');
       await AsyncStorage.removeItem('adminToken');
       await AsyncStorage.removeItem('adminUser');
+      await AsyncStorage.removeItem('doctorToken');
+      await AsyncStorage.removeItem('doctorUser');
       
       setUser(null);
       setRole('guest');

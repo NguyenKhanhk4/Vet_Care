@@ -7,19 +7,17 @@ import RootNavigator from './src/shared/navigation/RootNavigator';
 
 import { ThemeProvider } from './src/shared/context/ThemeContext';
 import { AuthProvider } from './src/shared/context/AuthContext';
-import { DoctorProvider } from './src/roles/doctor/context/DoctorContext';
+
 
 export default function App() {
   return (
     <PaperProvider>
       <ThemeProvider>
         <AuthProvider>
-          <DoctorProvider>
-            <NavigationContainer>
-              <StatusBar style="auto" />
-              <RootNavigator />
-            </NavigationContainer>
-          </DoctorProvider>
+          <NavigationContainer>
+            <StatusBar style="auto" />
+            <RootNavigator />
+          </NavigationContainer>
         </AuthProvider>
       </ThemeProvider>
     </PaperProvider>

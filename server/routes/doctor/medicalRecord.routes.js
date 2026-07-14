@@ -17,9 +17,9 @@ router.post(
   [
     body('appointmentId').notEmpty().isMongoId().withMessage('ID lịch hẹn không hợp lệ'),
     body('diagnosis').notEmpty().trim().isLength({ max: 1000 }).withMessage('Vui lòng nhập chẩn đoán'),
-    body('symptoms').optional().trim().isLength({ max: 1000 }),
+    body('symptoms').notEmpty().trim().isLength({ max: 1000 }).withMessage('Vui lòng nhập triệu chứng'),
     body('prescription').optional().trim().isLength({ max: 1000 }),
-    body('treatment').optional().trim().isLength({ max: 1000 }),
+    body('treatment').notEmpty().trim().isLength({ max: 1000 }).withMessage('Vui lòng nhập hướng điều trị'),
     body('doctorNotes').optional().trim().isLength({ max: 1000 }),
     body('cost').optional().isFloat({ min: 0 }).withMessage('Chi phí không hợp lệ'),
   ],

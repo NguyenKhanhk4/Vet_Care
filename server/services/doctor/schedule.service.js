@@ -15,7 +15,7 @@ class DoctorScheduleService {
     })
       .populate('customer', 'name phone avatar')
       .populate('pet', 'name species breed age image')
-      .populate('service', 'name duration')
+      .populate('services', 'name duration')
       .sort({ time: 1 });
 
     const total = appointments.length;
@@ -30,10 +30,10 @@ class DoctorScheduleService {
     };
   }
 
-  static async getWeeklySchedule(userId) {
+  static async getWeeklySchedule(userId, queryDate) {
     const doctor = await DoctorScheduleService._getDoctorByUserId(userId);
 
-    const today = new Date();
+    const today = queryDate ? new Date(queryDate) : new Date();
     const dayOfWeek = today.getDay();
     const monday = new Date(today);
     monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
@@ -49,7 +49,7 @@ class DoctorScheduleService {
     })
       .populate('customer', 'name phone avatar')
       .populate('pet', 'name species breed age image')
-      .populate('service', 'name duration')
+      .populate('services', 'name duration')
       .sort({ date: 1, time: 1 });
 
     const grouped = {};

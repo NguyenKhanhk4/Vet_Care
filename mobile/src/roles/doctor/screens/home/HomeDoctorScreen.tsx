@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -11,34 +12,27 @@ import {
 import { useDoctor } from '../../context/DoctorContext';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
-import { doctorApi } from '../../services/doctorApi';
+import { useSchedule } from '../../hooks/useSchedule';
+import LoadingScreen from '../../components/LoadingScreen';
+import StatusBadge from '../../components/StatusBadge';
+import EmptyState from '../../components/EmptyState';
 
 const HomeDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { doctor } = useDoctor();
   const { colors } = useTheme();
-  const [schedule, setSchedule] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { todaySchedule: schedule, loading, fetchTodaySchedule } = useSchedule();
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchTodaySchedule = async () => {
-    try {
-      const response = await doctorApi.get('/schedules/today');
-      setSchedule(response.data.data);
-    } catch (error) {
-      console.error('Error fetching today schedule:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      fetchTodaySchedule();
+    }, [fetchTodaySchedule])
+  );
 
-  useEffect(() => {
-    fetchTodaySchedule();
-  }, []);
-
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    fetchTodaySchedule();
+    await fetchTodaySchedule();
+    setRefreshing(false);
   };
 
   const getGreeting = () => {
@@ -51,11 +45,7 @@ const HomeDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const styles = getStyles(colors);
 
   if (loading) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   return (
@@ -106,14 +96,14 @@ const HomeDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <View style={styles.actionsContainer}>
           <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => navigation.navigate('Appointments')}
+            onPress={() => navigation.navigate('AppointmentTab')}
           >
             <Text style={styles.actionIcon}>📅</Text>
             <Text style={styles.actionText}>Lịch hẹn</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => navigation.navigate('Schedule')}
+            onPress={() => navigation.navigate('ScheduleTab')}
           >
             <Text style={styles.actionIcon}>⏰</Text>
             <Text style={styles.actionText}>Lịch trình</Text>
@@ -125,7 +115,7 @@ const HomeDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Ca khám tiếp theo</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Appointments')}>
+          <TouchableOpacity onPress={() => navigation.navigate('AppointmentTab')}>
             <Text style={styles.seeAllText}>Xem tất cả</Text>
           </TouchableOpacity>
         </View>
@@ -138,24 +128,20 @@ const HomeDoctorScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           >
             <View style={styles.timeBlock}>
               <Text style={styles.timeText}>{appt.time}</Text>
-              <Text style={[styles.statusBadge, {
-                backgroundColor: appt.status === 'pending' ? colors.warning + '20' : appt.status === 'confirmed' ? colors.primary + '20' : colors.success + '20',
-                color: appt.status === 'pending' ? colors.warning : appt.status === 'confirmed' ? colors.primary : colors.success
-              }]}>{appt.status === 'pending' ? 'Chờ xác nhận' : appt.status === 'confirmed' ? 'Đã xác nhận' : appt.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}</Text>
+              <View style={{ marginTop: 5 }}>
+                <StatusBadge status={appt.status} />
+              </View>
             </View>
             <View style={styles.apptInfo}>
-              <Text style={styles.petName}>🐾 {appt.pet.name}</Text>
-              <Text style={styles.customerName}>👤 {appt.customer.name}</Text>
-              <Text style={styles.serviceName}>🩺 {appt.service.name}</Text>
+              <Text style={styles.petName}>🐾 {appt.pet?.name}</Text>
+              <Text style={styles.customerName}>👤 {appt.customer?.name}</Text>
+              <Text style={styles.serviceName}>🩺 {appt.services?.[0]?.name}</Text>
             </View>
           </TouchableOpacity>
         ))}
 
         {(!schedule?.appointments || schedule.appointments.length === 0) && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>☕</Text>
-            <Text style={styles.emptyText}>Hôm nay bạn không có lịch hẹn nào.</Text>
-          </View>
+          <EmptyState icon="☕" text="Hôm nay bạn không có lịch hẹn nào." />
         )}
       </View>
     </ScrollView>

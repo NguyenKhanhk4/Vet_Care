@@ -16,7 +16,7 @@ class DoctorAppointmentService {
       Appointment.find(query)
         .populate('customer', 'name email phone avatar')
         .populate('pet', 'name species breed age gender image')
-        .populate('service', 'name price duration')
+        .populate('services', 'name price duration')
         .populate('clinic', 'name address')
         .sort({ date: -1, time: 1 })
         .skip(skip)
@@ -33,7 +33,7 @@ class DoctorAppointmentService {
     const appointment = await Appointment.findOne({ _id: appointmentId, doctor: doctor._id })
       .populate('customer', 'name email phone avatar')
       .populate('pet', 'name species breed age gender weight color image vaccineStatus')
-      .populate('service', 'name price duration description')
+      .populate('services', 'name price duration description')
       .populate('clinic', 'name address phone');
 
     if (!appointment) {
@@ -54,6 +54,16 @@ class DoctorAppointmentService {
       const error = new Error('Không tìm thấy lịch hẹn');
       error.statusCode = 404;
       throw error;
+    }
+
+    if (appointment.status === newStatus) {
+      // Đã ở trạng thái này rồi, trả về luôn để tránh lỗi trùng lặp khi người dùng retry
+      await appointment.populate([
+        { path: 'customer', select: 'name email phone avatar' },
+        { path: 'pet', select: 'name species breed age image' },
+        { path: 'services', select: 'name price duration' },
+      ]);
+      return appointment;
     }
 
     const allowedTransitions = {
@@ -104,7 +114,7 @@ class DoctorAppointmentService {
     await appointment.populate([
       { path: 'customer', select: 'name email phone avatar' },
       { path: 'pet', select: 'name species breed age image' },
-      { path: 'service', select: 'name price duration' },
+      { path: 'services', select: 'name price duration' },
     ]);
 
     return appointment;

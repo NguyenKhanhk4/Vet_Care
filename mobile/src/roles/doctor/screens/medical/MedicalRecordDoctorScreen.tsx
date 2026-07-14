@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -8,16 +9,29 @@ import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants
 import { doctorApi } from '../../services/doctorApi';
 
 const medicalRecordSchema = yup.object().shape({
-  diagnosis: yup.string().required('Vui lòng nhập chẩn đoán'),
-  symptoms: yup.string(),
-  prescription: yup.string(),
-  treatment: yup.string(),
-  doctorNotes: yup.string(),
-  cost: yup.number().min(0, 'Chi phí không được âm').typeError('Chi phí phải là số'),
+  diagnosis: yup.string()
+    .required('Vui lòng nhập chẩn đoán')
+    .min(5, 'Chẩn đoán quá ngắn, vui lòng mô tả chi tiết hơn')
+    .max(1000, 'Chẩn đoán quá dài (tối đa 1000 ký tự)'),
+  symptoms: yup.string()
+    .required('Vui lòng nhập triệu chứng')
+    .min(5, 'Triệu chứng quá ngắn')
+    .max(1000, 'Tối đa 1000 ký tự'),
+  prescription: yup.string().max(1000, 'Tối đa 1000 ký tự'),
+  treatment: yup.string()
+    .required('Vui lòng nhập hướng điều trị')
+    .min(5, 'Hướng điều trị quá ngắn')
+    .max(1000, 'Tối đa 1000 ký tự'),
+  doctorNotes: yup.string().max(1000, 'Tối đa 1000 ký tự'),
+  cost: yup.number()
+    .transform((value, originalValue) => (String(originalValue).trim() === '' ? 0 : value))
+    .typeError('Chi phí phải là số hợp lệ')
+    .min(0, 'Chi phí không được âm')
+    .max(100000000, 'Chi phí vượt quá giới hạn (tối đa 100 triệu)'),
 });
 
 const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
-  const { appointmentId, existingRecord } = route.params;
+  const { appointmentId, existingRecord, isReadOnly } = route.params;
   const { colors } = useTheme();
   const [submitting, setSubmitting] = useState(false);
 
@@ -60,10 +74,10 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backIcon}>←</Text>
+          <Ionicons name="arrow-back" size={28} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{existingRecord ? 'Sửa Bệnh Án' : 'Cập Nhật Bệnh Án'}</Text>
-        <View style={{ width: 40 }} />
+        <Text style={styles.headerTitle}>{isReadOnly ? 'Chi Tiết Bệnh Án' : existingRecord ? 'Sửa Bệnh Án' : 'Thêm Mới Bệnh Án'}</Text>
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -81,53 +95,61 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
                   placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={4}
+                  maxLength={1000}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
-            {errors.diagnosis && <Text style={styles.errorText}>{errors.diagnosis.message}</Text>}
+            {errors.diagnosis && <Text style={styles.errorText}>{errors.diagnosis.message?.toString()}</Text>}
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Triệu chứng</Text>
+            <Text style={styles.label}>Triệu chứng *</Text>
             <Controller
               control={control}
               name="symptoms"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  style={[styles.input, styles.textArea, errors.symptoms && styles.inputError]}
                   placeholder="Mô tả triệu chứng..."
                   placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={3}
+                  maxLength={1000}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
+            {errors.symptoms && <Text style={styles.errorText}>{errors.symptoms.message?.toString()}</Text>}
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Hướng điều trị</Text>
+            <Text style={styles.label}>Hướng điều trị *</Text>
             <Controller
               control={control}
               name="treatment"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  style={[styles.input, styles.textArea, errors.treatment && styles.inputError]}
                   placeholder="Chi tiết liệu trình điều trị..."
                   placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={3}
+                  maxLength={1000}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
+            {errors.treatment && <Text style={styles.errorText}>{errors.treatment.message?.toString()}</Text>}
           </View>
 
           <View style={styles.inputGroup}>
@@ -137,17 +159,20 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
               name="prescription"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  style={[styles.input, styles.textArea, errors.prescription && styles.inputError]}
                   placeholder="Kê đơn thuốc..."
                   placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={3}
+                  maxLength={1000}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
+            {errors.prescription && <Text style={styles.errorText}>{errors.prescription.message?.toString()}</Text>}
           </View>
 
           <View style={styles.inputGroup}>
@@ -157,17 +182,20 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
               name="doctorNotes"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  style={[styles.input, styles.textArea, errors.doctorNotes && styles.inputError]}
                   placeholder="Ghi chú của bác sĩ..."
                   placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={3}
+                  maxLength={1000}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
+            {errors.doctorNotes && <Text style={styles.errorText}>{errors.doctorNotes.message?.toString()}</Text>}
           </View>
 
           <View style={styles.inputGroup}>
@@ -184,21 +212,24 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value ? value.toString() : ''}
+                  editable={!isReadOnly}
                 />
               )}
             />
-            {errors.cost && <Text style={styles.errorText}>{errors.cost.message}</Text>}
+            {errors.cost && <Text style={styles.errorText}>{errors.cost.message?.toString()}</Text>}
           </View>
 
         </View>
 
-        <TouchableOpacity 
-          style={[styles.submitButton, submitting && { opacity: 0.7 }]} 
-          onPress={handleSubmit(onSubmit)}
-          disabled={submitting}
-        >
-          <Text style={styles.submitButtonText}>{submitting ? 'Đang lưu...' : 'Lưu Bệnh Án'}</Text>
-        </TouchableOpacity>
+        {!isReadOnly && (
+          <TouchableOpacity 
+            style={[styles.submitButton, submitting && { opacity: 0.7 }]} 
+            onPress={handleSubmit(onSubmit)}
+            disabled={submitting}
+          >
+            <Text style={styles.submitButtonText}>{submitting ? 'Đang lưu...' : 'Lưu Bệnh Án'}</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -207,10 +238,9 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
 const getStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.spacing.lg, backgroundColor: colors.surface, ...SHADOWS.light },
-    backButton: { padding: SIZES.spacing.xs },
-    backIcon: { fontSize: 24, color: colors.textPrimary },
-    headerTitle: { fontSize: SIZES.title, color: colors.textPrimary, ...FONTS.bold },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.spacing.lg, paddingTop: 60, backgroundColor: colors.surface, ...SHADOWS.light, borderBottomLeftRadius: 30, borderBottomRightRadius: 30, marginBottom: SIZES.spacing.md },
+    backButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.primary + '15', alignItems: 'center', justifyContent: 'center' },
+    headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, color: colors.textPrimary, ...FONTS.bold, marginHorizontal: 10 },
     scrollContent: { padding: SIZES.spacing.lg, paddingBottom: 50 },
     formSection: { backgroundColor: colors.surface, padding: SIZES.spacing.xl, borderRadius: SIZES.radius.lg, ...SHADOWS.medium },
     inputGroup: { marginBottom: SIZES.spacing.lg },

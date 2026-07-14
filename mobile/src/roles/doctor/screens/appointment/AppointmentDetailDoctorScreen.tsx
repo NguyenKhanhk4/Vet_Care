@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { doctorApi } from '../../services/doctorApi';
@@ -39,9 +41,11 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
     }
   };
 
-  useEffect(() => {
-    fetchAppointment();
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAppointment();
+    }, [id])
+  );
 
   const updateStatus = async (status: string, confirmMessage: string) => {
     Alert.alert('Xác nhận', confirmMessage, [
@@ -98,10 +102,10 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backIcon}>←</Text>
+          <Ionicons name="arrow-back" size={28} color={colors.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Chi Tiết Lịch Hẹn</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -118,7 +122,15 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
 
         {/* Pet Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Thông Tin Thú Cưng</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: SIZES.spacing.sm, borderBottomWidth: 1, borderColor: colors.border, paddingBottom: 5 }}>
+            <Text style={[styles.sectionTitle, { borderBottomWidth: 0, marginBottom: 0, paddingBottom: 0, marginRight: 12 }]} numberOfLines={1}>Thông Tin Thú Cưng</Text>
+            <TouchableOpacity 
+              style={{ backgroundColor: colors.primary + '15', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}
+              onPress={() => navigation.navigate('MedicalHistoryDoctor', { petId: appointment.pet?._id, petName: appointment.pet?.name })}
+            >
+              <Text style={{ color: colors.primary, fontSize: SIZES.sm, ...FONTS.bold }}>📜 Lịch Sử Khám</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.infoRow}><Text style={styles.label}>Tên:</Text><Text style={styles.value}>{appointment.pet?.name}</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Loài/Giống:</Text><Text style={styles.value}>{translateSpecies(appointment.pet?.species)} - {appointment.pet?.breed || 'Không rõ'}</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Tuổi:</Text><Text style={styles.value}>{appointment.pet?.age} năm</Text></View>
@@ -128,7 +140,15 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
 
         {/* Customer Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Thông Tin Khách Hàng</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: SIZES.spacing.sm, borderBottomWidth: 1, borderColor: colors.border, paddingBottom: 5 }}>
+            <Text style={[styles.sectionTitle, { borderBottomWidth: 0, marginBottom: 0, paddingBottom: 0, marginRight: 12 }]} numberOfLines={1}>Khách Hàng</Text>
+            <TouchableOpacity 
+              style={{ backgroundColor: colors.primary + '15', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}
+              onPress={() => navigation.navigate('CustomerPetsDoctor', { customerId: appointment.customer?._id, customerName: appointment.customer?.name })}
+            >
+              <Text style={{ color: colors.primary, fontSize: SIZES.sm, ...FONTS.bold }}>🐾 Danh sách thú cưng</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.infoRow}><Text style={styles.label}>Tên:</Text><Text style={styles.value}>{appointment.customer?.name}</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Điện thoại:</Text><Text style={styles.value}>{appointment.customer?.phone}</Text></View>
           <View style={styles.infoRow}><Text style={styles.label}>Email:</Text><Text style={styles.value}>{appointment.customer?.email}</Text></View>
@@ -137,16 +157,16 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
         {/* Service Info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Dịch Vụ & Thanh Toán</Text>
-          <View style={styles.infoRow}><Text style={styles.label}>Dịch vụ:</Text><Text style={styles.value}>{appointment.service?.name}</Text></View>
-          <View style={styles.infoRow}><Text style={styles.label}>Thời lượng:</Text><Text style={styles.value}>{appointment.service?.duration} phút</Text></View>
-          <View style={styles.infoRow}><Text style={styles.label}>Giá dịch vụ:</Text><Text style={styles.value}>{(appointment.totalAmount || appointment.service?.price || 0).toLocaleString('vi-VN')} VNĐ</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Dịch vụ:</Text><Text style={styles.value}>{appointment.services?.map((s: any) => s.name).join(', ')}</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Thời lượng:</Text><Text style={styles.value}>{appointment.services?.reduce((total: number, s: any) => total + (s.duration || 0), 0)} phút</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Giá dịch vụ:</Text><Text style={styles.value}>{(appointment.totalAmount || appointment.services?.reduce((total: number, s: any) => total + (s.price || 0), 0) || 0).toLocaleString('vi-VN')} VNĐ</Text></View>
           {medicalRecord && medicalRecord.cost > 0 && (
             <View style={styles.infoRow}><Text style={styles.label}>Phát sinh:</Text><Text style={styles.value}>{medicalRecord.cost.toLocaleString('vi-VN')} VNĐ</Text></View>
           )}
           <View style={[styles.infoRow, { borderTopWidth: 1, borderColor: colors.border, paddingTop: 8, marginTop: 4 }]}>
             <Text style={[styles.label, { ...FONTS.bold, color: colors.textPrimary }]}>Tổng tiền:</Text>
             <Text style={[styles.value, { color: colors.primary, ...FONTS.bold, fontSize: SIZES.lg }]}>
-              {((appointment.totalAmount || appointment.service?.price || 0) + (medicalRecord?.cost || 0)).toLocaleString('vi-VN')} VNĐ
+              {((appointment.totalAmount || appointment.services?.reduce((total: number, s: any) => total + (s.price || 0), 0) || 0) + (medicalRecord?.cost || 0)).toLocaleString('vi-VN')} VNĐ
             </Text>
           </View>
           {appointment.notes && (
@@ -202,7 +222,7 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
 
               {appointment.status === 'completed' && (
                 <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('MedicalRecordDoctor', { appointmentId: appointment._id, existingRecord: medicalRecord })}>
-                  <Text style={styles.actionBtnText}>{medicalRecord ? '📝 Sửa Bệnh Án' : '📝 Cập Nhật Bệnh Án'}</Text>
+                  <Text style={styles.actionBtnText}>{medicalRecord ? '📝 Sửa Bệnh Án' : '📝 Thêm Mới Bệnh Án'}</Text>
                 </TouchableOpacity>
               )}
             </>
@@ -217,10 +237,9 @@ const getStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     center: { justifyContent: 'center', alignItems: 'center' },
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.spacing.lg, backgroundColor: colors.surface, ...SHADOWS.light },
-    backButton: { padding: SIZES.spacing.xs },
-    backIcon: { fontSize: 24, color: colors.textPrimary },
-    headerTitle: { fontSize: SIZES.title, color: colors.textPrimary, ...FONTS.bold },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.spacing.lg, paddingTop: 60, backgroundColor: colors.surface, ...SHADOWS.light, borderBottomLeftRadius: 30, borderBottomRightRadius: 30, marginBottom: SIZES.spacing.md },
+    backButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.primary + '15', alignItems: 'center', justifyContent: 'center' },
+    headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, color: colors.textPrimary, ...FONTS.bold, marginHorizontal: 10 },
     scrollContent: { padding: SIZES.spacing.lg, paddingBottom: 100 },
     section: { backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.lg, marginBottom: SIZES.spacing.lg, ...SHADOWS.medium },
     statusRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },

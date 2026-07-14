@@ -6,10 +6,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthContext } from '../context/AuthContext';
 import { CustomerProvider } from '../../roles/customer/context/CustomerContext';
 import { AdminProvider } from '../../roles/admin/context/AdminContext';
+import { DoctorProvider } from '../../roles/doctor/context/DoctorContext';
 
 // Navigators
 import CustomerNavigator from '../../roles/customer/navigation/CustomerNavigator';
 import AdminNavigator from '../../roles/admin/navigation/AdminNavigator';
+import DoctorNavigator from '../../roles/doctor/navigation/DoctorNavigator';
 
 // Unified Auth Screens
 import LoginScreen from '../screens/auth/LoginScreen';
@@ -33,6 +35,12 @@ const AdminFlowComponent = () => (
   </AdminProvider>
 );
 
+const DoctorFlowComponent = () => (
+  <DoctorProvider>
+    <DoctorNavigator />
+  </DoctorProvider>
+);
+
 export default function RootNavigator() {
   const { role, isLoading } = useContext(AuthContext);
 
@@ -54,12 +62,7 @@ export default function RootNavigator() {
   }
 
   if (role === 'doctor') {
-    // Return DoctorFlowComponent when ready
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FF9800" />
-      </View>
-    );
+    return <DoctorFlowComponent />;
   }
 
   // Fallback for 'guest' (not logged in) - Show Unified Auth Stack
