@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
@@ -11,6 +11,14 @@ const MedicalHistoryDoctorScreen: React.FC<{ route: any; navigation: any }> = ({
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredRecords = records.filter(record => 
+    record.diagnosis?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    record.treatment?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    record.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    new Date(record.date).toLocaleDateString('vi-VN').includes(searchQuery)
+  );
 
   const fetchRecords = async () => {
     try {
@@ -45,18 +53,37 @@ const MedicalHistoryDoctorScreen: React.FC<{ route: any; navigation: any }> = ({
         <View style={{ width: 44 }} />
       </View>
 
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={22} color={colors.primary} style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Tìm chẩn đoán, điều trị, ngày..."
+          placeholderTextColor={colors.textLight}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+            <Ionicons name="close-circle" size={20} color={colors.textLight} />
+          </TouchableOpacity>
+        )}
+      </View>
+
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
         <FlatList
-          data={records}
+          data={filteredRecords}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContainer}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
           renderItem={({ item }) => (
-            <View style={styles.card}>
+            <TouchableOpacity 
+              style={styles.card}
+              onPress={() => navigation.navigate('MedicalRecordDoctor', { existingRecord: item, isReadOnly: true })}
+            >
               <View style={styles.cardHeader}>
                 <Text style={styles.dateText}>📅 {new Date(item.date).toLocaleDateString('vi-VN')}</Text>
                 <Text style={styles.petName}>🐾 {item.pet?.name}</Text>
@@ -77,7 +104,7 @@ const MedicalHistoryDoctorScreen: React.FC<{ route: any; navigation: any }> = ({
                   </View>
                 ) : null}
               </View>
-            </View>
+            </TouchableOpacity>
           )}
           ListEmptyComponent={
             <View style={styles.emptyState}>
@@ -98,6 +125,10 @@ const getStyles = (colors: ThemeColors) =>
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.spacing.lg, paddingTop: 60, backgroundColor: colors.surface, ...SHADOWS.light, borderBottomLeftRadius: 30, borderBottomRightRadius: 30, marginBottom: SIZES.spacing.md },
     backButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.primary + '15', alignItems: 'center', justifyContent: 'center' },
     headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, color: colors.textPrimary, ...FONTS.bold, marginHorizontal: 10 },
+    searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 24, marginHorizontal: SIZES.spacing.lg, marginTop: 10, paddingHorizontal: 16, height: 48, borderWidth: 1, borderColor: colors.divider, ...SHADOWS.light },
+    searchIcon: { marginRight: 8 },
+    searchInput: { flex: 1, height: '100%', color: colors.textPrimary, fontSize: 15, ...FONTS.medium },
+    clearButton: { padding: 4 },
     listContainer: { padding: SIZES.spacing.lg, flexGrow: 1 },
     card: { backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.lg, marginBottom: SIZES.spacing.md, ...SHADOWS.light },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.spacing.sm, borderBottomWidth: 1, borderColor: colors.border, paddingBottom: 10 },

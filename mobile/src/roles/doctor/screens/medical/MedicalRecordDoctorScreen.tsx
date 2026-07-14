@@ -31,7 +31,7 @@ const medicalRecordSchema = yup.object().shape({
 });
 
 const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
-  const { appointmentId, existingRecord } = route.params;
+  const { appointmentId, existingRecord, isReadOnly } = route.params;
   const { colors } = useTheme();
   const [submitting, setSubmitting] = useState(false);
 
@@ -76,7 +76,7 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={28} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{existingRecord ? 'Sửa Bệnh Án' : 'Thêm Mới Bệnh Án'}</Text>
+        <Text style={styles.headerTitle}>{isReadOnly ? 'Chi Tiết Bệnh Án' : existingRecord ? 'Sửa Bệnh Án' : 'Thêm Mới Bệnh Án'}</Text>
         <View style={{ width: 44 }} />
       </View>
 
@@ -99,6 +99,7 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
@@ -121,6 +122,7 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
@@ -143,6 +145,7 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
@@ -165,6 +168,7 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
@@ -187,6 +191,7 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  editable={!isReadOnly}
                 />
               )}
             />
@@ -207,6 +212,7 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value ? value.toString() : ''}
+                  editable={!isReadOnly}
                 />
               )}
             />
@@ -215,13 +221,15 @@ const MedicalRecordDoctorScreen: React.FC<{ route: any; navigation: any }> = ({ 
 
         </View>
 
-        <TouchableOpacity 
-          style={[styles.submitButton, submitting && { opacity: 0.7 }]} 
-          onPress={handleSubmit(onSubmit)}
-          disabled={submitting}
-        >
-          <Text style={styles.submitButtonText}>{submitting ? 'Đang lưu...' : 'Lưu Bệnh Án'}</Text>
-        </TouchableOpacity>
+        {!isReadOnly && (
+          <TouchableOpacity 
+            style={[styles.submitButton, submitting && { opacity: 0.7 }]} 
+            onPress={handleSubmit(onSubmit)}
+            disabled={submitting}
+          >
+            <Text style={styles.submitButtonText}>{submitting ? 'Đang lưu...' : 'Lưu Bệnh Án'}</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );

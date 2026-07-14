@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../../../shared/context/ThemeContext';
@@ -14,6 +14,16 @@ const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation
   const [filter, setFilter] = useState('all'); // all, pending, confirmed, completed, cancelled
   const { appointments, loading, fetchAppointments } = useAppointments();
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredAppointments = appointments?.filter(appt => {
+    if (!searchQuery) return true;
+    const lowerQuery = searchQuery.toLowerCase();
+    const customerMatch = appt.customer?.name?.toLowerCase().includes(lowerQuery) || appt.customer?.phone?.includes(lowerQuery);
+    const petMatch = appt.pet?.name?.toLowerCase().includes(lowerQuery);
+    const serviceMatch = appt.services?.some((s: any) => s.name?.toLowerCase().includes(lowerQuery));
+    return customerMatch || petMatch || serviceMatch;
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -47,6 +57,21 @@ const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation
           <Text style={styles.headerTitle}>Quản Lý Lịch Hẹn</Text>
           <Ionicons name="calendar" size={28} color={colors.primary} />
         </View>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={22} color={colors.primary} style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Tìm khách hàng, thú cưng, SĐT..."
+            placeholderTextColor={colors.textLight}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+              <Ionicons name="close-circle" size={20} color={colors.textLight} />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       <View style={styles.filterContainer}>
@@ -63,7 +88,7 @@ const AppointmentListDoctorScreen: React.FC<{ navigation: any }> = ({ navigation
         <LoadingScreen />
       ) : (
         <FlatList
-          data={appointments}
+          data={filteredAppointments}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContainer}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
@@ -87,8 +112,12 @@ const getStyles = (colors: ThemeColors) =>
     container: { flex: 1, backgroundColor: colors.background },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     header: { padding: SIZES.spacing.lg, paddingTop: 60, backgroundColor: colors.surface, ...SHADOWS.light, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, zIndex: 1 },
-    headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.spacing.md },
     headerTitle: { fontSize: 24, color: colors.textPrimary, ...FONTS.bold },
+    searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 24, paddingHorizontal: 16, height: 48, borderWidth: 1, borderColor: colors.divider, ...SHADOWS.light },
+    searchIcon: { marginRight: 8 },
+    searchInput: { flex: 1, height: '100%', color: colors.textPrimary, fontSize: 15, ...FONTS.medium },
+    clearButton: { padding: 4 },
     filterContainer: { paddingVertical: SIZES.spacing.md, backgroundColor: colors.background },
     filterTab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.surface, marginRight: 10, ...SHADOWS.light },
     filterText: { fontSize: SIZES.sm, color: colors.textSecondary, ...FONTS.medium },
