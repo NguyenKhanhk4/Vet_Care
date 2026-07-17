@@ -118,7 +118,7 @@ const getStyles = (colors: ThemeColors) =>
     infoRow: { flexDirection: 'row', marginBottom: 8 },
     infoLabel: { width: 100, fontSize: SIZES.sm, color: colors.textSecondary },
     infoValue: { flex: 1, fontSize: SIZES.sm, color: colors.textPrimary, ...FONTS.medium },
-    historyButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary + '15', paddingVertical: 12, borderRadius: SIZES.radius.base },
+    historyButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary + '15', paddingVertical: 10, borderRadius: SIZES.radius.base },
     historyButtonText: { color: colors.primary, fontSize: SIZES.md, ...FONTS.bold },
     emptyState: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: -50 },
     emptyText: { fontSize: SIZES.md, color: colors.textSecondary, ...FONTS.medium },

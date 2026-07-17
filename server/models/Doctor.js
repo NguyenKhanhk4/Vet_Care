@@ -64,6 +64,18 @@ const doctorSchema = new mongoose.Schema(
         },
       },
     ],
+    timeOff: [
+      {
+        date: {
+          type: String,
+          required: true,
+        },
+        reason: {
+          type: String,
+          default: '',
+        },
+      },
+    ],
     isActive: {
       type: Boolean,
       default: true,

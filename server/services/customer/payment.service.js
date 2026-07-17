@@ -316,6 +316,38 @@ class PaymentService {
       throw error;
     }
   }
+  /**
+   * Explicitly cancel a payment and its associated appointment
+   */
+  static async cancelPayment(userId, orderCode) {
+    const payment = await Payment.findOne({ orderCode, user: userId });
+    if (!payment) {
+      const error = new Error('Payment not found');
+      error.statusCode = 404;
+      throw error;
+    }
+    
+    if (payment.status === 'PAID') {
+      const error = new Error('Payment already completed');
+      error.statusCode = 400;
+      throw error;
+    }
+    
+    // Attempt to cancel on PayOS if it is still pending
+    if (payment.status === 'PENDING') {
+      try {
+        await payos.paymentRequests.cancel(Number(orderCode), 'Cancelled by user');
+      } catch(e) {
+        // Ignore errors if it's already cancelled on payOS or can't be found
+        console.warn('payOS cancel ignored:', e.message);
+      }
+    }
+
+    payment.status = 'FAILED';
+    await payment.save();
+    
+    return { status: 'FAILED' };
+  }
 }
 
 module.exports = PaymentService;

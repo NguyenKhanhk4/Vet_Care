@@ -86,7 +86,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   input: { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radius.base, paddingHorizontal: SIZES.spacing.base, paddingVertical: SIZES.spacing.md, fontSize: SIZES.base, color: colors.textPrimary },
   inputError: { borderColor: colors.error },
   errorText: { color: colors.error, fontSize: SIZES.sm, marginTop: SIZES.spacing.xs },
-  submitButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', ...SHADOWS.light },
+  submitButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', ...SHADOWS.light },
   buttonDisabled: { opacity: 0.7 },
   submitButtonText: { color: colors.textWhite, fontSize: SIZES.base, ...FONTS.semiBold },
 });

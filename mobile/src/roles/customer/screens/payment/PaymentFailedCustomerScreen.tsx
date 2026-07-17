@@ -24,13 +24,15 @@ const PaymentFailedCustomerScreen: React.FC<{ route: any; navigation: any }> = (
           </View>
         )}
 
-        <TouchableOpacity style={styles.primaryButton} onPress={() => { navigation.goBack(); }} activeOpacity={0.8}>
-          <Text style={styles.primaryButtonText}>Retry Payment</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 10, width: '100%' }}>
+          <TouchableOpacity style={[styles.primaryButton, { flex: 1 }]} onPress={() => { navigation.goBack(); }} activeOpacity={0.8}>
+            <Text style={styles.primaryButtonText}>Try Again</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => { navigation.popToTop(); navigation.navigate('Home'); }} activeOpacity={0.7}>
-          <Text style={styles.secondaryButtonText}>Back to Home</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={[styles.secondaryButton, { flex: 1 }]} onPress={() => { navigation.popToTop(); navigation.navigate('Home'); }} activeOpacity={0.7}>
+            <Text style={styles.secondaryButtonText}>Home</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -46,10 +48,10 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   transactionCard: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, padding: SIZES.spacing.xl, width: '100%', alignItems: 'center', marginBottom: SIZES.spacing.xxl, ...SHADOWS.light },
   transLabel: { fontSize: SIZES.sm, color: colors.textLight, marginBottom: SIZES.spacing.xs },
   transValue: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.medium },
-  primaryButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, width: '100%', alignItems: 'center', marginBottom: SIZES.spacing.md, ...SHADOWS.light },
-  primaryButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
-  secondaryButton: { paddingVertical: SIZES.spacing.md },
-  secondaryButtonText: { color: colors.primary, fontSize: SIZES.base, ...FONTS.medium },
+  primaryButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', ...SHADOWS.light },
+  primaryButtonText: { color: colors.textWhite, fontSize: SIZES.md, ...FONTS.semiBold },
+  secondaryButton: { paddingVertical: 10, borderWidth: 1, borderColor: colors.primary, borderRadius: SIZES.radius.base, alignItems: 'center', justifyContent: 'center' },
+  secondaryButtonText: { color: colors.primary, fontSize: SIZES.md, ...FONTS.semiBold },
 });
 
 export default PaymentFailedCustomerScreen;

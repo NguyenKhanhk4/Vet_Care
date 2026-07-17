@@ -9,5 +9,7 @@ router.use(authorize('doctor'));
 
 router.get('/today', DoctorScheduleController.getTodaySchedule);
 router.get('/week', DoctorScheduleController.getWeeklySchedule);
+router.post('/time-off', DoctorScheduleController.addTimeOff);
+router.delete('/time-off/:date', DoctorScheduleController.removeTimeOff);
 
 module.exports = router;

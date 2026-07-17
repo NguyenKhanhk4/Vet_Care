@@ -19,7 +19,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'payos_now' | 'payos_later' | 'cash'>('payos_now');
+  const [paymentMethod, setPaymentMethod] = useState<'payos_now' | 'cash'>('payos_now');
   const { colors } = useTheme();
 
   // Data lists
@@ -170,7 +170,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
     setStep(4);
   };
 
-  const generateDates = () => {
+  const availableDates = React.useMemo(() => {
     const dates = [];
     for (let i = 1; i <= 14; i++) {
       const date = new Date();
@@ -178,7 +178,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
       dates.push(date.toISOString().split('T')[0]);
     }
     return dates;
-  };
+  }, []);
 
   const handleSelectDate = async (date: string) => {
     setSelectedDate(date);
@@ -213,9 +213,6 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
       if (paymentMethod === 'cash') {
         const paymentRes = await api.post('/payments/create', { appointmentId, method: 'cash' });
         navigation.replace('PaymentSuccessCustomer', { orderCode: paymentRes.data.data.orderCode, method: 'cash' });
-      } else if (paymentMethod === 'payos_later') {
-        // Just navigate to success screen
-        navigation.replace('PaymentSuccessCustomer', { appointmentId, method: 'payos_later' });
       } else {
         // payos_now
         const paymentRes = await api.post('/payments/create', { appointmentId, method: 'payos' });
@@ -253,34 +250,50 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Step 0: Select Clinic */}
-        {step === 0 && clinics.map((clinic) => (
-          <TouchableOpacity key={clinic._id} style={styles.selectionCard} onPress={() => handleSelectClinic(clinic)} activeOpacity={0.7}>
-            <Text style={styles.cardEmoji}>🏥</Text>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>{clinic.name}</Text>
-              <Text style={styles.cardSubtitle}>📍 {clinic.address}</Text>
-              <RatingStars rating={clinic.rating} size={12} />
+        {step === 0 && (
+          clinics.length === 0 ? (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <Text style={{ color: colors.textSecondary }}>No clinics available.</Text>
             </View>
-          </TouchableOpacity>
-        ))}
+          ) : clinics.map((clinic) => (
+            <TouchableOpacity key={clinic._id} style={styles.selectionCard} onPress={() => handleSelectClinic(clinic)} activeOpacity={0.7}>
+              <Text style={styles.cardEmoji}>🏥</Text>
+              <View style={styles.cardInfo}>
+                <Text style={styles.cardTitle}>{clinic.name}</Text>
+                <Text style={styles.cardSubtitle}>📍 {clinic.address}</Text>
+                <RatingStars rating={clinic.rating} size={12} />
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
 
         {/* Step 1: Select Doctor */}
-        {step === 1 && doctors.map((doctor) => (
-          <TouchableOpacity key={doctor._id} style={styles.selectionCard} onPress={() => handleSelectDoctor(doctor)} activeOpacity={0.7}>
-            <Text style={styles.cardEmoji}>👨‍⚕️</Text>
-            <View style={styles.cardInfo}>
-              <Text style={styles.cardTitle}>{doctor.user?.name || 'Doctor'}</Text>
-              <Text style={styles.cardSubtitle}>{doctor.specialization}</Text>
-              <Text style={styles.cardMeta}>{doctor.experience} years experience</Text>
+        {step === 1 && (
+          doctors.length === 0 ? (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <Text style={{ color: colors.textSecondary }}>No doctors available at this clinic.</Text>
             </View>
-          </TouchableOpacity>
-        ))}
+          ) : doctors.map((doctor) => (
+            <TouchableOpacity key={doctor._id} style={styles.selectionCard} onPress={() => handleSelectDoctor(doctor)} activeOpacity={0.7}>
+              <Text style={styles.cardEmoji}>👨‍⚕️</Text>
+              <View style={styles.cardInfo}>
+                <Text style={styles.cardTitle}>{doctor.user?.name || 'Doctor'}</Text>
+                <Text style={styles.cardSubtitle}>{doctor.specialization}</Text>
+                <Text style={styles.cardMeta}>{doctor.experience} years experience</Text>
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
 
         {/* Step 2: Select Services */}
         {step === 2 && (
           <View>
             <Text style={styles.sectionLabel}>Select one or more services</Text>
-            {services.map((service) => {
+            {services.length === 0 ? (
+              <View style={{ padding: 20, alignItems: 'center' }}>
+                <Text style={{ color: colors.textSecondary }}>No services available at this clinic.</Text>
+              </View>
+            ) : services.map((service) => {
               const isSelected = selectedServices.some(s => s._id === service._id);
               return (
                 <TouchableOpacity key={service._id} style={isSelected ? styles.selectionCardActive : styles.selectionCard} onPress={() => handleToggleService(service)} activeOpacity={0.7}>
@@ -331,7 +344,7 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
           <View>
             <Text style={styles.sectionLabel}>Select Date</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateScroll}>
-              {generateDates().map((date) => (
+              {availableDates.map((date) => (
                 <TouchableOpacity key={date} style={[styles.dateCard, selectedDate === date && styles.dateCardActive]} onPress={() => handleSelectDate(date)} activeOpacity={0.7}>
                   <Text style={[styles.dateDay, selectedDate === date && styles.dateDayActive]}>{new Date(date).toLocaleDateString('en-GB', { weekday: 'short' })}</Text>
                   <Text style={[styles.dateNum, selectedDate === date && styles.dateNumActive]}>{new Date(date).getDate()}</Text>
@@ -396,23 +409,10 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
             >
               <Text style={styles.methodIcon}>💳</Text>
               <View style={styles.methodInfo}>
-                <Text style={styles.methodName}>Thanh toán Online (Ngay)</Text>
-                <Text style={styles.methodDesc}>Quét mã QR PayOS để thanh toán ngay</Text>
+                <Text style={styles.methodName}>Online Payment</Text>
+                <Text style={styles.methodDesc}>Scan PayOS QR code to pay instantly</Text>
               </View>
               {paymentMethod === 'payos_now' && <Text style={styles.checkIcon}>✅</Text>}
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={paymentMethod === 'payos_later' ? styles.methodCardActive : styles.methodCard}
-              onPress={() => setPaymentMethod('payos_later')}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.methodIcon}>⏱️</Text>
-              <View style={styles.methodInfo}>
-                <Text style={styles.methodName}>Thanh toán Online (Sau)</Text>
-                <Text style={styles.methodDesc}>Tạo lịch trước, thanh toán chuyển khoản sau</Text>
-              </View>
-              {paymentMethod === 'payos_later' && <Text style={styles.checkIcon}>✅</Text>}
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -422,8 +422,8 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
             >
               <Text style={styles.methodIcon}>💵</Text>
               <View style={styles.methodInfo}>
-                <Text style={styles.methodName}>Thanh toán Tiền mặt</Text>
-                <Text style={styles.methodDesc}>Thanh toán trực tiếp tại phòng khám</Text>
+                <Text style={styles.methodName}>Cash Payment</Text>
+                <Text style={styles.methodDesc}>Pay directly at the clinic</Text>
               </View>
               {paymentMethod === 'cash' && <Text style={styles.checkIcon}>✅</Text>}
             </TouchableOpacity>
@@ -447,20 +447,20 @@ const BookingCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
 
 const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  stepContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingTop: SIZES.spacing.base, paddingHorizontal: SIZES.spacing.base },
+  stepContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingTop: SIZES.spacing.xl, paddingHorizontal: SIZES.spacing.xl },
   stepItem: { flexDirection: 'row', alignItems: 'center' },
-  stepDot: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.divider, justifyContent: 'center', alignItems: 'center' },
-  stepDotActive: { backgroundColor: colors.primary },
+  stepDot: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center', ...SHADOWS.light },
+  stepDotActive: { backgroundColor: colors.primary, ...SHADOWS.medium },
   stepDotCompleted: { backgroundColor: colors.primaryDark },
   stepNumber: { fontSize: SIZES.xs, color: colors.textLight, ...FONTS.bold },
   stepNumberActive: { color: colors.textWhite },
-  stepLine: { width: 20, height: 2, backgroundColor: colors.divider, marginHorizontal: 2 },
+  stepLine: { width: 20, height: 4, backgroundColor: colors.surface, marginHorizontal: 4, borderRadius: 2 },
   stepLineActive: { backgroundColor: colors.primary },
-  stepLabel: { textAlign: 'center', fontSize: SIZES.lg, color: colors.textPrimary, ...FONTS.semiBold, marginVertical: SIZES.spacing.md },
-  content: { flex: 1, paddingHorizontal: SIZES.spacing.base },
-  selectionCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, ...SHADOWS.light },
-  selectionCardActive: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 2, borderColor: colors.primary, ...SHADOWS.light },
-  cardEmoji: { fontSize: 32, marginRight: SIZES.spacing.md },
+  stepLabel: { textAlign: 'center', fontSize: SIZES.xl, color: colors.textPrimary, ...FONTS.bold, marginVertical: SIZES.spacing.lg },
+  content: { flex: 1, paddingHorizontal: SIZES.spacing.xl },
+  selectionCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.lg, marginBottom: SIZES.spacing.md, ...SHADOWS.light },
+  selectionCardActive: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E1F5FE', borderRadius: SIZES.radius.lg, padding: SIZES.spacing.lg, marginBottom: SIZES.spacing.md, borderWidth: 2, borderColor: colors.primary, ...SHADOWS.medium },
+  cardEmoji: { fontSize: 36, marginRight: SIZES.spacing.lg },
   cardInfo: { flex: 1 },
   cardTitle: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold, marginBottom: 2 },
   cardSubtitle: { fontSize: SIZES.sm, color: colors.textSecondary, marginBottom: 2 },
@@ -470,40 +470,40 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   durationText: { fontSize: SIZES.xs, color: colors.textLight },
   emptyPets: { alignItems: 'center', padding: SIZES.spacing.xxl },
   emptyText: { fontSize: SIZES.base, color: colors.textSecondary, marginBottom: SIZES.spacing.base },
-  addPetBtn: { backgroundColor: colors.primary, paddingVertical: SIZES.spacing.md, paddingHorizontal: SIZES.spacing.xl, borderRadius: SIZES.radius.base },
+  addPetBtn: { backgroundColor: colors.primary, paddingVertical: 10, paddingHorizontal: SIZES.spacing.xl, borderRadius: SIZES.radius.base },
   addPetText: { color: colors.textWhite, ...FONTS.semiBold },
   sectionLabel: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold, marginBottom: SIZES.spacing.md, marginTop: SIZES.spacing.base },
   dateScroll: { marginBottom: SIZES.spacing.base },
-  dateCard: { width: 64, height: 80, borderRadius: SIZES.radius.base, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center', marginRight: SIZES.spacing.sm, borderWidth: 1, borderColor: colors.border },
-  dateCardActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  dateDay: { fontSize: SIZES.xs, color: colors.textLight },
-  dateDayActive: { color: 'rgba(255,255,255,0.8)' },
-  dateNum: { fontSize: SIZES.xl, color: colors.textPrimary, ...FONTS.bold },
+  dateCard: { width: 70, height: 90, borderRadius: SIZES.radius.lg, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center', marginRight: SIZES.spacing.md, ...SHADOWS.light },
+  dateCardActive: { backgroundColor: colors.primary, ...SHADOWS.medium },
+  dateDay: { fontSize: SIZES.xs, color: colors.textLight, ...FONTS.medium },
+  dateDayActive: { color: 'rgba(255,255,255,0.9)' },
+  dateNum: { fontSize: SIZES.xxl, color: colors.textPrimary, ...FONTS.bold, marginVertical: 2 },
   dateNumActive: { color: colors.textWhite },
-  dateMonth: { fontSize: SIZES.xs, color: colors.textLight },
-  dateMonthActive: { color: 'rgba(255,255,255,0.8)' },
-  timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.spacing.sm },
-  timeSlot: { paddingVertical: SIZES.spacing.sm, paddingHorizontal: SIZES.spacing.base, borderRadius: SIZES.radius.base, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  timeSlotActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  timeSlotDisabled: { backgroundColor: colors.divider, borderColor: colors.divider },
-  timeText: { fontSize: SIZES.md, color: colors.textPrimary },
-  timeTextActive: { color: colors.textWhite, ...FONTS.medium },
+  dateMonth: { fontSize: SIZES.xs, color: colors.textLight, ...FONTS.medium },
+  dateMonthActive: { color: 'rgba(255,255,255,0.9)' },
+  timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.spacing.md },
+  timeSlot: { paddingVertical: 12, paddingHorizontal: SIZES.spacing.lg, borderRadius: SIZES.radius.round, backgroundColor: colors.surface, ...SHADOWS.light },
+  timeSlotActive: { backgroundColor: colors.primary, ...SHADOWS.medium },
+  timeSlotDisabled: { backgroundColor: colors.background, elevation: 0, shadowOpacity: 0 },
+  timeText: { fontSize: SIZES.md, color: colors.textPrimary, ...FONTS.medium },
+  timeTextActive: { color: colors.textWhite, ...FONTS.bold },
   timeTextDisabled: { color: colors.textLight, textDecorationLine: 'line-through' },
-  nextButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginTop: SIZES.spacing.xl, ...SHADOWS.light },
-  nextButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
-  confirmSection: { backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.xl, ...SHADOWS.medium },
+  nextButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.round, paddingVertical: 14, alignItems: 'center', marginTop: SIZES.spacing.xl, marginBottom: SIZES.spacing.xxl, ...SHADOWS.medium },
+  nextButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.bold },
+  confirmSection: { backgroundColor: colors.surface, borderRadius: SIZES.radius.xl, padding: SIZES.spacing.xl, marginBottom: SIZES.spacing.xxl, ...SHADOWS.medium },
   confirmTitle: { fontSize: SIZES.xl, color: colors.textPrimary, ...FONTS.bold, marginBottom: SIZES.spacing.lg, textAlign: 'center' },
   confirmRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: SIZES.spacing.md, borderBottomWidth: 1, borderBottomColor: colors.divider },
   confirmIcon: { fontSize: 18, width: 30 },
   confirmLabel: { fontSize: SIZES.md, color: colors.textSecondary, width: 70 },
-  confirmValue: { flex: 1, fontSize: SIZES.md, color: colors.textPrimary, ...FONTS.medium, textAlign: 'right' },
-  bookButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginTop: SIZES.spacing.xl, ...SHADOWS.medium },
+  confirmValue: { flex: 1, fontSize: SIZES.md, color: colors.textPrimary, ...FONTS.bold, textAlign: 'right' },
+  bookButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.round, paddingVertical: 14, alignItems: 'center', marginTop: SIZES.spacing.xl, ...SHADOWS.medium },
   disabled: { opacity: 0.7 },
   bookButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.bold },
-  backButton: { paddingVertical: SIZES.spacing.md, paddingHorizontal: SIZES.spacing.xl, borderTopWidth: 1, borderTopColor: colors.divider, backgroundColor: colors.surface },
-  backButtonText: { fontSize: SIZES.base, color: colors.primary, ...FONTS.medium },
-  methodCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.background, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 1, borderColor: colors.border },
-  methodCardActive: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, borderRadius: SIZES.radius.base, padding: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderWidth: 2, borderColor: colors.primary, ...SHADOWS.light },
+  backButton: { paddingVertical: 14, paddingHorizontal: SIZES.spacing.xl, borderTopWidth: 1, borderTopColor: colors.divider, backgroundColor: colors.surface },
+  backButtonText: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold },
+  methodCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.lg, marginBottom: SIZES.spacing.md, ...SHADOWS.light },
+  methodCardActive: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E1F5FE', borderRadius: SIZES.radius.lg, padding: SIZES.spacing.lg, marginBottom: SIZES.spacing.md, borderWidth: 2, borderColor: colors.primary, ...SHADOWS.medium },
   methodIcon: { fontSize: 24, marginRight: SIZES.spacing.base },
   methodInfo: { flex: 1 },
   methodName: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold },

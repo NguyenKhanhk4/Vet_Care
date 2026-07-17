@@ -75,7 +75,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   input: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radius.base, paddingHorizontal: SIZES.spacing.base, paddingVertical: SIZES.spacing.md, fontSize: SIZES.base, color: colors.textPrimary },
   inputDisabled: { backgroundColor: colors.divider, color: colors.textLight },
   textArea: { minHeight: 80, paddingTop: SIZES.spacing.md },
-  saveButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginTop: SIZES.spacing.lg, ...SHADOWS.light },
+  saveButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', marginTop: SIZES.spacing.lg, ...SHADOWS.light },
   disabled: { opacity: 0.7 },
   saveButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
 });

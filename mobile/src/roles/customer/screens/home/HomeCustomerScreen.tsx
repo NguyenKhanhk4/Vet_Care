@@ -138,7 +138,7 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             keyExtractor={(item) => item._id}
             contentContainerStyle={styles.horizontalList}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.doctorCard} activeOpacity={0.8}>
+              <TouchableOpacity style={styles.doctorCard} activeOpacity={0.8} onPress={() => navigation.navigate('DoctorDetailCustomer', { doctorId: item._id })}>
                 <View style={styles.doctorAvatar}>
                   <Text style={styles.doctorEmoji}>👨‍⚕️</Text>
                 </View>
@@ -190,43 +190,43 @@ const HomeCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
 const getStyles = (colors: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  banner: { backgroundColor: colors.primary, marginHorizontal: SIZES.spacing.base, marginTop: SIZES.spacing.base, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.xl, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  banner: { backgroundColor: colors.primary, marginHorizontal: SIZES.spacing.xl, marginTop: SIZES.spacing.xl, borderRadius: SIZES.radius.xl, padding: SIZES.spacing.xl, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', ...SHADOWS.medium },
   bannerContent: { flex: 1 },
   welcomeText: { fontSize: SIZES.xl, color: colors.textWhite, ...FONTS.bold, marginBottom: SIZES.spacing.xs },
   bannerSubText: { fontSize: SIZES.md, color: 'rgba(255,255,255,0.85)' },
   bannerEmoji: { fontSize: 48 },
-  quickActions: { flexDirection: 'row', justifyContent: 'space-around', marginHorizontal: SIZES.spacing.base, marginTop: SIZES.spacing.lg },
+  quickActions: { flexDirection: 'row', justifyContent: 'space-around', marginHorizontal: SIZES.spacing.xl, marginTop: SIZES.spacing.xl },
   quickActionItem: { alignItems: 'center', width: 70 },
-  quickActionIcon: { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.secondaryLight, justifyContent: 'center', alignItems: 'center', marginBottom: SIZES.spacing.sm },
+  quickActionIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center', marginBottom: SIZES.spacing.sm, ...SHADOWS.light },
   quickActionEmoji: { fontSize: 24 },
   quickActionLabel: { fontSize: SIZES.xs, color: colors.textSecondary, ...FONTS.medium, textAlign: 'center' },
-  section: { marginTop: SIZES.spacing.xl },
-  lastSection: { marginBottom: SIZES.spacing.xxl },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: SIZES.spacing.base, marginBottom: SIZES.spacing.md },
-  sectionTitle: { fontSize: SIZES.lg, color: colors.textPrimary, ...FONTS.bold },
-  seeAll: { fontSize: SIZES.md, color: colors.primary, ...FONTS.medium },
-  horizontalList: { paddingHorizontal: SIZES.spacing.base },
+  section: { marginTop: SIZES.spacing.xl + 10 },
+  lastSection: { marginBottom: SIZES.spacing.xxl + 20 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', paddingHorizontal: SIZES.spacing.xl, marginBottom: SIZES.spacing.md },
+  sectionTitle: { fontSize: SIZES.xl, color: colors.textPrimary, ...FONTS.bold },
+  seeAll: { fontSize: SIZES.md, color: colors.primary, ...FONTS.semiBold, paddingBottom: 2 },
+  horizontalList: { paddingHorizontal: SIZES.spacing.xl, paddingBottom: SIZES.spacing.sm },
   // Clinic Cards
-  clinicCard: { width: 220, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, marginRight: SIZES.spacing.md, ...SHADOWS.light, overflow: 'hidden' },
-  clinicImagePlaceholder: { height: 100, backgroundColor: colors.secondaryLight, justifyContent: 'center', alignItems: 'center' },
-  clinicEmoji: { fontSize: 40 },
+  clinicCard: { width: 240, backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, marginRight: SIZES.spacing.md, ...SHADOWS.light, overflow: 'hidden' },
+  clinicImagePlaceholder: { height: 120, backgroundColor: '#E1F5FE', justifyContent: 'center', alignItems: 'center' },
+  clinicEmoji: { fontSize: 48 },
   clinicInfo: { padding: SIZES.spacing.md },
   clinicName: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold, marginBottom: 4 },
   clinicAddress: { fontSize: SIZES.sm, color: colors.textSecondary, marginBottom: 6 },
   clinicRating: { flexDirection: 'row', alignItems: 'center' },
   reviewCount: { fontSize: SIZES.xs, color: colors.textLight, marginLeft: 4 },
   // Doctor Cards
-  doctorCard: { width: 140, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, marginRight: SIZES.spacing.md, padding: SIZES.spacing.md, alignItems: 'center', ...SHADOWS.light },
-  doctorAvatar: { width: 64, height: 64, borderRadius: 32, backgroundColor: colors.primaryLight, justifyContent: 'center', alignItems: 'center', marginBottom: SIZES.spacing.sm },
-  doctorEmoji: { fontSize: 28 },
+  doctorCard: { width: 150, backgroundColor: colors.surface, borderRadius: SIZES.radius.lg, marginRight: SIZES.spacing.md, padding: SIZES.spacing.lg, alignItems: 'center', ...SHADOWS.light },
+  doctorAvatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: colors.primaryLight, justifyContent: 'center', alignItems: 'center', marginBottom: SIZES.spacing.md, ...SHADOWS.light },
+  doctorEmoji: { fontSize: 32 },
   doctorName: { fontSize: SIZES.md, color: colors.textPrimary, ...FONTS.semiBold, textAlign: 'center', marginBottom: 2 },
   doctorSpec: { fontSize: SIZES.xs, color: colors.textSecondary, textAlign: 'center', marginBottom: 4 },
   doctorRating: { marginBottom: 2 },
   doctorExp: { fontSize: SIZES.xs, color: colors.textLight },
   // Service Cards
-  serviceCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, marginHorizontal: SIZES.spacing.base, marginBottom: SIZES.spacing.sm, borderRadius: SIZES.radius.base, padding: SIZES.spacing.md, ...SHADOWS.light },
-  serviceIcon: { width: 48, height: 48, borderRadius: SIZES.radius.base, backgroundColor: colors.secondaryLight, justifyContent: 'center', alignItems: 'center', marginRight: SIZES.spacing.md },
-  serviceEmoji: { fontSize: 24 },
+  serviceCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, marginHorizontal: SIZES.spacing.xl, marginBottom: SIZES.spacing.md, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.md, ...SHADOWS.light },
+  serviceIcon: { width: 56, height: 56, borderRadius: SIZES.radius.round, backgroundColor: colors.secondaryLight, justifyContent: 'center', alignItems: 'center', marginRight: SIZES.spacing.md },
+  serviceEmoji: { fontSize: 28 },
   serviceInfo: { flex: 1, marginRight: SIZES.spacing.sm },
   serviceName: { fontSize: SIZES.md, color: colors.textPrimary, ...FONTS.semiBold, marginBottom: 2 },
   serviceDesc: { fontSize: SIZES.sm, color: colors.textSecondary },

@@ -2,19 +2,6 @@ node_modules/
 .env
 uploads/*
 !uploads/.gitkeep
-node_modules/
-.expo/
-.expo-shared/
-dist/
-build/
-android/
-ios/
-.env
-.env.*
-*.log
-
-.vscode/
-.idea/
 
 package-lock.json
 yarn.lock

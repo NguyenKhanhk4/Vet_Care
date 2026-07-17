@@ -4,12 +4,12 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 
-const SettingsCustomerScreen: React.FC = () => {
+const SettingsCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { isDarkMode, toggleTheme, colors } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
@@ -35,10 +35,6 @@ const SettingsCustomerScreen: React.FC = () => {
   };
 
 
-
-  const handleLink = (title: string) => {
-    Alert.alert(title, `This will open the ${title} page in a web browser.`);
-  };
 
   const styles = getStyles(colors);
 
@@ -80,7 +76,7 @@ const SettingsCustomerScreen: React.FC = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>About & Support</Text>
         
-        <TouchableOpacity style={styles.settingItem} onPress={() => handleLink('Privacy Policy')}>
+        <TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('PrivacyPolicy')}>
           <View style={styles.settingInfo}>
             <Text style={styles.settingIcon}>🔒</Text>
             <Text style={styles.settingLabel}>Privacy Policy</Text>
@@ -89,7 +85,7 @@ const SettingsCustomerScreen: React.FC = () => {
         </TouchableOpacity>
         <View style={styles.divider} />
 
-        <TouchableOpacity style={styles.settingItem} onPress={() => handleLink('Terms of Service')}>
+        <TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('TermsOfService')}>
           <View style={styles.settingInfo}>
             <Text style={styles.settingIcon}>📜</Text>
             <Text style={styles.settingLabel}>Terms of Service</Text>
@@ -98,7 +94,7 @@ const SettingsCustomerScreen: React.FC = () => {
         </TouchableOpacity>
         <View style={styles.divider} />
 
-        <TouchableOpacity style={styles.settingItem} onPress={() => handleLink('Help Center')}>
+        <TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('HelpCenter')}>
           <View style={styles.settingInfo}>
             <Text style={styles.settingIcon}>❓</Text>
             <Text style={styles.settingLabel}>Help Center</Text>

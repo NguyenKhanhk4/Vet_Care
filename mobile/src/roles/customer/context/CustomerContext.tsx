@@ -101,22 +101,14 @@ export const CustomerProvider: React.FC<{ children: ReactNode }> = ({ children }
       setIsLoading(true);
       setError(null);
 
-      const response = await api.post<ApiResponse<AuthResponse>>('/auth/register', {
+      await api.post<ApiResponse<AuthResponse>>('/auth/register', {
         name,
         email,
         password,
         phone,
       });
 
-      const { user: userData, token: authToken } = response.data.data;
-
-      // Save to state
-      setUser(userData);
-      setToken(authToken);
-
-      // Persist to storage
-      await AsyncStorage.setItem('token', authToken);
-      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      // Do not auto-login. The user will be redirected to the Login screen.
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.message || 'Registration failed. Please try again.';

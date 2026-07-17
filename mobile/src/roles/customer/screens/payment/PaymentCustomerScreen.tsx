@@ -122,7 +122,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   methodName: { fontSize: SIZES.base, color: colors.textPrimary, ...FONTS.semiBold },
   methodDesc: { fontSize: SIZES.sm, color: colors.textSecondary, marginTop: 2 },
   checkIcon: { fontSize: 20 },
-  payButton: { backgroundColor: colors.primary, margin: SIZES.spacing.base, marginTop: SIZES.spacing.xl, marginBottom: SIZES.spacing.xxl, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', ...SHADOWS.medium },
+  payButton: { backgroundColor: colors.primary, margin: SIZES.spacing.base, marginTop: SIZES.spacing.xl, marginBottom: SIZES.spacing.xxl, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', ...SHADOWS.medium },
   payButtonDisabled: { opacity: 0.5 },
   payButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.bold },
 });

@@ -57,6 +57,20 @@ class PaymentController {
       next(error);
     }
   }
+  /**
+   * POST /api/customer/payments/:orderCode/cancel
+   */
+  static async cancelPayment(req, res, next) {
+    try {
+      const result = await PaymentService.cancelPayment(req.user._id, req.params.orderCode);
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = PaymentController;

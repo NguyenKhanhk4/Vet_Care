@@ -38,7 +38,7 @@ const NearbyClinicCustomerScreen: React.FC<{ navigation: any }> = ({ navigation 
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setLocationError('Không thể xác định vị trí hiện tại. Vui lòng bật GPS và thử lại.');
+        setLocationError('Unable to determine current location. Please enable GPS and try again.');
         setIsLoading(false);
         return;
       }
@@ -52,6 +52,7 @@ const NearbyClinicCustomerScreen: React.FC<{ navigation: any }> = ({ navigation 
 
       if (!location) {
         console.warn('Cannot get real location. Using fallback mock location (Ho Chi Minh City) for testing.');
+        Alert.alert('Location Fallback', 'Cannot determine exact location. Using a default location for testing purposes.');
         location = {
           coords: {
             latitude: 10.7769,
@@ -261,7 +262,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: SIZES.spacing.xxl, backgroundColor: colors.background },
   errorEmoji: { fontSize: 64, marginBottom: SIZES.spacing.md },
   errorText: { fontSize: SIZES.md, color: colors.textSecondary, textAlign: 'center', marginBottom: SIZES.spacing.xl, lineHeight: 22 },
-  retryButton: { backgroundColor: colors.primary, paddingHorizontal: SIZES.spacing.xxl, paddingVertical: SIZES.spacing.md, borderRadius: SIZES.radius.base, ...SHADOWS.light },
+  retryButton: { backgroundColor: colors.primary, paddingHorizontal: SIZES.spacing.xxl, paddingVertical: 10, borderRadius: SIZES.radius.base, ...SHADOWS.light },
   retryButtonText: { color: colors.textWhite, fontSize: SIZES.base, ...FONTS.semiBold },
   
   searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, marginHorizontal: SIZES.spacing.base, marginTop: SIZES.spacing.base, borderRadius: SIZES.radius.base, paddingHorizontal: SIZES.spacing.base, ...SHADOWS.light },

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Platform, RefreshControl } from 'react-native';
 import { SIZES, FONTS, SHADOWS, ThemeColors } from '../../../../shared/constants/theme';
 import { useTheme } from '../../../../shared/context/ThemeContext';
 import api from '../../../../shared/utils/api';
@@ -17,6 +17,7 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
   const { appointmentId } = route.params;
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { colors } = useTheme();
 
@@ -28,8 +29,13 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
       const res = await api.get(`/appointments/${appointmentId}`);
       setAppointment(res.data.data);
     } catch (err: any) { setError(err.response?.data?.message || 'Failed to load'); }
-    finally { setIsLoading(false); }
+    finally { setIsLoading(false); setRefreshing(false); }
   };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchAppointment();
+  }, [appointmentId]);
 
   const handleCancel = () => {
     Alert.alert('Cancel Appointment', 'Are you sure you want to cancel this appointment?', [
@@ -52,16 +58,16 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
 
   const handleChangePaymentMethod = () => {
     const newMethod = appointment?.paymentMethod === 'cash' ? 'payos' : 'cash';
-    const methodText = newMethod === 'cash' ? 'Tiền mặt' : 'Thanh toán Online (payOS)';
+    const methodText = newMethod === 'cash' ? 'Cash' : 'Online (payOS)';
     
-    Alert.alert('Thay đổi phương thức thanh toán', `Bạn muốn đổi sang ${methodText}?`, [
-      { text: 'Hủy', style: 'cancel' },
-      { text: 'Đồng ý', onPress: async () => {
+    Alert.alert('Change Payment Method', `Do you want to switch to ${methodText}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Confirm', onPress: async () => {
         try {
           await api.put(`/appointments/${appointmentId}`, { paymentMethod: newMethod });
-          Alert.alert('Thành công', 'Đã cập nhật phương thức thanh toán');
+          Alert.alert('Success', 'Payment method updated successfully');
           fetchAppointment();
-        } catch (err: any) { Alert.alert('Lỗi', err.response?.data?.message || 'Không thể cập nhật'); }
+        } catch (err: any) { Alert.alert('Error', err.response?.data?.message || 'Cannot update payment method'); }
       }}
     ]);
   };
@@ -76,7 +82,13 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
   const formatDate = (date: string) => new Date(date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      style={styles.container} 
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
+      }
+    >
       {/* Status Header */}
       <View style={styles.statusHeader}>
         <StatusBadge status={a.status} />
@@ -136,9 +148,15 @@ const AppointmentDetailCustomerScreen: React.FC<{ route: any; navigation: any }>
               </TouchableOpacity>
             )}
             <TouchableOpacity style={[styles.changeMethodButton, a.paymentMethod === 'payos' ? styles.halfButton : styles.fullButton]} onPress={handleChangePaymentMethod} activeOpacity={0.8}>
-              <Text style={styles.changeMethodText}>🔄 Đổi PTTT</Text>
+              <Text style={styles.changeMethodText}>🔄 Change Method</Text>
             </TouchableOpacity>
           </View>
+        )}
+        
+        {['pending', 'confirmed', 'completed', 'paid'].includes(a.status) && (
+          <TouchableOpacity style={[styles.payButton, { backgroundColor: colors.info, marginBottom: SIZES.spacing.sm }]} onPress={() => navigation.navigate('ChatCustomer', { doctorId: typeof a.doctor === 'object' ? a.doctor.user?._id : a.doctor, doctorName: typeof a.doctor === 'object' ? a.doctor.user?.name : 'Doctor' })} activeOpacity={0.8}>
+            <Text style={styles.payButtonText}>💬 Chat with Doctor</Text>
+          </TouchableOpacity>
         )}
         
         {['pending', 'confirmed'].includes(a.status) && (
@@ -170,11 +188,11 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   paymentActionRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: SIZES.spacing.sm },
   halfButton: { flex: 0.48, marginBottom: 0 },
   fullButton: { flex: 1, marginBottom: 0 },
-  changeMethodButton: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.primary },
+  changeMethodButton: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.primary },
   changeMethodText: { color: colors.primary, fontSize: SIZES.base, ...FONTS.semiBold },
-  payButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginBottom: SIZES.spacing.sm, ...SHADOWS.light },
+  payButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', marginBottom: SIZES.spacing.sm, ...SHADOWS.light },
   payButtonText: { color: colors.textWhite, fontSize: SIZES.base, ...FONTS.semiBold },
-  cancelButton: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.error },
+  cancelButton: { backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.error },
   cancelButtonText: { color: colors.error, fontSize: SIZES.base, ...FONTS.semiBold },
 });
 

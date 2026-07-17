@@ -115,10 +115,6 @@ class AdminAppointmentService {
     return appointment;
   }
 
-  /**
-   * Delete appointment
-   * @param {string} appointmentId
-   */
   static async deleteAppointment(appointmentId) {
     const appointment = await Appointment.findByIdAndDelete(appointmentId);
 
@@ -129,6 +125,34 @@ class AdminAppointmentService {
     }
 
     return { message: 'Appointment deleted successfully' };
+  }
+
+  /**
+   * Confirm cash payment for an appointment
+   * @param {string} appointmentId
+   */
+  static async confirmPayment(appointmentId) {
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+      const error = new Error('Appointment not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (appointment.paymentStatus === 'PAID') {
+      const error = new Error('Appointment is already paid');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    appointment.paymentStatus = 'PAID';
+    // If we want, we can also set status to confirmed if it was pending
+    if (appointment.status === 'pending') {
+      appointment.status = 'confirmed';
+    }
+
+    await appointment.save();
+    return appointment;
   }
 }
 

@@ -23,10 +23,15 @@ class DoctorScheduleService {
     const confirmed = appointments.filter((a) => a.status === 'confirmed').length;
     const completed = appointments.filter((a) => a.status === 'completed').length;
 
+    const todayStr = today.toISOString().split('T')[0];
+    const timeOffInfo = doctor.timeOff?.find(t => t.date === todayStr);
+
     return {
-      date: today.toISOString().split('T')[0],
+      date: todayStr,
       appointments,
       stats: { total, pending, confirmed, completed },
+      isOff: !!timeOffInfo,
+      offReason: timeOffInfo ? timeOffInfo.reason : null,
     };
   }
 
@@ -66,10 +71,13 @@ class DoctorScheduleService {
       const day = new Date(monday);
       day.setDate(monday.getDate() + i);
       const dateKey = day.toISOString().split('T')[0];
+      const timeOffInfo = doctor.timeOff?.find(t => t.date === dateKey);
       schedule.push({
         date: dateKey,
         dayName: dayNames[day.getDay()],
         appointments: grouped[dateKey] || [],
+        isOff: !!timeOffInfo,
+        offReason: timeOffInfo ? timeOffInfo.reason : null,
       });
     }
 
@@ -78,6 +86,33 @@ class DoctorScheduleService {
       weekEnd: sunday.toISOString().split('T')[0],
       schedule,
     };
+  }
+
+  static async addTimeOff(userId, date, reason = '') {
+    const doctor = await DoctorScheduleService._getDoctorByUserId(userId);
+    
+    // Check if already off
+    const existing = doctor.timeOff?.find(t => t.date === date);
+    if (existing) {
+      existing.reason = reason;
+    } else {
+      if (!doctor.timeOff) doctor.timeOff = [];
+      doctor.timeOff.push({ date, reason });
+    }
+    
+    await doctor.save();
+    return doctor.timeOff;
+  }
+
+  static async removeTimeOff(userId, date) {
+    const doctor = await DoctorScheduleService._getDoctorByUserId(userId);
+    
+    if (doctor.timeOff) {
+      doctor.timeOff = doctor.timeOff.filter(t => t.date !== date);
+      await doctor.save();
+    }
+    
+    return doctor.timeOff;
   }
 
   static async _getDoctorByUserId(userId) {

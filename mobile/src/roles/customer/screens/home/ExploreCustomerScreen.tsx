@@ -78,7 +78,7 @@ const ExploreCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ rout
   );
 
   const renderDoctor = ({ item }: { item: Doctor }) => (
-    <TouchableOpacity style={styles.doctorCard} activeOpacity={0.8}>
+    <TouchableOpacity style={styles.doctorCard} activeOpacity={0.8} onPress={() => navigation.navigate('DoctorDetailCustomer', { doctorId: item._id })}>
       <View style={styles.doctorAvatar}>
         <Text style={styles.doctorEmoji}>👨‍⚕️</Text>
       </View>

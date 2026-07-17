@@ -201,9 +201,9 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   servicePrice: { fontSize: SIZES.md, color: colors.primary, ...FONTS.bold },
   serviceDuration: { fontSize: SIZES.xs, color: colors.textLight, marginTop: 2 },
   actionButtonsContainer: { flexDirection: 'row', margin: SIZES.spacing.base, marginBottom: SIZES.spacing.xxl, gap: SIZES.spacing.md },
-  bookButton: { flex: 2, backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', ...SHADOWS.medium },
+  bookButton: { flex: 2, backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', ...SHADOWS.medium },
   bookButtonText: { color: colors.textWhite, fontSize: SIZES.md, ...FONTS.semiBold },
-  directionButton: { flex: 1, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.primary, ...SHADOWS.light },
+  directionButton: { flex: 1, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.primary, ...SHADOWS.light },
   directionButtonText: { color: colors.primary, fontSize: SIZES.md, ...FONTS.semiBold },
 });
 

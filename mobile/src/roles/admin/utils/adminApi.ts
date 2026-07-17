@@ -1,10 +1,9 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_BASE_URL as BASE_URL } from '../../../shared/utils/api';
+import { ROOT_API_URL } from '../../../shared/utils/api';
 
-// Derive the Admin API URL from the base one by replacing /customer with /admin
-// For example: http://10.0.2.2:5001/api/customer -> http://10.0.2.2:5001/api/admin
-const ADMIN_API_BASE_URL = BASE_URL.replace('/customer', '/admin');
+// Derive the Admin API URL from the base one
+const ADMIN_API_BASE_URL = `${ROOT_API_URL}/admin`;
 
 const adminApi = axios.create({
   baseURL: ADMIN_API_BASE_URL,

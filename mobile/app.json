@@ -9,21 +9,25 @@
     "splash": {
       "image": "./assets/vetcare.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#87d1e8"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vetcare.app"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
+        "backgroundColor": "#87d1e8",
         "foregroundImage": "./assets/vetcare.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.VetCare"
+      "package": "com.vetcare.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
   }
 }

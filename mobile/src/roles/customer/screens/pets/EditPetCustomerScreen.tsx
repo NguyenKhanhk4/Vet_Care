@@ -102,7 +102,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   label: { fontSize: SIZES.md, color: colors.textPrimary, ...FONTS.medium, marginBottom: SIZES.spacing.sm },
   input: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radius.base, paddingHorizontal: SIZES.spacing.base, paddingVertical: SIZES.spacing.md, fontSize: SIZES.base, color: colors.textPrimary },
   row: { flexDirection: 'row' },
-  submitButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginTop: SIZES.spacing.lg, ...SHADOWS.light },
+  submitButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', marginTop: SIZES.spacing.lg, ...SHADOWS.light },
   disabled: { opacity: 0.7 },
   submitText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
 });

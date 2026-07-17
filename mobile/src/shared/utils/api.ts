@@ -5,11 +5,14 @@
 
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
-// Base URL for the API - change this to your server URL
-const API_BASE_URL = 'http://10.0.2.2:5001/api/customer'; // Android Emulator
-// const API_BASE_URL = 'http://localhost:5001/api/customer'; // iOS Simulator
-// const API_BASE_URL = 'http://YOUR_IP:5001/api/customer'; // Physical Device
+// Base URL for the API - change this to your server URL via .env (e.g. EXPO_PUBLIC_API_URL=https://api.vetcare.com)
+const DEFAULT_HOST = Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
+const BASE_HOST = process.env.EXPO_PUBLIC_API_URL || DEFAULT_HOST;
+
+const ROOT_API_URL = `${BASE_HOST}/api`;
+const API_BASE_URL = `${ROOT_API_URL}/customer`;
 
 // Create Axios instance
 const api = axios.create({
@@ -48,13 +51,13 @@ api.interceptors.response.use(
   },
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid - clear storage
-      await AsyncStorage.removeItem('token');
-      await AsyncStorage.removeItem('user');
+      import('react-native').then(({ DeviceEventEmitter }) => {
+        DeviceEventEmitter.emit('force_logout');
+      });
     }
     return Promise.reject(error);
   }
 );
 
 export default api;
-export { API_BASE_URL };
+export { API_BASE_URL, ROOT_API_URL, BASE_HOST };

@@ -171,7 +171,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   modalDivider: { height: 1, backgroundColor: colors.divider, marginBottom: SIZES.spacing.md },
   modalMessageScroll: { marginBottom: SIZES.spacing.xl },
   modalMessage: { fontSize: SIZES.base, color: colors.textSecondary, lineHeight: 24 },
-  closeButton: { backgroundColor: colors.primary, paddingVertical: SIZES.spacing.md, borderRadius: SIZES.radius.base, alignItems: 'center' },
+  closeButton: { backgroundColor: colors.primary, paddingVertical: 10, borderRadius: SIZES.radius.base, alignItems: 'center' },
   closeButtonText: { color: colors.textWhite, fontSize: SIZES.md, ...FONTS.bold },
 });
 

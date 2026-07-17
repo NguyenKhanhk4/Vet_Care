@@ -157,7 +157,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   optionText: { fontSize: SIZES.md, color: colors.textSecondary },
   optionTextSelected: { color: colors.primaryDark, ...FONTS.medium },
   row: { flexDirection: 'row' },
-  submitButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginTop: SIZES.spacing.lg, ...SHADOWS.light },
+  submitButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', marginTop: SIZES.spacing.lg, ...SHADOWS.light },
   buttonDisabled: { opacity: 0.7 },
   submitText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
 });

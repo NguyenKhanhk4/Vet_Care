@@ -121,7 +121,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   clinicEmoji: { fontSize: 32, marginRight: SIZES.spacing.md },
   clinicName: { fontSize: SIZES.md, color: colors.textPrimary, ...FONTS.semiBold },
   clinicAddress: { fontSize: SIZES.sm, color: colors.textSecondary, marginTop: 2 },
-  bookButton: { backgroundColor: colors.primary, margin: SIZES.spacing.base, marginBottom: SIZES.spacing.xxl, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', ...SHADOWS.medium },
+  bookButton: { backgroundColor: colors.primary, margin: SIZES.spacing.base, marginBottom: SIZES.spacing.xxl, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', ...SHADOWS.medium },
   bookButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
 });
 
