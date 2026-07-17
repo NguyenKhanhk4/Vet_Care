@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 import axios from 'axios';
 import { SIZES, FONTS, ThemeColors } from '../../../../shared/constants/theme';
 import { useTheme } from '../../../../shared/context/ThemeContext';
-import { API_BASE_URL } from '../../../../shared/utils/api';
+import api, { ROOT_API_URL } from '../../../../shared/utils/api';
 
 const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = ({ route, navigation }) => {
   const { checkoutUrl, orderCode } = route.params;
@@ -31,14 +31,14 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
       
       if (pollCount.current > 30) {
         stopPolling();
-        Alert.alert('Timeout', 'Chưa nhận được kết quả thanh toán. Vui lòng kiểm tra lại sau.');
+        Alert.alert('Timeout', 'Payment result not received yet. Please check again later.');
         navigation.goBack();
         return;
       }
 
       try {
-        const verifyUrl = API_BASE_URL.replace('/customer', '') + `/payment/verify/${orderCode}`;
-        const res = await axios.post(verifyUrl);
+        const verifyUrl = `${ROOT_API_URL}/payment/verify/${orderCode}`;
+        const res = await api.post(verifyUrl);
         const status = res.data?.data?.status;
 
         if (status === 'PAID') {
@@ -65,13 +65,18 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
     stopPolling();
     if (success) {
       try {
-        const verifyUrl = API_BASE_URL.replace('/customer', '') + `/payment/verify/${orderCode}`;
-        await axios.post(verifyUrl);
+        const verifyUrl = `${ROOT_API_URL}/payment/verify/${orderCode}`;
+        await api.post(verifyUrl);
       } catch (err) {
         console.error('Verify payment error:', err);
       }
       navigation.replace('PaymentSuccessCustomer', { orderCode });
     } else {
+      try {
+        await api.post(`/payments/${orderCode}/cancel`);
+      } catch (err) {
+        console.error('Cancel payment error:', err);
+      }
       navigation.replace('PaymentFailedCustomer', { orderCode });
     }
   };
@@ -96,15 +101,15 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
         <TouchableOpacity style={styles.backButton} onPress={() => { stopPolling(); navigation.goBack(); }}>
           <Text style={styles.backText}>Close</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Thanh toán</Text>
+        <Text style={styles.title}>Payment</Text>
         <View style={{ width: 60 }} />
       </View>
 
       {hasError ? (
         <View style={styles.centerContainer}>
-          <Text style={styles.errorText}>Không thể tải trang thanh toán.</Text>
+          <Text style={styles.errorText}>Unable to load payment page.</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => { setHasError(false); webViewRef.current?.reload(); }}>
-            <Text style={styles.retryText}>Thử lại</Text>
+            <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -121,7 +126,7 @@ const PaymentWebViewCustomerScreen: React.FC<{ route: any; navigation: any }> = 
           renderLoading={() => (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.primary} />
-              <Text style={styles.loadingText}>Đang tải trang thanh toán...</Text>
+              <Text style={styles.loadingText}>Loading payment page...</Text>
             </View>
           )}
         />

@@ -199,30 +199,30 @@ const AppointmentDetailDoctorScreen: React.FC<{ route: any; navigation: any }> =
           ) : (
             <>
               {appointment.status === 'pending' && (
-                <>
-                  <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={() => updateStatus('confirm', 'Bạn có chắc chắn muốn xác nhận lịch hẹn này?')}>
-                    <Text style={styles.actionBtnText}>✅ Xác Nhận Lịch Hẹn</Text>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <TouchableOpacity style={[styles.actionBtn, { flex: 1, backgroundColor: colors.primary }]} onPress={() => updateStatus('confirm', 'Bạn có chắc chắn muốn xác nhận lịch hẹn này?')}>
+                    <Text style={styles.actionBtnText}>Xác Nhận</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.error, marginTop: 10 }]} onPress={() => updateStatus('reject', 'Bạn có chắc chắn muốn từ chối lịch hẹn này?')}>
-                    <Text style={styles.actionBtnText}>❌ Từ Chối</Text>
+                  <TouchableOpacity style={[styles.actionBtn, { flex: 1, backgroundColor: colors.error }]} onPress={() => updateStatus('reject', 'Bạn có chắc chắn muốn từ chối lịch hẹn này?')}>
+                    <Text style={styles.actionBtnText}>Từ Chối</Text>
                   </TouchableOpacity>
-                </>
+                </View>
               )}
 
               {appointment.status === 'confirmed' && (
-                <>
-                  <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.success }]} onPress={() => updateStatus('complete', 'Xác nhận hoàn thành ca khám này?')}>
-                    <Text style={styles.actionBtnText}>🏁 Hoàn Thành Khám</Text>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <TouchableOpacity style={[styles.actionBtn, { flex: 1, backgroundColor: colors.success }]} onPress={() => updateStatus('complete', 'Xác nhận hoàn thành ca khám này?')}>
+                    <Text style={styles.actionBtnText}>Hoàn Thành</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.error, marginTop: 10 }]} onPress={() => updateStatus('reject', 'Bạn có chắc chắn muốn hủy lịch hẹn này?')}>
-                    <Text style={styles.actionBtnText}>❌ Hủy Lịch Hẹn</Text>
+                  <TouchableOpacity style={[styles.actionBtn, { flex: 1, backgroundColor: colors.error }]} onPress={() => updateStatus('reject', 'Bạn có chắc chắn muốn hủy lịch hẹn này?')}>
+                    <Text style={styles.actionBtnText}>Hủy</Text>
                   </TouchableOpacity>
-                </>
+                </View>
               )}
 
               {appointment.status === 'completed' && (
                 <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('MedicalRecordDoctor', { appointmentId: appointment._id, existingRecord: medicalRecord })}>
-                  <Text style={styles.actionBtnText}>{medicalRecord ? '📝 Sửa Bệnh Án' : '📝 Thêm Mới Bệnh Án'}</Text>
+                  <Text style={styles.actionBtnText}>{medicalRecord ? 'Sửa Bệnh Án' : 'Thêm Mới Bệnh Án'}</Text>
                 </TouchableOpacity>
               )}
             </>

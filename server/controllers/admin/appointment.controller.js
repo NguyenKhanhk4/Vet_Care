@@ -68,6 +68,22 @@ class AdminAppointmentController {
       next(error);
     }
   }
+
+  /**
+   * PUT /api/admin/appointments/:id/pay
+   */
+  static async confirmPayment(req, res, next) {
+    try {
+      const appointment = await AdminAppointmentService.confirmPayment(req.params.id);
+      res.status(200).json({
+        success: true,
+        message: 'Đã xác nhận thu tiền mặt thành công',
+        data: appointment,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = AdminAppointmentController;

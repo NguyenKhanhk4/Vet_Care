@@ -1,11 +1,12 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DeviceEventEmitter } from 'react-native';
 import axios from 'axios';
-import { API_BASE_URL } from '../utils/api';
+import { ROOT_API_URL } from '../utils/api';
 
 // Create a generic auth instance pointing to the base /api/auth
 const authApi = axios.create({
-  baseURL: API_BASE_URL.replace('/customer', ''), // this makes it http://localhost:5001/api
+  baseURL: ROOT_API_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -47,6 +48,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     checkAuthState();
+
+    const subscription = DeviceEventEmitter.addListener('force_logout', () => {
+      logoutUnified();
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   const checkAuthState = async () => {

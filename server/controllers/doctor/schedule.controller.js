@@ -18,6 +18,25 @@ class DoctorScheduleController {
       next(error);
     }
   }
+  static async addTimeOff(req, res, next) {
+    try {
+      const { date, reason } = req.body;
+      const result = await DoctorScheduleService.addTimeOff(req.user._id, date, reason);
+      res.status(200).json({ success: true, message: 'Đã đánh dấu nghỉ thành công', data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async removeTimeOff(req, res, next) {
+    try {
+      const { date } = req.params;
+      const result = await DoctorScheduleService.removeTimeOff(req.user._id, date);
+      res.status(200).json({ success: true, message: 'Đã hủy đánh dấu nghỉ thành công', data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = DoctorScheduleController;

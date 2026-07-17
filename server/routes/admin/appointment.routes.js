@@ -11,6 +11,7 @@ router.use(authorize('admin'));
 
 router.get('/', AdminAppointmentController.getAllAppointments);
 router.get('/:id', AdminAppointmentController.getAppointmentById);
+router.put('/:id/pay', AdminAppointmentController.confirmPayment);
 router.put('/:id', AdminAppointmentController.updateAppointment);
 router.delete('/:id', AdminAppointmentController.deleteAppointment);
 

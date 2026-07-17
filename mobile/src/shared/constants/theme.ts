@@ -5,13 +5,13 @@
 
 export const lightColors = {
   // Primary Colors
-  primary: '#4CAF50',
-  primaryDark: '#388E3C',
-  primaryLight: '#C8E6C9',
+  primary: '#87d1e8',
+  primaryDark: '#5ab9d4',
+  primaryLight: '#d0eff8',
   // Secondary Colors
-  secondary: '#81C784',
-  secondaryDark: '#66BB6A',
-  secondaryLight: '#E8F5E9',
+  secondary: '#a3dfef',
+  secondaryDark: '#75c4db',
+  secondaryLight: '#e1f4fa',
   // Background Colors
   background: '#F8F9FA',
   surface: '#FFFFFF',
@@ -51,8 +51,8 @@ export const darkColors = {
   border: '#333333',
   divider: '#2C2C2C',
   shadow: 'rgba(0, 0, 0, 0.5)',
-  primaryLight: '#1B5E20',
-  secondaryLight: '#2E7D32',
+  primaryLight: '#1c3b46',
+  secondaryLight: '#254652',
 };
 
 export type ThemeColors = typeof lightColors;
@@ -100,12 +100,12 @@ export const SIZES = {
 
   // Border Radius
   radius: {
-    sm: 4,
-    md: 8,
-    base: 12,
-    lg: 16,
-    xl: 20,
-    round: 50,
+    sm: 8,
+    md: 12,
+    base: 16,
+    lg: 24,
+    xl: 32,
+    round: 999, // Pill shape
   },
 
   // Icon Sizes
@@ -121,24 +121,24 @@ export const SIZES = {
 export const SHADOWS = {
   light: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
   },
   medium: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 6,
   },
   dark: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.16,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.12,
+    shadowRadius: 30,
+    elevation: 10,
   },
 };
 

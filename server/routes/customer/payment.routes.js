@@ -33,4 +33,7 @@ router.get('/history', PaymentController.getPaymentHistory);
 // GET /api/customer/payments/:id
 router.get('/:id', PaymentController.getPaymentById);
 
+// POST /api/customer/payments/:orderCode/cancel
+router.post('/:orderCode/cancel', PaymentController.cancelPayment);
+
 module.exports = router;

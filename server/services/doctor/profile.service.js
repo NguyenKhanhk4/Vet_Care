@@ -66,6 +66,78 @@ class DoctorProfileService {
     user.password = newPassword;
     await user.save();
   }
+
+  static async getCustomers(userId, query) {
+    const doctor = await Doctor.findOne({ user: userId });
+    if (!doctor) {
+      const error = new Error('Không tìm thấy hồ sơ bác sĩ');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const page = parseInt(query.page) || 1;
+    const limit = parseInt(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const Appointment = require('../../models/Appointment');
+
+    const pipeline = [
+      { $match: { doctor: doctor._id, status: { $in: ['completed', 'paid', 'confirmed', 'pending'] } } },
+      { $group: {
+          _id: '$customer',
+          totalVisits: { $sum: 1 },
+          lastVisit: { $max: '$date' }
+      }},
+      { $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'customerDetails'
+      }},
+      { $unwind: '$customerDetails' }
+    ];
+
+    if (query.search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { 'customerDetails.name': { $regex: query.search, $options: 'i' } },
+            { 'customerDetails.phone': { $regex: query.search, $options: 'i' } }
+          ]
+        }
+      });
+    }
+
+    const countPipeline = [...pipeline, { $count: 'total' }];
+    const countResult = await Appointment.aggregate(countPipeline);
+    const total = countResult.length > 0 ? countResult[0].total : 0;
+
+    pipeline.push(
+      { $project: {
+          _id: 1,
+          totalVisits: 1,
+          lastVisit: 1,
+          name: '$customerDetails.name',
+          phone: '$customerDetails.phone',
+          email: '$customerDetails.email',
+          avatar: '$customerDetails.avatar'
+      }},
+      { $sort: { lastVisit: -1 } },
+      { $skip: skip },
+      { $limit: limit }
+    );
+
+    const customers = await Appointment.aggregate(pipeline);
+
+    return {
+      customers,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / limit)
+      }
+    };
+  }
 }
 
 module.exports = DoctorProfileService;

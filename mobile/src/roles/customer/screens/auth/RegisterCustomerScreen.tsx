@@ -37,6 +37,11 @@ const RegisterCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   const onSubmit = async (data: RegisterFormData) => {
     try {
       await register(data.name, data.email, data.password, data.phone);
+      Alert.alert(
+        'Registration Successful',
+        'Your account has been created successfully. Please sign in.',
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
     } catch (error: any) {
       Alert.alert('Registration Failed', error.message);
     }
@@ -112,7 +117,7 @@ const RegisterCustomerScreen: React.FC<{ navigation: any }> = ({ navigation }) =
           {/* Login Link */}
           <View style={styles.loginContainer}>
             <Text style={styles.loginText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('LoginCustomer')} activeOpacity={0.7}>
+            <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
               <Text style={styles.loginLink}>Sign In</Text>
             </TouchableOpacity>
           </View>
@@ -139,7 +144,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   eyeButton: { position: 'absolute' as const, right: 12, top: 12, padding: 4 },
   eyeIcon: { fontSize: 20 },
   errorText: { color: colors.error, fontSize: SIZES.sm, marginTop: SIZES.spacing.xs },
-  registerButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center' as const, marginTop: SIZES.spacing.sm, marginBottom: SIZES.spacing.lg, ...SHADOWS.light },
+  registerButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center' as const, marginTop: SIZES.spacing.sm, marginBottom: SIZES.spacing.lg, ...SHADOWS.light },
   buttonDisabled: { opacity: 0.7 },
   registerButtonText: { color: colors.textWhite, fontSize: SIZES.lg, ...FONTS.semiBold },
   loginContainer: { flexDirection: 'row' as const, justifyContent: 'center' as const, alignItems: 'center' as const },

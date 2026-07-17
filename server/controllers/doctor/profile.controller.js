@@ -42,6 +42,15 @@ class DoctorProfileController {
       next(error);
     }
   }
+
+  static async getCustomers(req, res, next) {
+    try {
+      const result = await DoctorProfileService.getCustomers(req.user._id, req.query);
+      res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = DoctorProfileController;

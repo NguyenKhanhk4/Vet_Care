@@ -11,6 +11,7 @@ router.use(authenticate);
 router.use(authorize('doctor'));
 
 router.get('/', DoctorProfileController.getProfile);
+router.get('/customers', DoctorProfileController.getCustomers);
 
 router.put(
   '/',

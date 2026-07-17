@@ -236,7 +236,7 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   petChipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
   petChipText: { fontSize: SIZES.sm, color: colors.textSecondary, ...FONTS.medium },
   petChipTextActive: { color: colors.textWhite, ...FONTS.semiBold },
-  submitButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginTop: SIZES.spacing.lg, ...SHADOWS.medium },
+  submitButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', marginTop: SIZES.spacing.lg, ...SHADOWS.medium },
   submitButtonDisabled: { opacity: 0.7 },
   submitButtonText: { color: colors.textWhite, fontSize: SIZES.md, ...FONTS.bold },
 });

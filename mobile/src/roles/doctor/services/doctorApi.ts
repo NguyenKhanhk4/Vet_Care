@@ -2,8 +2,9 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-const BASE_URL = Platform.OS === 'ios' ? 'http://localhost:5001/api/doctor' : 'http://10.0.2.2:5001/api/doctor';
-const SERVER_URL = Platform.OS === 'ios' ? 'http://localhost:5001' : 'http://10.0.2.2:5001';
+const DEFAULT_HOST = Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
+const SERVER_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_HOST;
+const BASE_URL = `${SERVER_URL}/api/doctor`;
 
 export const getImageUrl = (path?: string) => {
   if (!path) return null;

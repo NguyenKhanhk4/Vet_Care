@@ -20,6 +20,7 @@ const ProfileCustomerScreen = ({ navigation }: any) => {
     { icon: '🔒', label: 'Change Password', screen: 'ChangePasswordCustomer' },
     { icon: '📋', label: 'Medical History', screen: 'MedicalHistoryCustomer' },
     { icon: '⚙️', label: 'Settings', screen: 'SettingsCustomer' },
+    { icon: 'ℹ️', label: 'About Us', screen: 'AboutUs' },
   ];
 
   const styles = getStyles(colors);
@@ -34,7 +35,7 @@ const ProfileCustomerScreen = ({ navigation }: any) => {
           </Text>
         </View>
         <Text style={styles.name}>{user?.name || 'User Name'}</Text>
-        <Text style={styles.phone}>{user?.phone || 'No phone number'}</Text>
+        <Text style={styles.phone}>{user?.phone || 'Add phone number in Edit Profile'}</Text>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>Standard Member</Text>
         </View>

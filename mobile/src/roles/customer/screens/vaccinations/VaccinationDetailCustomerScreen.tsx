@@ -170,12 +170,12 @@ const getStyles = (colors: ThemeColors) => StyleSheet.create({
   notesCard: { backgroundColor: 'rgba(255, 152, 0, 0.15)', marginHorizontal: SIZES.spacing.base, marginBottom: SIZES.spacing.base, borderRadius: SIZES.radius.lg, padding: SIZES.spacing.lg },
   notesText: { fontSize: SIZES.md, color: colors.warning, ...FONTS.medium, lineHeight: 22 },
   actionsContainer: { padding: SIZES.spacing.base, paddingBottom: SIZES.spacing.xxl },
-  bookButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', marginBottom: SIZES.spacing.md, ...SHADOWS.light },
+  bookButton: { backgroundColor: colors.primary, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', marginBottom: SIZES.spacing.md, ...SHADOWS.light },
   bookButtonText: { color: colors.textWhite, fontSize: SIZES.md, ...FONTS.bold },
   rowActions: { flexDirection: 'row', gap: SIZES.spacing.md },
-  editButton: { flex: 1, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.primary },
+  editButton: { flex: 1, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.primary },
   editButtonText: { color: colors.primary, fontSize: SIZES.md, ...FONTS.semiBold },
-  deleteButton: { flex: 1, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: SIZES.spacing.base, alignItems: 'center', borderWidth: 1, borderColor: colors.error },
+  deleteButton: { flex: 1, backgroundColor: colors.surface, borderRadius: SIZES.radius.base, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.error },
   deleteButtonText: { color: colors.error, fontSize: SIZES.md, ...FONTS.semiBold },
 });
 

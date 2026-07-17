@@ -28,6 +28,7 @@ import ExploreCustomerScreen from '../screens/home/ExploreCustomerScreen';
 import ClinicDetailCustomerScreen from '../screens/clinics/ClinicDetailCustomerScreen';
 import NearbyClinicCustomerScreen from '../screens/clinics/NearbyClinicCustomerScreen';
 import ClinicListCustomerScreen from '../screens/clinics/ClinicListCustomerScreen';
+import DoctorDetailCustomerScreen from '../screens/doctors/DoctorDetailCustomerScreen';
 
 // Import Pet Screens
 import PetListCustomerScreen from '../screens/pets/PetListCustomerScreen';
@@ -63,6 +64,15 @@ import EditProfileCustomerScreen from '../screens/profile/EditProfileCustomerScr
 import ChangePasswordCustomerScreen from '../screens/profile/ChangePasswordCustomerScreen';
 import SettingsCustomerScreen from '../screens/profile/SettingsCustomerScreen';
 
+// Import Support Screens
+import PrivacyPolicyScreen from '../screens/support/PrivacyPolicyScreen';
+import TermsOfServiceScreen from '../screens/support/TermsOfServiceScreen';
+import HelpCenterScreen from '../screens/support/HelpCenterScreen';
+import AboutUsScreen from '../screens/support/AboutUsScreen';
+
+// Import Chat Screen
+import ChatCustomerScreen from '../screens/chat/ChatCustomerScreen';
+
 // Import Notification Screen
 import NotificationCustomerScreen from '../screens/notifications/NotificationCustomerScreen';
 
@@ -89,6 +99,7 @@ export type HomeStackParamList = {
   ExploreCustomer: { type: string; title: string };
   NearbyClinicCustomer: undefined;
   ClinicListCustomer: undefined;
+  DoctorDetailCustomer: { doctorId: string };
 };
 
 export type PetStackParamList = {
@@ -112,6 +123,7 @@ export type AppointmentStackParamList = {
   PaymentFailedCustomer: { orderCode?: number; appointmentId?: string };
   MedicalDetailCustomer: { recordId: string };
   ReviewCustomer: { appointmentId: string };
+  ChatCustomer: { doctorId: string; doctorName: string };
 };
 
 export type MedicalStackParamList = {
@@ -126,6 +138,10 @@ export type ProfileStackParamList = {
   MedicalHistoryCustomer: undefined;
   MedicalDetailCustomer: { recordId: string };
   SettingsCustomer: undefined;
+  PrivacyPolicy: undefined;
+  TermsOfService: undefined;
+  HelpCenter: undefined;
+  AboutUs: undefined;
 };
 
 // ============================================================
@@ -216,9 +232,10 @@ const CustomerNavigator: React.FC = () => {
       <HomeStack.Screen name="PaymentSuccessCustomer" component={PaymentSuccessCustomerScreen} options={{ title: 'Payment Success', headerShown: false }} />
       <HomeStack.Screen name="PaymentFailedCustomer" component={PaymentFailedCustomerScreen} options={{ title: 'Payment Failed', headerShown: false }} />
       <HomeStack.Screen name="NotificationCustomer" component={NotificationCustomerScreen} options={{ title: 'Notifications' }} />
-      <HomeStack.Screen name="ExploreCustomer" component={ExploreCustomerScreen} options={{ title: 'Explore' }} />
+      <HomeStack.Screen name="ExploreCustomer" component={ExploreCustomerScreen} options={({ route }: any) => ({ title: route.params?.title || 'Explore' })} />
       <HomeStack.Screen name="NearbyClinicCustomer" component={NearbyClinicCustomerScreen} options={{ title: 'Nearby Clinics' }} />
       <HomeStack.Screen name="ClinicListCustomer" component={ClinicListCustomerScreen} options={{ title: 'All Clinics' }} />
+      <HomeStack.Screen name="DoctorDetailCustomer" component={DoctorDetailCustomerScreen} options={{ headerShown: false }} />
     </HomeStack.Navigator>
   );
 
@@ -248,6 +265,7 @@ const CustomerNavigator: React.FC = () => {
       <AppointmentStack.Screen name="PaymentFailedCustomer" component={PaymentFailedCustomerScreen} options={{ title: 'Payment Failed', headerShown: false }} />
       <AppointmentStack.Screen name="MedicalDetailCustomer" component={MedicalDetailCustomerScreen} options={{ title: 'Medical Record' }} />
       <AppointmentStack.Screen name="ReviewCustomer" component={ReviewCustomerScreen} options={{ title: 'Leave a Review' }} />
+      <AppointmentStack.Screen name="ChatCustomer" component={ChatCustomerScreen} options={({ route }: any) => ({ title: route.params?.doctorName || 'Chat' })} />
     </AppointmentStack.Navigator>
   );
 
@@ -268,6 +286,10 @@ const CustomerNavigator: React.FC = () => {
       <ProfileStack.Screen name="MedicalHistoryCustomer" component={MedicalHistoryCustomerScreen} options={{ title: 'Medical History' }} />
       <ProfileStack.Screen name="MedicalDetailCustomer" component={MedicalDetailCustomerScreen} options={{ title: 'Medical Record' }} />
       <ProfileStack.Screen name="SettingsCustomer" component={SettingsCustomerScreen} options={{ title: 'Settings' }} />
+      <ProfileStack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} options={{ headerShown: false }} />
+      <ProfileStack.Screen name="TermsOfService" component={TermsOfServiceScreen} options={{ headerShown: false }} />
+      <ProfileStack.Screen name="HelpCenter" component={HelpCenterScreen} options={{ headerShown: false }} />
+      <ProfileStack.Screen name="AboutUs" component={AboutUsScreen} options={{ headerShown: false }} />
     </ProfileStack.Navigator>
   );
 
