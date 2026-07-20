@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 // Base URL for the API - change this to your server URL via .env (e.g. EXPO_PUBLIC_API_URL=https://api.vetcare.com)
-const DEFAULT_HOST = Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
+const DEFAULT_HOST = 'https://vet-care-g0hz.onrender.com';
 const BASE_HOST = process.env.EXPO_PUBLIC_API_URL || DEFAULT_HOST;
 
 const ROOT_API_URL = `${BASE_HOST}/api`;
