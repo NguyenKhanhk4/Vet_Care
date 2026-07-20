@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-const DEFAULT_HOST = Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
+const DEFAULT_HOST = 'https://vet-care-g0hz.onrender.com';
 const SERVER_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_HOST;
 const BASE_URL = `${SERVER_URL}/api/doctor`;
 
